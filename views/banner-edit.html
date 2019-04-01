@@ -19,7 +19,8 @@
 	<link rel="stylesheet" href="../modules/ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
 	
 	<!--[if lte IE 9]>
-	<link rel="stylesheet" href="../modules/ace/css/ace-part2.min.css" class="ace-main-stylesheet" />
+	<link rel="stylesheet" href="../modules/ace/css/ace-part2.min.css"
+	      class="ace-main-stylesheet"/>
 	<![endif]-->
 	
 	<link rel="stylesheet" href="../modules/ace/css/ace-skins.min.css" />
@@ -27,7 +28,7 @@
 	<link rel="stylesheet" href="../css/banner-edit.css">
 	
 	<!--[if lte IE 9]>
-	<link rel="stylesheet" href="../modules/ace/css/ace-ie.min.css" />
+	<link rel="stylesheet" href="../modules/ace/css/ace-ie.min.css"/>
 	<![endif]-->
 	
 	<!-- ace settings handler -->
@@ -148,7 +149,7 @@
 						<i class="ace-icon fa fa-home home-icon"></i>
 						<a href="/manager/index"> 首页</a>
 					</li>
-					<li><a href="./banner-setting.html">小程序banner配置</a></li>
+					<li><a href="banner-setting.html">小程序banner配置</a></li>
 					<li class="active">编辑</li>
 				</ul><!-- 面包屑 -->
 				
@@ -282,7 +283,7 @@
 							</div>
 							<div class="banner-btns">
 								<button class="btn btn-lg btn-success" id="submit">保存</button>
-								<a class="btn btn-white btn-default" id="cancel" href="./banner-setting.html">取消</a>
+								<a class="btn btn-white btn-default" id="cancel" href="banner-setting.html">取消</a>
 							</div>
 						</form>
 					</div>
@@ -469,7 +470,7 @@
 							$loadingTip.text('保存成功').show();
 							setTimeout(() => {
 								$loadingTip.hide();
-								window.location.href='./banner-setting.html'
+								window.location.href='banner-setting.html'
 							}, 2000);
 							
 						},
