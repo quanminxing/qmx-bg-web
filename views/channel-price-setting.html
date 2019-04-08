@@ -10,26 +10,26 @@
   <!--<link rel="icon" type="image/x-icon" href="" />-->
   
   <!-- bootstrap -->
-  <link rel="stylesheet" href="../../libs/ace/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../libs/ace/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="../libs/ace/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../libs/ace/font-awesome/css/font-awesome.min.css">
 
   <!-- text font -->
-  <link rel="stylesheet" href="../../libs/ace/css/fonts.googleapis.com.css">
-  <link rel="stylesheet" href="../../libs/ace/css/ace-skins.min.css" />
-  <link rel="stylesheet" href="../../libs/ace/css/ace-rtl.min.css" />
+  <link rel="stylesheet" href="../libs/ace/css/fonts.googleapis.com.css">
+  <link rel="stylesheet" href="../libs/ace/css/ace-skins.min.css" />
+  <link rel="stylesheet" href="../libs/ace/css/ace-rtl.min.css" />
   <!-- ace style-->
-  <link rel="stylesheet" href="../../libs/ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
+  <link rel="stylesheet" href="../libs/ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
 
   <!--[if lte IE 9]>
-  <link rel="stylesheet" href="../../libs/ace/css/ace-part2.min.css" class="ace-main-stylesheet" />
-  <link rel="stylesheet" href="../../libs/ace/css/ace-ie.min.css" />
+  <link rel="stylesheet" href="../libs/ace/css/ace-part2.min.css" class="ace-main-stylesheet" />
+  <link rel="stylesheet" href="../libs/ace/css/ace-ie.min.css" />
   <![endif]-->
 
   <!-- ace settings handler -->
-  <script src="../../libs/ace/js/ace-extra.min.js"></script>
+  <script src="../libs/ace/js/ace-extra.min.js"></script>
   <!--[if lte IE 8]>
-	<script src="../../libs/ace/js/html5shiv.min.js"></script>
-	<script src="../../libs/ace/js/respond.min.js"></script>
+	<script src="../libs/ace/js/html5shiv.min.js"></script>
+	<script src="../libs/ace/js/respond.min.js"></script>
   <![endif]-->
 </head>
 <body class="no-skin">
@@ -115,21 +115,35 @@
 			</script>
 			
 			<ul class="nav nav-list">
-				<li>
-					<a href="banner-setting.html">
-						<i class="menu-icon fa fa-tachometer"></i>
-						<span class="menu-text"> 小程序banner配置 </span>
-					</a>
-					<b class="arrow"></b>
+        <li>
+          <a href="./banner-setting.html">
+            <i class="menu-icon fa fa-tachometer"></i>
+            <span class="menu-text"> 小程序banner配置</span>
+          </a>
+          <b class="arrow"></b>
+        </li>
+        <li>
+          <a href="./channel-setting.html">
+            <i class="menu-icon fa fa-tachometer"></i>
+            <span class="menu-text"> 频道配置</span>
+          </a>
+          <b class="arrow"></b>
         </li>
         <li class="active">
-					<a href="./channel-setting.html">
-						<i class="menu-icon fa fa-tachometer"></i>
-						<span class="menu-text"> 频道配置 </span>
-					</a>
-					<b class="arrow"></b>
-				</li>
-			</ul>
+          <a href="#">
+            <i class="menu-icon fa fa-tachometer"></i>
+            <span class="menu-text"> 频道价格配置</span>
+          </a>
+          <b class="arrow"></b>
+        </li>
+        <li>
+          <a href="./video.html">
+            <i class="menu-icon fa fa-tachometer"></i>
+            <span class="menu-text"> 视频配置</span>
+          </a>
+          <b class="arrow"></b>
+        </li>
+      </ul>
 			
 			<!-- 收起 sidebar -->
 			<div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
@@ -148,7 +162,8 @@
 							<i class="ace-icon fa fa-home home-icon"></i>
 							<a href="/manager/index"> 首页</a>
 						</li>
-						<li class="active"> 频道配置</li>
+            <li><a href="./channel-setting.html"></a> 频道配置</li>
+            <li class="active"> 频道价格配置</li>
 					</ul><!-- 面包屑 -->
 					
 					<!-- 搜索 -->
@@ -227,8 +242,34 @@
 					
 					<!-- 页面主要信息 -->
 					<div class="page-main row">
-            
-					</div>	
+            <!-- 添加按钮 -->
+						<div class="page-header banner-add">
+                <div class="add-btn">
+                  <a class="btn btn-lg btn-success" href="./channel-edit.html?oper=add">
+                    <i class="ace-icon fa fa-plus-square"></i>
+                    添加
+                  </a>
+                </div>
+              </div><!-- 添加按钮 -->
+
+              <div class="banner-table col-xs-12">
+                <table id="simple-table" class="table table-bordered table-hover center">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>名称</th>
+                      <th>价格下限</th>
+                      <th>价格上限</th>
+                      <th>排序</th>
+                      <th>状态</th>
+                      <th>编辑</th>
+                    </tr>
+                  </thead>
+                  
+                  <tbody></tbody>
+                </table>
+              </div>
+					</div>
 				</div><!-- 页面内容 -->
 			</div>
 		</div><!-- 主要内容区 main-content -->
@@ -240,37 +281,33 @@
 	
 	</div>
 
-
-
   
   <!-- ace base script -->
-  <script src="../../libs/ace/js/jquery-3.3.1.min.js"></script>
-  <script src="../../libs/ace/js/bootstrap.min.js"></script>
+  <script src="../libs/ace/js/jquery-3.3.1.min.js"></script>
+  <script src="../libs/ace/js/bootstrap.min.js"></script>
 
   <!-- vue -->
-  <script src="../../libs/vue/vue.js"></script>
-  <script src="../../libs/vue/vue-router.js"></script>
+  <script src="../libs/vue/vue.js"></script>
+  <script src="../libs/vue/vue-router.js"></script>
 
   <!--[if IE]>
-  <script src="../../libs/ace/js/jquery-1.11.3.min.js"></script>
+  <script src="../libs/ace/js/jquery-1.11.3.min.js"></script>
   <![endif]-->
 
   <script type="text/javascript">
     if ('ontouchstart' in document.documentElement) document.write(
-      "<script src='../../libs/ace/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+      "<script src='../libs/ace/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
   </script>
 
   <!-- ace  script-->
-  <script src="../../libs/ace/js/ace-elements.min.js"></script>
-  <script src="../../libs/ace/js/ace.min.js"></script>
+  <script src="../libs/ace/js/ace-elements.min.js"></script>
+  <script src="../libs/ace/js/ace.min.js"></script>
 
   <!-- 图片或视频上传 -->
   <script src="https://file.qmxpower.com/scripts/file.js"></script>
 
   <!-- page script -->
-  <script>
-    
-  </script>
+  <script src="../js/channel-price.js"></script>
 
 </body>
 </html>

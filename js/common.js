@@ -27,9 +27,4 @@ const query = function (url, type, data = '') {
   })
 }
 
-
-
-
-module.exports = {
-  query,
-}
+export { query }
