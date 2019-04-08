@@ -13,7 +13,6 @@
         i.ace-icon.fa.fa-angle-double-up.icon-only.bigger-110
 </template>
 
-<<script src="../static/ace/js/ace.min.js"></script>
 <script>
   try{
     ace.settings.loadState('main-container')
