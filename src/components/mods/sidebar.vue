@@ -37,9 +37,9 @@
             submenu: [
               {
                 id: 1,
-                label: 'banner 配置',
+                label: 'banner配置',
                 active: true,
-                href: '#',
+                href: '/banner/setting',
               }
             ]
           },

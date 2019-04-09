@@ -1,6 +1,6 @@
 <template lang="pug">
   //- navbar 组件
-  #navbar.navbar.navbar-default.ace-save-state
+  #navbar.navbar.navbar-default.ace-save-state.navbar-fixed-top
     .navbar-container.ace-save-state#navbar-container
       //- 菜单隐藏时的按钮
       button.navbar-toggle.menu-toggle.pull-left#menu-toggle(type="button" data-target="#sidebar")
