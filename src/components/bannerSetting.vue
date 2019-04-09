@@ -1,7 +1,7 @@
 <template lang="pug">
   .main-content
     .main-content-inner
-      breadcrumbs(:breadcrumbs='breadcrumbs')
+      breadcrumbs(v-bind:breadcrumbs="breadcrumbs")
       .page-content
         .page-main
     footer
@@ -12,7 +12,7 @@
   import footer from './mods/footer.vue'
 
   export default {
-    name: bannerSetting,
+    name: 'bannerSetting',
     data() {
       return {
         breadcrumbs: [  // 面包屑导航

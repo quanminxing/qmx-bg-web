@@ -10,8 +10,8 @@
 
 <script>
 export default {
-  props: [breadcrumbs],
-  name: breadcrumbs
+  name: 'breadcrumbs',
+  props: [ 'breadcrumbs' ],
 }
 </script>
 
