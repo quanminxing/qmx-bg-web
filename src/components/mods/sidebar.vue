@@ -26,8 +26,6 @@
 </template>
 
 <script>
-  try{ace.settings.loadState('sidebar')}catch(e){}
-
   console.log('sidebar');
   
 
@@ -165,9 +163,10 @@
         let $currentTarget = $(e.currentTarget);
 
         $('#sidebar li.active').removeClass('active')
+        $('#sidebar li.open').removeClass('open');
 
         if($currentTarget.hasClass('sub-menu')) {
-          // $('#sidebar li.open').removeClass('open');
+          
           $currentTarget.parents('li').first().addClass('active open')
         }
 
