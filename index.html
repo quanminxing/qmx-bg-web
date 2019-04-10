@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hans">
+<html lang="zh-Hans" class="vh">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -31,8 +31,13 @@
     <![endif]-->
 </head>
 
-<body class="no-skin">
+<body class="no-skin vh">
   <div id="app"></div>
+
+  <script>
+    console.log('index-top');
+    
+  </script>
 
   <!-- ace base script -->
   <script src="/static/ace/js/jquery-3.3.1.min.js"></script>
@@ -45,10 +50,10 @@
     if ('ontouchstart' in document.documentElement) document.write(
       "<script src='/static/ace/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
   </script>
- 
+
   <!-- ace  script-->
-  <script src="/static/ace/js/ace-elements.min.js"></script>
-  <script src="/static/ace/js/ace.min.js"></script>
+  <!-- <script src=" /static/ace/js/ace-elements.min.js"></script> -->
+  <!-- <script src="/static/ace/js/ace.min.js"></script> -->
 
   <!-- 图片或视频上传 -->
   <script src="https://file.qmxpower.com/scripts/file.js"></script>

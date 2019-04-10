@@ -3,9 +3,10 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-console.log(App);
 
 Vue.config.productionTip = false
+
+console.log('mainjs');
 
 /* eslint-disable no-new */
 new Vue({
@@ -14,3 +15,6 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+console.log($('#sidebar'));
+
+$('body').append('<script src="/static/ace/js/ace-elements.min.js"></script><script src="/static/ace/js/ace.min.js"></script>')

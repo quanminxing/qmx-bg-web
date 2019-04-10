@@ -3,19 +3,19 @@
   .sidebar.responsive.ace-save-state.sidebar-fixed#sidebar
     //- sidebar 列表
     ul.nav.nav-list
-      li.active(@click='menuActive')
+      li.active.top-menu(@click='menuActive')
         router-link(to='/')
           i.menu-icon.fa.fa-home
           span 首页
         b.arrow
-      li(v-for="item in sidebars" :key="item.id" @click='menuActive')
+      li.top-menu(v-for="item in sidebars" :key="item.id" @click='menuActive')
         router-link(:to="item.href" :class='{"dropdown-toggle": item.submenus.length > 0}')
           i.menu-icon.fa(:class='item.icon')
           span.menu-text {{ item.label }}
           b.arrow.fa.fa-angle-down(v-if="item.submenus.length > 0")
         b.arrow
         ul.submenu(v-if="item.submenus.length > 0")
-          li(v-for="submenu in item.submenus" :key='submenu.id' @click='subMenuActive')
+          li.sub-menu(v-for="submenu in item.submenus" :key='submenu.id' @click.stop='menuActive')
             router-link(:to='submenu.href')
               i.menu-icon.fa.fa-caret-right
               span {{submenu.label}}
@@ -27,6 +27,9 @@
 
 <script>
   try{ace.settings.loadState('sidebar')}catch(e){}
+
+  console.log('sidebar');
+  
 
   const sidebars = [
     {
@@ -50,7 +53,7 @@
       label: '视频属性管理',
       active: false,
       icon: 'fa-list',
-      href: '#',
+      href: '',
       submenus: [
         {
           id: 31,
@@ -124,7 +127,7 @@
       label: '小程序配置',
       active: false,
       icon: 'fa-comments',
-      href: '#',
+      href: '',
       submenus: [
         {
           id: 91,
@@ -159,11 +162,18 @@
     },
     methods: {
       menuActive(e) {
-        console.log(e)
+        let $currentTarget = $(e.currentTarget);
+
         $('#sidebar li.active').removeClass('active')
-        $(e.currentTarget).addClass('active')
+
+        if($currentTarget.hasClass('sub-menu')) {
+          // $('#sidebar li.open').removeClass('open');
+          $currentTarget.parents('li').first().addClass('active open')
+        }
+
+        $currentTarget.addClass('active');
       },
-      subMenuActive(e) {
+      submenuActive(e) {
 
       }
     }

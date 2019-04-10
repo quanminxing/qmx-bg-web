@@ -1,18 +1,18 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import bannerSetting from '@/components/bannerSetting'
+import wechatBanner from '@/components/wechat/banner'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/banner/setting',
-      name: 'bannerSetting',
-      component: bannerSetting
+      path: '/wechat/banner',
+      name: 'banner',
+      component: wechatBanner
     }, {
-      path: '/banner/edit',
-      name: 'bannerEdit',
+      path: '/wechat/banner/edit',
+      name: 'bannerSetting',
     }
   ]
 })

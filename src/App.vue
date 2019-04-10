@@ -1,7 +1,7 @@
 <template lang="pug">
-  #app
+  .vh#app
     navbar
-    .main-container.ace-save-state#main-container
+    .main-container.ace-save-state.vh#main-container
       sidebar
       router-view
       a.btn-scroll-up.btn.btn-sm.btn-inverse#btn-scroll-up(href='#')
@@ -12,10 +12,11 @@
   import navbar from '../src/components/mods/navbar.vue'
   import sidebar from '../src/components/mods/sidebar.vue'
 
+  console.log('app');
+
   try{
     ace.settings.loadState('main-container')
   } catch(e) {}
-  
 
   export default {
     name: 'App',
@@ -28,9 +29,12 @@
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .vh {
+    height: 100%;
+  }
 </style>

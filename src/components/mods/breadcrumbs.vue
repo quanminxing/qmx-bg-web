@@ -1,17 +1,19 @@
 <template lang="pug">
   .breadcrumbs.ace-save-state#breadcrumbs
     ul.breadcrumb
-      li
-        i.ace-icon.fa.fa-home.home-icon
-        a(href='#') 首页
-      li(v-for='item in breadcrumbs' :key='item.id' :class='{active: item.active}')
-        a(:href='item.href') {{item.label}}
+      li(v-for='item in breadcrumbs' :key='item.id' :class='[!!item.active ? "active" : ""]')
+        span(v-if='item.active') {{item.label}}
+        router-link(v-else :to='item.href') {{item.label}}
+        
 </template>
 
 <script>
-export default {
-  name: 'breadcrumbs',
-  props: [ 'breadcrumbs' ],
-}
+  console.log('breadcrumbs');
+  
+
+  export default {
+    name: 'breadcrumbs',
+    props: [ 'breadcrumbs' ],
+  }
 </script>
 
