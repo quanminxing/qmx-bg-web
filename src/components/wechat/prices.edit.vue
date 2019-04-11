@@ -49,8 +49,8 @@
     },
     {
       id: 2,
-      label: 'banner配置',
-      href: '/wechat/banner'
+      label: '价格配置',
+      href: '/wechat/prices'
     },
     {
       id: 3,
@@ -63,39 +63,37 @@
   let infoText = [
     {
       label: '名称',
-      idName: 'url_name',
+      idName: 'name',
       placeholder: '请填写名称',
       required: true
     },
     {
-      label: '跳转链接',
-      idName: 'url',
-      placeholder: '请填写跳转链接',
+      label: '价格上限',
+      idName: 'max',
+      placeholder: '请填写价格上限',
+      required: false
+    },
+    {
+      label: '价格下限',
+      idName: 'min',
+      placeholder: '请填写价格下限',
+      required: false
+    },
+    {
+      label: '排序',
+      idName: 'weight',
+      placeholder: '排序',
       required: true
+    },
+    {
+      label: '备注',
+      idName: 'comment',
+      placeholder: '备注',
+      required: false
     }
   ];
 
   let infoSelect = [
-    {
-      label: '链接属性',
-      required: true,
-      idName: 'type_id',
-      placeholder: '请填写链接属性',
-      options:[
-        {
-          value: 1,
-          key: '非 tab 页'
-        },
-        {
-          value: 2,
-          key: 'tab 页'
-        },
-        {
-          value: 3,
-          key: '外链'
-        }
-      ]
-    },
     {
       label: '状态',
       required: true,
@@ -111,15 +109,22 @@
           key: '显示'
         }
       ]
+    }, {
+      label: '关联频道',
+      required: false,
+      idName: 'channel_ids',
+      options:[
+        {
+          value: 0,
+          key: '不显示'
+        },
+        {
+          value: 1,
+          key: '显示'
+        }
+      ]
     }
   ];
-
-  let infoImg = {
-    required: true,
-    label: '图片',
-    tips: ['建议尺寸：750 * 300', '在保证清晰度的前提下图片大小尽量不要超过100K'],
-    img_url: ''
-  }
 
   export default {
     name: 'wechatBannerEdit',
@@ -128,15 +133,15 @@
         pagemenu,
         infoText,
         infoSelect,
-        infoImg,
         values: {
           oper: 'add',
           id: null,
-          img_url: '',
+          max: '',
           is_show: -1,
-          url: '',
-          url_name: '',
-          type_id: -1
+          min: '',
+          weight: '',
+          channel_ids: [],
+          comment: ''
         },
         submitDisabled: true,
         toast: '请填写完整信息！'

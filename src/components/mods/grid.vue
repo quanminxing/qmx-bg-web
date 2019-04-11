@@ -9,7 +9,7 @@
       .tbn-group.col-xs-8
         button.btn.btn-white.btn-info.margin-lr5 搜索 
           i.ace-icon.fa.fa-search.bigger-120.blue
-        router-link(to='/wechat/banner/edit?oper=add') 
+        router-link(:to='{name: editUrl, params: { oper: "add" }}') 
           button.btn.btn-info.btn-sm 添加 
             i.ace-icon.fa.fa-print.align-top.bigger-120.icon-on-right
     .grid-content
@@ -31,9 +31,9 @@
             td.center(v-for='(value, key) in data' :key='key' v-if='key !== "origin"') {{value}}
             td.center
               div.btn-group
-                router-link.blue.space(:to='{name: "bannerEdit", params: data.origin}')
+                router-link.blue.space(:to='{name: editUrl, params: data.origin}')
                   i.ace-icon.fa.fa-pencil.bigger-120
-                a.red.space.pointer(@click='delData(data.id, data.index)')
+                a.red.space.pointer(@click='delData(data.id, data.index, delUrl)')
                   i.ace-icon.fa.fa-trash-o.bigger-120
     .grid-footer
       ul.pager
@@ -55,14 +55,15 @@
 
   export default {
     name: 'grid',
-    props: [ 'colNames', 'datas', 'editUrl' ],
+    props: [ 'colNames', 'datas', 'editUrl', 'delUrl' ],
     methods: {
       
       // 删除记录
-      delData(dataId, dataIndex) {
+      delData(dataId, dataIndex, url) {
         // console.log(id);
-        query('/api/banner/del', 'POST', { id: dataId })
+        query(url, 'POST', { id: dataId })
         .then(() => {
+          console.log(url)
           this.$props.datas.splice(dataIndex, 1)
         })
         .catch((err) => {

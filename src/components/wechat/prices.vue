@@ -21,42 +21,42 @@
     },
     {
       id: 2,
-      label: 'banner配置',
+      label: '价格配置',
       href: '',
       active: true
     }
   ];
 
   // table 数据
-  let colNames = [ 'ID', '名称', '跳转链接', '链接属性', '状态' ]
+  let colNames = [ 'ID', '名称', '价格上限', '价格下限', '状态', '排序' ]
 
-  console.log('banner');
+  console.log('price');
 
   // 测试数据
   let test = [
     {
       id: 15,
-      img_name: null,
-      img_url: "https://file.qmxpower.com/image/banner-%E4%B8%8B%E5%8D%95%E6%B5%81%E7%A8%8B.png",
+      name: null,
+      max: null,
+      min: null,
       is_show: 1,
       oper: "edit",
       timestamp: "2019-04-01 12:57",
-      type_id: 1,
-      url: "/pages/find/flow",
-      url_name: "小程序下单流程",
-      work_id: null
+      weight: 1,
+      channel_ids: [],
+      comment: ''
     },
     {
       id: 14,
-      img_name: null,
-      img_url: "https://file.qmxpower.com/image/banner-%E4%B8%9A%E5%8A%A1%E4%BB%8B%E7%BB%8D2.png",
+      name: 'null',
+      max: null,
+      min: null,
       is_show: 1,
       oper: "edit",
       timestamp: "2019-04-01 12:56",
-      type_id: 1,
-      url: "/pages/find/business",
-      url_name: "小程序业务介绍",
-      work_id: null
+      weight: 1,
+      channel_ids: [1,3],
+      comment: "小程序业务介绍"
     }
   ];
   
@@ -69,8 +69,8 @@
         gridData: {
           colNames,
           datas: [],
-          editUrl: 'bannerEdit',
-          delUrl: '/api/banner/del'
+          editUrl: 'pricesEdit',
+          delUrl: '/api/priceRange/del'
         }
       }
     },
@@ -81,7 +81,7 @@
     mounted() {
       console.log(query);
       console.log(this);
-      query('/api/banner/all', 'GET').then((res) => {
+      query('/api/priceRange', 'GET', {pageNum: 1, pageSize: 20}).then((res) => {
         console.log(res);
         
       })
@@ -92,21 +92,16 @@
           item.oper = 'edit';
           data.push({
             id: item.id,
-            url_name: item.url_name,
-            url: item.url,
-            type_id: urlProperty(item.type_id),
+            name: item.name,
+            max: item.max,
+            min: item.min,
             is_show: isShow(item.is_show),
+            weight: item.weight,
             origin: item
           })
         })
         console.log(test);
         this.gridData.datas = data
-      })
-
-      console.log('banner mouted');
-      this.$nextTick(function() {
-        console.log('banner nextTick');
-        
       })
     }
   }

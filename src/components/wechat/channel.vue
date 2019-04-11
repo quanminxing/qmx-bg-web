@@ -21,56 +21,56 @@
     },
     {
       id: 2,
-      label: 'banner配置',
+      label: '频道配置',
       href: '',
       active: true
     }
   ];
 
   // table 数据
-  let colNames = [ 'ID', '名称', '跳转链接', '链接属性', '状态' ]
+  let colNames = [ 'ID', '名称', '跳转链接', '链接属性', '状态', '排序', '备注' ]
 
-  console.log('banner');
+  console.log('channel');
 
   // 测试数据
   let test = [
     {
       id: 15,
-      img_name: null,
+      name: '小程序下单流程',
       img_url: "https://file.qmxpower.com/image/banner-%E4%B8%8B%E5%8D%95%E6%B5%81%E7%A8%8B.png",
       is_show: 1,
       oper: "edit",
       timestamp: "2019-04-01 12:57",
       type_id: 1,
       url: "/pages/find/flow",
-      url_name: "小程序下单流程",
-      work_id: null
+      weight: 1,
+      comment: '备注1111111'
     },
     {
       id: 14,
-      img_name: null,
+      name: '小程序业务介绍',
       img_url: "https://file.qmxpower.com/image/banner-%E4%B8%9A%E5%8A%A1%E4%BB%8B%E7%BB%8D2.png",
-      is_show: 1,
+      is_show: 0,
       oper: "edit",
       timestamp: "2019-04-01 12:56",
-      type_id: 1,
+      type_id: 2,
       url: "/pages/find/business",
-      url_name: "小程序业务介绍",
-      work_id: null
+      weight: 2,
+      comment: '备注33222222222222'
     }
   ];
   
 
   export default {
-    name: 'wechatBanner',
+    name: 'wechatChannel',
     data() {
       return {
         pagemenu,
         gridData: {
           colNames,
           datas: [],
-          editUrl: 'bannerEdit',
-          delUrl: '/api/banner/del'
+          editUrl: 'channelEdit',
+          delUrl: '/api/channel/del'
         }
       }
     },
@@ -81,7 +81,7 @@
     mounted() {
       console.log(query);
       console.log(this);
-      query('/api/banner/all', 'GET').then((res) => {
+      query('/api/channel', 'GET', { pageNum: 1, pageSize: 20 }).then((res) => {
         console.log(res);
         
       })
@@ -89,24 +89,19 @@
         console.log(err);
         let data = []
         $.each(test, (index, item) => {
-          item.oper = 'edit';
           data.push({
             id: item.id,
-            url_name: item.url_name,
+            name: item.name,
             url: item.url,
             type_id: urlProperty(item.type_id),
             is_show: isShow(item.is_show),
+            weight: item.weight,
+            comment: item.comment,
             origin: item
           })
         })
         console.log(test);
         this.gridData.datas = data
-      })
-
-      console.log('banner mouted');
-      this.$nextTick(function() {
-        console.log('banner nextTick');
-        
       })
     }
   }

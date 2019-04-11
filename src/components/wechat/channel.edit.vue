@@ -49,8 +49,8 @@
     },
     {
       id: 2,
-      label: 'banner配置',
-      href: '/wechat/banner'
+      label: '频道配置',
+      href: '/wechat/channel'
     },
     {
       id: 3,
@@ -63,9 +63,19 @@
   let infoText = [
     {
       label: '名称',
-      idName: 'url_name',
+      idName: 'name',
       placeholder: '请填写名称',
       required: true
+    },
+    {
+      label: '排序',
+      idName: 'weight',
+      placeholder: '排序'
+    },
+    {
+      label: '备注',
+      idName: 'comment',
+      placeholder: '备注',
     },
     {
       label: '跳转链接',
@@ -132,11 +142,13 @@
         values: {
           oper: 'add',
           id: null,
+          name: '',
           img_url: '',
           is_show: -1,
           url: '',
-          url_name: '',
-          type_id: -1
+          weight: '',
+          type_id: -1,
+          comment: ''
         },
         submitDisabled: true,
         toast: '请填写完整信息！'
@@ -223,4 +235,5 @@
 </script>
 
 <style src='@/assets/css/edit.css'></style>
+
 
