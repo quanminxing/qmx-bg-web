@@ -11,8 +11,7 @@
 <script>
   import navbar from '../src/components/mods/navbar.vue'
   import sidebar from '../src/components/mods/sidebar.vue'
-
-  console.log('app');
+  
 
   try{
     ace.settings.loadState('main-container')
@@ -22,7 +21,16 @@
     name: 'App',
     components: {
       navbar,
-      sidebar
+      sidebar,
+    },
+    mounted() {
+      
+
+      console.log('app mouted');
+      this.$nextTick(function() {
+        console.log('app nextTick');
+        
+      })
     }
   }
 
@@ -37,4 +45,18 @@
   .vh {
     height: 100%;
   }
+
+  .space{
+    padding: 0 4px;
+  }
+  .pointer {
+    cursor: pointer;
+  }
+  .margin-lr5 {
+    margin: 0 5px;
+  }
+  .color-fff {
+    color: #fff;
+  }
+
 </style>

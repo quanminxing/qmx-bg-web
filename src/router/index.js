@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import wechatBanner from '@/components/wechat/banner'
+import wechatBannerEdit from '@/components/wechat/banner.edit'
 
 Vue.use(Router)
 
@@ -12,7 +13,8 @@ export default new Router({
       component: wechatBanner
     }, {
       path: '/wechat/banner/edit',
-      name: 'bannerSetting',
+      name: 'bannerEdit',
+      component: wechatBannerEdit
     }
   ]
 })

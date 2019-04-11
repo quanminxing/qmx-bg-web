@@ -217,14 +217,14 @@
   
 
   export default {
-    name: 'bannerSetting',
+    name: 'wechatBanner',
     data() {
       return {
         pagemenu,
         gridData: {
           colNames,
           datas: [],
-          editUrl: '/wechat/banner/edit'
+          editUrl: '/wechat/banner/edit?oper=edit'
         }
       }
     },
@@ -248,11 +248,18 @@
             url_name: item.url_name,
             url: item.url,
             type_id: urlProperty(item.type_id),
-            is_show: isShow(item.is_show)
+            is_show: isShow(item.is_show),
+            origin: item
           })
         })
         console.log(test);
         this.gridData.datas = data
+      })
+
+      console.log('banner mouted');
+      this.$nextTick(function() {
+        console.log('banner nextTick');
+        
       })
     }
   }

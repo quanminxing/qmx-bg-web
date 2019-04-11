@@ -47,3 +47,14 @@ export const urlProperty = function (code) {
 
   return mode[code];
 }
+
+// 编辑时，设置value值
+export const setValue = function(name, value, that) {
+  console.log(name);
+  console.log(value);
+  console.log(that.values);
+  
+  if(value !== null && value !== undefined) {
+    that.values[name] = value
+  }
+}
