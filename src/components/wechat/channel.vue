@@ -1,10 +1,9 @@
 <template lang="pug">
-  .main-content.vh.position-relative
-    .main-content-inner
-      breadcrumbs(v-bind:breadcrumbs="pagemenu")
-      .page-content.row
-        .page-main.col-xs-12
-          grid(v-bind='gridData')
+  .main-content-inner
+    breadcrumbs(v-bind:breadcrumbs="pagemenu")
+    .page-content.row
+      .page-main.col-xs-12
+        grid(v-bind='gridData')
 </template>
 
 <script>
@@ -68,6 +67,7 @@
         pagemenu,
         gridData: {
           colNames,
+          stickTop: false,
           datas: [],
           editUrl: 'channelEdit',
           delUrl: '/api/channel/del'

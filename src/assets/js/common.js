@@ -48,6 +48,51 @@ export const urlProperty = function (code) {
   return mode[code];
 }
 
+// 对应值code和文字的转换
+export const codeTransform = async function(type, code) {
+  const mode = {
+    wechatUrl:  {
+      1: '非tab页',
+      2: 'tab页',
+      3: '外链'
+    },
+    displayState: {
+      0: '不显示',
+      1: '显示'
+    }
+  }
+  if(!mode[type]) {
+    if(type === 'channel') {
+      await query('/api/channel', 'POST').then(res => {
+        res.data.forEach(item => {
+          mode.channel = {
+            [item.id]: item.name
+          }
+        })
+
+      }).catch(err => {
+        console.log(err);
+        
+      })
+    } else {
+      await query('/api/channel', 'POST').then(res => {
+        let data = res.data;
+        for(key in data) {
+          data[key].forEach(item => {
+            mode[key] = {
+              [item.id]: item.name
+            }
+          })
+        }
+    l  }).catch(err => {
+        console.log(err);
+      })
+    }
+    
+  }
+  return mode[code]
+}
+
 // 编辑时，设置value值
 export const setValue = function(name, value, that) {
   if(value !== null && value !== undefined) {
@@ -56,9 +101,10 @@ export const setValue = function(name, value, that) {
 }
 
 // 提示信息显示和隐藏
-export const showToast = function ($toast, time = 2000) {
+export const showToast = function ($toast, time) {
+  clearTimeout(timer)
   $toast.show();
-  setTimeout(() => {
+  let timer = setTimeout(() => {
     $toast.hide()
   }, time)
 }

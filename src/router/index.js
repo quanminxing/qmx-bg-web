@@ -6,6 +6,8 @@ import wechatChannel from '@/components/wechat/channel'
 import wechatChannelEdit from '@/components/wechat/channel.edit'
 import wechatPrices from '@/components/wechat/prices'
 import wechatPricesEdit from '@/components/wechat/prices.edit'
+import videos from '@/components/videos/videos'
+import videosEdit from '@/components/videos/videos.edit'
 
 Vue.use(Router)
 
@@ -35,6 +37,14 @@ export default new Router({
       path: '/wechat/prices/edit',
       name: 'pricesEdit',
       component: wechatPricesEdit
+    }, {
+      path: '/videos/videos',
+      name: 'videos',
+      component: videos
+    }, {
+      path: '/videos/videos/edit',
+      name: 'videosEdit',
+      component: videosEdit
     }
   ]
 })

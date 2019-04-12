@@ -3,14 +3,19 @@
     navbar
     .main-container.ace-save-state.vh#main-container
       sidebar
-      router-view
+      .main-content.vh.position-relative
+        router-view(@toast='toastShow')
+        .toast
+          .alert.alert-info {{toast}}
       a.btn-scroll-up.btn.btn-sm.btn-inverse#btn-scroll-up(href='#')
         i.ace-icon.fa.fa-angle-double-up.icon-only.bigger-110
+    
 </template>
 
 <script>
   import navbar from '../src/components/mods/navbar.vue'
   import sidebar from '../src/components/mods/sidebar.vue'
+  import { showToast } from '@/assets/js/common.js'
   
 
   try{
@@ -19,18 +24,30 @@
 
   export default {
     name: 'App',
+    data() {
+      return {
+        toast: '提示信息！'
+      }
+    },
     components: {
       navbar,
       sidebar,
     },
-    mounted() {
-      
-
+    mounted() { 
       console.log('app mouted');
       this.$nextTick(function() {
         console.log('app nextTick');
         
       })
+    },
+    methods:{
+      toastShow(msg, time = 2000) {
+        console.log(msg);
+        console.log('000000000000000000000000000000000000000');
+        
+        this.toast = msg;
+        showToast($('.toast'), time)
+      }
     }
   }
 
@@ -58,5 +75,25 @@
   .color-fff {
     color: #fff;
   }
+
+  
+.toast {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .1);
+  text-align: center;
+}
+
+.toast .alert {
+  display: inline-block;
+  width: 50%;
+  margin-top: 200px;
+  text-align: center;
+  /* transform: translateX(-50%); */
+}
 
 </style>

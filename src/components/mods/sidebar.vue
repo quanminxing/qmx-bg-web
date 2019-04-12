@@ -43,7 +43,7 @@
       label: '视频管理',
       active: false,
       icon: 'fa-film',
-      href: '/videos',
+      href: '/videos/videos',
       submenus: []
     },
     {

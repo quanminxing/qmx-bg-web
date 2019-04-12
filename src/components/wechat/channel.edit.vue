@@ -1,39 +1,36 @@
 <template lang="pug">
-  .main-content.vh.position-relative
-    .main-content-inner.pos-rel
-      breadcrumbs(v-bind:breadcrumbs="pagemenu")
-      form.page-content.row
-        .edit-content.page-main.col-xs-12
-          .info(v-for='(item, index) in infoText' :key='item.idName + index')
-            label.label-txt
-              i.require-icon(v-if='item.required') *
-              span {{item.label}}
-            input.input(:id='item.idName' type='text' :placeholder='item.placeholder' :required='item.required' v-model='values[item.idName]' :key='item.idName')
-          .info(v-for='(item, index) in infoSelect' :key='item.idName + index')
-            label.label-txt
-              i.require-icon(v-if='item.required') *
-              span {{item.label}}
-            select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
-              option.hide(value=-1 selected disabled) --请选择--
-              option(v-for='option in item.options' :key='option.value' :value='option.value') {{option.key}}
-          .info
-            label.label-txt.img-label
-              i.require-icon(v-if='infoImg.required') *
-              span {{infoImg.label}}
-            #imgs
-              .img
-                img.pic(:src='values.img_url' alt='图片' v-show='!!values.img_url')
-              .img-file
-                span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择图片
-                input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile')
-            .img-tips
-              p(v-for='tip in infoImg.tips' :key='tip') {{tip}}
+  .main-content-inner.pos-rel
+    breadcrumbs(v-bind:breadcrumbs="pagemenu")
+    form.page-content.row
+      .edit-content.page-main.col-xs-12
+        .info(v-for='(item, index) in infoText' :key='item.idName + index')
+          label.label-txt
+            i.require-icon(v-if='item.required') *
+            span {{item.label}}
+          input.input(:id='item.idName' type='text' :placeholder='item.placeholder' :required='item.required' v-model='values[item.idName]' :key='item.idName')
+        .info(v-for='(item, index) in infoSelect' :key='item.idName + index')
+          label.label-txt
+            i.require-icon(v-if='item.required') *
+            span {{item.label}}
+          select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
+            option.hide(value=-1 selected disabled) --请选择--
+            option(v-for='option in item.options' :key='option.value' :value='option.value') {{option.key}}
+        .info
+          label.label-txt.img-label
+            i.require-icon(v-if='infoImg.required') *
+            span {{infoImg.label}}
+          #imgs
+            .img
+              img.pic(:src='values.img_url' alt='图片' v-show='!!values.img_url')
+            .img-file
+              span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择图片
+              input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile')
+          .img-tips
+            p(v-for='tip in infoImg.tips' :key='tip') {{tip}}
 
-        .edit-btns
-          button.btn.btn-md.btn-success#save(@click='save' type='submit' :disabled='submitDisabled') 保存
-          router-link.btn.btn-default.btn-md#cancel(to='/wechat/banner') 取消
-      .toast
-        .alert.alert-info {{toast}}
+      .edit-btns
+        button.btn.btn-md.btn-success#save(@click='save' type='submit' :disabled='submitDisabled') 保存
+        router-link.btn.btn-default.btn-md#cancel(to='/wechat/banner') 取消
 </template>
 
 <script>
@@ -151,7 +148,6 @@
           comment: ''
         },
         submitDisabled: true,
-        toast: '请填写完整信息！'
       }
     },
     components:{
@@ -192,16 +188,23 @@
         readFile.readAsDataURL(file)
         readFile.onload = function() {
           that.values.img_url = this.result;
-          that.toast = '上传中，请稍等。。。'
-          $('.toast').show();
+          // that.toast = '上传中，请稍等。。。'
+          // $('.toast').show();
+          that.$emit('toast', '上传中，请稍等。。。', 300000)
+          // let networkTimeout = setTimeout(() => {
+          //   that.$emit('toast', '网络超时，请重试')
+          // }, 120000)
           putimage('https://test.qmxpower.com/api/getSTS?filetype=image', file.name, file, function(res) {
+            // clearTimeout(networkTimeout)
             if(res.status === 200) {
-              that.toast = '上传成功！';
-              showToast($('.toast'), 1000)
+              // that.toast = '上传成功！';
+              // showToast($('.toast'), 1000)
+              that.$emit('toast', '上传成功！', 1000)
               that.submitDisabled = false;
             } else {
-              that.toast = '上传失败，请重新上传！';
-              showToast($('.toast'))
+              // that.toast = '上传失败，请重新上传！';
+              // showToast($('.toast'))
+              that.$emit('toast', '上传失败，请重新上传！')
               that.values.img_url = ''
             }
             
@@ -215,17 +218,20 @@
       save() {
         if(this.values.is_show === -1 || this.values.type_id === -1) {
           console.log('-111111111111');
-          this.toast = '请输入完整信息！'
-          showToast($('.toast'))
+          // this.toast = '请输入完整信息！'
+          // showToast($('.toast'))
+          this.$emit('toast', '请输入完整信息！')
         } else {
           query('/api/banner', 'POST', this.values).then(res => {
-            this.toast = '保存成功！';
-            showToast($('.toast'), 1500)
+            // this.toast = '保存成功！';
+            // showToast($('.toast'), 1500)
+            this.$emit('toast', '保存成功！', 1500)
             window.location.href = '/wechat/banner'
           }).catch(err => {
             console.log(err);
-            this.toast = '网络异常，请重试！'
-            showToast($('.toast'), 1500)
+            // this.toast = '网络异常，请重试！'
+            // showToast($('.toast'), 1500)
+            this.$emit('toast', '网络异常，请重试！', 1500)
           })
         }
       },

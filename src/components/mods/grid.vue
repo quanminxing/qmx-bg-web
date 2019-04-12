@@ -35,6 +35,8 @@
                   i.ace-icon.fa.fa-pencil.bigger-120
                 a.red.space.pointer(@click='delData(data.id, data.index, delUrl)')
                   i.ace-icon.fa.fa-trash-o.bigger-120
+                a.red.space.pointer(v-if='!!stickTop' @click='toTop')
+                  i.ace-icon.far.fa-arrow-alt-to-top.bigger-120
     .grid-footer
       ul.pager
         li.disabled
@@ -55,20 +57,24 @@
 
   export default {
     name: 'grid',
-    props: [ 'colNames', 'datas', 'editUrl', 'delUrl' ],
+    props: [ 'colNames', 'datas', 'editUrl', 'delUrl', 'stickTop' ],
     methods: {
-      
       // 删除记录
       delData(dataId, dataIndex, url) {
         // console.log(id);
         query(url, 'POST', { id: dataId })
         .then(() => {
           console.log(url)
+
           this.$props.datas.splice(dataIndex, 1)
         })
         .catch((err) => {
           console.log(err);
         })
+      },
+      // 置顶
+      toTop() {
+
       }
     },
     computed: {
