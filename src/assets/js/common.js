@@ -49,48 +49,140 @@ export const urlProperty = function (code) {
 }
 
 // 对应值code和文字的转换
-export const codeTransform = async function(type, code) {
+export const codeTransform = async function(type, code){
   const mode = {
-    wechatUrl:  {
-      1: '非tab页',
-      2: 'tab页',
-      3: '外链'
-    },
-    displayState: {
-      0: '不显示',
-      1: '显示'
-    }
+    wechatUrl: [
+      {
+        value: 1,
+        key: '非tab页'
+      },{
+        value: 2,
+        key: 'tab页'
+      }, {
+        value: 3,
+        key: '外链'
+      }
+    ],
+    displayState: [
+      {
+        value: 0,
+        key: '不显示'
+      }, {
+        value: 1,
+        key: '显示'
+      }
+    ],
+    channel: [
+      {
+        value: 0,
+        key: '频道1'
+      }, {
+        value: 1,
+        key: '频道2'
+      }, {
+        value: 2,
+        key: '频道3'
+      }
+    ],
+    category: [
+      {
+        value: 0,
+        key: '类目0'
+      }, {
+        value: 1,
+        key: '类目1'
+      }, {
+        value: 2,
+        key: '类目2'
+      }, {
+        value: 3,
+        key: '类目3'
+      }, {
+        value: 4,
+        key: '类目4'
+      }
+    ],
+    platform: [
+      {
+        value: 0,
+        key: '平台0'
+      },
+      {
+        value: 1,
+        key: '平台1'
+      }
+    ],
+    column: [
+      {
+        value: 0,
+        key: '栏目1'
+      }, {
+        value: 1,
+        key: '栏目2'
+      }
+    ],
+    style: [
+      {
+        value: 0,
+        key: '风格1'
+      }, {
+        value: 1,
+        key: '风格2'
+      }
+    ],
+    usage: [
+      {
+        value: 0,
+        key: '功能1'
+      }, {
+        value: 1,
+        key: '功能2'
+      }
+    ],
+    classify: [
+      {
+        value: 0,
+        key: '分类1'
+      }, {
+        value: 1,
+        key: '分类2'
+      }
+    ]
   }
-  if(!mode[type]) {
-    if(type === 'channel') {
-      await query('/api/channel', 'POST').then(res => {
-        res.data.forEach(item => {
-          mode.channel = {
-            [item.id]: item.name
-          }
-        })
+  
+  // if(!mode[type]) {
+  //   if(type === 'channel') {
+  //     await query('/api/channel', 'POST').then(res => {
+  //       res.data.forEach(item => {
+  //         mode.channel = {
+  //           [item.id]: item.name
+  //         }
+  //       })
 
-      }).catch(err => {
-        console.log(err);
+  //     }).catch(err => {
+  //       console.log(err);
         
-      })
-    } else {
-      await query('/api/channel', 'POST').then(res => {
-        let data = res.data;
-        for(key in data) {
-          data[key].forEach(item => {
-            mode[key] = {
-              [item.id]: item.name
-            }
-          })
-        }
-    l  }).catch(err => {
-        console.log(err);
-      })
-    }
-    
-  }
-  return mode[code]
+  //     })
+  //   } else {
+  //     await query('/api/info/operateVideo', 'POST').then(res => {
+  //       let data = res.data;
+  //       for(key in data) {
+  //         data[key].forEach(item => {
+  //           mode[key] = {
+  //             [item.id]: item.name
+  //           }
+  //         })
+  //       }
+  //   l }).catch(err => {
+  //       console.log(err);
+        
+  //     })
+  //   } 
+  // }
+  // if (!!code) {
+  //   return mode[type][code]
+  // }
+  return mode[type]
 }
 
 // 编辑时，设置value值

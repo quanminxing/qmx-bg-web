@@ -1,14 +1,22 @@
+.align-top {
+  align-self: flex-start;
+}
+
 .edit-content {
   padding: 30px;
 }
 
 .edit-content .info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   padding: 10px 0;
 }
-
+.edit-content .info-left {
+  width: 30%;
+  padding-right: 15px;
+}
 .edit-content .info .label-txt {
-  width: 120px;
-  padding: 0 15px 0 0;
   text-align: right;
 }
 
@@ -47,13 +55,17 @@
 }
 
 .edit-content .img-tips {
-  padding: 5px 0 0 120px;
+  /* padding: 5px 0 0 120px; */
 }
 
 .edit-btns {
-  padding: 0 0 0 150px;
+  padding: 0 0 0 30%;
 }
 
 .edit-btns .btn {
-  margin: 0 15px 0 0;
+  margin: 6px;
+}
+
+.checkbox-groups {
+  padding: 0 30px 0 0;
 }
