@@ -34,23 +34,20 @@
   display: inline-block;
 }
 
-#imgs .img {
+.imgs .img-empty, .imgs img {
   width: 375px;
   height: 200px;
+}
+.imgs .img-empty {
   border: 1px solid #eee;
   background-color: #f5f5f5;
-}
-
-#imgs .pic {
-  width: 375px;
-  height: 200px;
 }
 
 .edit-content .img-label {
   vertical-align: top;
 }
 
-#imgs .choose-img {
+.imgs .choose-img {
   margin: 10px 0;
 }
 

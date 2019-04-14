@@ -3,39 +3,45 @@
     breadcrumbs(v-bind:breadcrumbs="pagemenu")
     form.page-content.row
       .edit-content.page-main.col-xs-12
-        .info(v-if='!!infoText' v-for='(item, index) in infoText' :key='item.idName + index')
-          label.label-txt
-            i.require-icon(v-if='item.required') *
+        .info.row(v-show='!!values.id')
+          label.label-txt.info-left 
+            span ID
+          .info-right
+            input.input(disabled v-model='values.id')
+        //- text 类型表单
+        .info.row(v-if='!!infoText' v-for='(item, index) in infoText' :key='item.idName + index')
+          label.label-txt.info-left
+            i.require-icon(v-if='item.required') * 
             span {{item.label}}
-          input.input(:id='item.idName' type='text' :placeholder='item.placeholder' :required='item.required' v-model='values[item.idName]' :key='item.idName')
-        .info(v-if='!!infoSelect' v-for='(item, index) in infoSelect' :key='item.idName + index')
-          label.label-txt
-            i.require-icon(v-if='item.required') *
+          .info-right
+            input.input(:id='item.idName' type='text' :placeholder='item.placeholder' :required='item.required' v-model='values[item.idName]' :key='item.idName')
+        //- select 类型表单
+        .info.row(v-if='!!infoSelect' v-for='(item, index) in infoSelect' :key='item.idName + index')
+          label.label-txt.info-left
+            i.require-icon(v-if='item.required') * 
             span {{item.label}}
-          select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
-            option.hide(value=-1 selected disabled) --请选择--
-            option(v-for='option in item.options' :key='option.value' :value='option.value') {{option.key}}
-        .info(v-if='!!infoImg')
-          label.label-txt.img-label
-            i.require-icon(v-if='infoImg.required') *
-            span {{infoImg.label}}
-          #imgs
-            .img
-              img.pic(:src='values.img_url' alt='图片' v-show='!!values.img_url')
+          .info-right
+            select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
+              option.hide(value=-1 selected disabled) --请选择--
+              option(v-for='option in item.options' :key='option.value' :value='option.value') {{option.key}}
+        //- 选择图片类型表单(单张图片)
+        .info.row(v-if='!!infoImg' v-for='(item, index) in infoImg' :key='item.idName + index')
+          label.label-txt.img-label.info-left.align-top
+            i.require-icon(v-if='item.required') * 
+            span {{item.label}}
+          .imgs.info-right.align-top
+            .imgs-wrap(:class='[!values[item.idName] ? "img-empty" : ""]')
+              img(:src='values[item.idName]', alt='images' v-show='!!values[item.idName]')
             .img-file
               span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择图片
-              input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile')
-          .img-tips
-            p(v-for='tip in infoImg.tips' :key='tip') {{tip}}
-
-      .edit-btns
-        button.btn.btn-md.btn-success#save(@click='save' type='submit' :disabled='submitDisabled') 保存
-        router-link.btn.btn-default.btn-md#cancel(to='/wechat/banner') 取消
+              input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile(item.idName, $event)')
+            .img-tips
+            p(v-for='tip in item.tips' :key='tip') {{tip}}
 </template>
 
 <script>
   import breadcrumbs from '../mods/breadcrumbs.vue'
-  import { query, isShow, urlProperty, setValue, showToast } from '@/assets/js/common.js'
+  import { query, codeTransform, showToast } from '@/assets/js/common.js'
 
   // 面包屑
   let pagemenu = [
@@ -78,45 +84,24 @@
       required: true,
       idName: 'type_id',
       placeholder: '请填写链接属性',
-      options:[
-        {
-          value: 1,
-          key: '非 tab 页'
-        },
-        {
-          value: 2,
-          key: 'tab 页'
-        },
-        {
-          value: 3,
-          key: '外链'
-        }
-      ]
+      options:codeTransform('wechatUrl')
     },
     {
       label: '状态',
       required: true,
       idName: 'is_show',
       placeholder: '请填写显示状态',
-      options:[
-        {
-          value: 0,
-          key: '不显示'
-        },
-        {
-          value: 1,
-          key: '显示'
-        }
-      ]
+      options: codeTransform('displayState')
     }
   ];
 
-  let infoImg = {
+  let infoImg = [{
+    idName: 'img_url',
     required: true,
     label: '图片',
     tips: ['建议尺寸：750 * 300', '在保证清晰度的前提下图片大小尽量不要超过100K'],
     img_url: ''
-  }
+  }]
 
   export default {
     name: 'wechatBannerEdit',
@@ -128,14 +113,13 @@
         infoImg,
         values: {
           oper: 'add',
-          id: null,
+          id: '',
           img_url: '',
           is_show: -1,
           url: '',
           url_name: '',
           type_id: -1
         },
-        submitDisabled: true,
       }
     },
     components:{
@@ -143,25 +127,12 @@
     },
     mounted() {
       // 绑定初始数据
-      let params = this.$route.params;
-      console.log(params);
-      this.infoText.forEach(item => {
-        setValue(item.idName, params[item.idName], this)
-      })
-      this.infoSelect.forEach(item => {
-        setValue(item.idName, params[item.idName], this)
-      })
-      setValue('img_url', params.img_url, this)
-
-      console.log('11111111111111111111111111111111');
+      let initData = this.$route.params;
+      console.log(initData);
       
-      console.log(!!this.values.img_url);
-      
-      if(!!this.values.img_url) {
-        this.submitDisabled = false;
+      for(let init in initData) {
+        this.values[init] = initData[init]
       }
-      setValue('id', params.id, this)
-      setValue('oper', params.oper, this)
     },
     methods: {
       // 选择图片
@@ -169,13 +140,15 @@
         console.log(e.currentTarget);
         $(e.currentTarget).next('input.choose-imgfile').click();
       },
-      chooseFile(e) {
+      chooseFile(idName, e) {
         let that = this;
         let readFile = new FileReader()
-        let file = e.currentTarget.files[0];be
+        console.log();
+        
+        let file = e.currentTarget.files[0];
         readFile.readAsDataURL(file)
         readFile.onload = function() {
-          that.values.img_url = this.result;
+          that.values[idName] = this.result;
           // that.toast = '上传中，请稍等。。。'
           // $('.toast').show();
           that.$emit('toast', '上传中，请稍等。。。', 300000)

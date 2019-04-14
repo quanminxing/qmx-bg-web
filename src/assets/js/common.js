@@ -49,7 +49,7 @@ export const urlProperty = function (code) {
 }
 
 // 对应值code和文字的转换
-export const codeTransform = async function(type, code){
+export const codeTransform = function(type, code){
   const mode = {
     wechatUrl: [
       {

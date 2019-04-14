@@ -90,10 +90,11 @@
 
 .toast .alert {
   display: inline-block;
+  position: fixed;
   width: 50%;
   margin-top: 200px;
   text-align: center;
-  /* transform: translateX(-50%); */
+  transform: translateX(-50%);
 }
 
 </style>
