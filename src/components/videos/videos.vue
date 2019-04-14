@@ -3,13 +3,13 @@
     breadcrumbs(v-bind:breadcrumbs="pagemenu")
     .page-content.row
       .page-main.col-xs-12
-        grid(v-bind='gridData')
+        grid(v-bind='gridData' @choosePagesize='choosePagesize')
 </template>
 
 <script>
   import breadcrumbs from '../mods/breadcrumbs.vue'
   import grid from '../mods/grid.vue'
-  import { query, isShow, urlProperty } from '@/assets/js/common.js'
+  import { query, codeTransform } from '@/assets/js/common.js'
 
   // 面包屑
   let pagemenu = [
@@ -82,13 +82,16 @@
     name: 'videos',
     data() {
       return {
+        pageSize: 20,
+        
         pagemenu,
         gridData: {
           colNames,
           stickTop: true,
           datas: [],
-          editUrl: '/videos/videos/edit',
-          delUrl: '/api/video/del'
+          editUrl: 'videosEdit',
+          delUrl: '/api/video/del',
+          searchItems: [{label: '搜索条件1', value: ''}],
         }
       }
     },
@@ -98,9 +101,7 @@
     },
     mounted() {
       // 视频相关信息
-      
-
-      query('/api/video/listAll', 'GET', { pageNum: 1, pageSize: 20 }).then((res) => {
+      query('/api/video/listAll', 'GET', { pageNum: 1, pageSize: this.pageSize }).then((res) => {
         console.log(res);
         
       })
@@ -111,18 +112,30 @@
           data.push({
             id: item.id,
             name: item.name,
-            category_id: item.url,
-
-            type_id: urlProperty(item.type_id),
-            is_show: isShow(item.is_show),
-            weight: item.weight,
-            comment: item.comment,
+            category_id: codeTransform('category',item.category_id),
+            platform_id: codeTransform('platform',item.platform_id),
+            column_id: codeTransform('column', item.column_id),
+            usage_id: codeTransform('usage', item.usage_id),
+            style_id: codeTransform('style', item.style_id),
+            classify_id: codeTransform('classify', item.classify_id),
+            price: item.price,
+            is_wechat: codeTransform('displayState', item.is_wechat),
+            time: item.time,
+            scale_id: codeTransform('scale', item.scale_id),
+            // type_id: urlProperty(item.type_id),
+            // is_show: isShow(item.is_show),
+            comment: item.description,
             origin: item
           })
         })
         console.log(test);
         this.gridData.datas = data
       })
+    },
+    methods: {
+      choosePagesize(pagesize) {
+        this.pageSize = pagesize;
+      }
     }
   }
 </script>

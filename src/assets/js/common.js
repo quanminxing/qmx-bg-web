@@ -147,7 +147,14 @@ export const codeTransform = function(type, code){
         value: 1,
         key: '分类2'
       }
-    ]
+    ],
+    scale: [{
+      value: 0,
+      key: '比例1'
+    }, {
+      value: 1,
+      key: '比例2'
+    }]
   }
   
   // if(!mode[type]) {
@@ -179,9 +186,25 @@ export const codeTransform = function(type, code){
   //     })
   //   } 
   // }
-  // if (!!code) {
-  //   return mode[type][code]
-  // }
+  if (!!code) {
+    console.log(mode[type][code]);
+    let types = mode[type];
+    let length = types.length;
+    let key = '';
+    for (let i = 0; i < length; i++) {
+      if (types[i].value === mode) {
+        key = types[i].key;
+        break
+      }
+    }
+    // mode[type].forEach(item => {
+    //   if (item.value === code) {
+    //     return item.key
+    //   }
+    // });
+    
+    return key
+  }
   return mode[type]
 }
 

@@ -2,7 +2,7 @@
   .main-content-inner.pos-rel
     breadcrumbs(v-bind:breadcrumbs="pagemenu")
     .form
-      .edit-content.page-main.col-xs-12
+      form.edit-content.page-main.col-xs-12
         .info.row(v-show='!!values.id')
           label.label-txt.info-left 
             span ID
@@ -14,7 +14,7 @@
             i.require-icon(v-if='item.required') * 
             span {{item.label}}
           .info-right
-            input.input(:id='item.idName' type='text' :placeholder='item.placeholder' :required='item.required' v-model='values[item.idName]' :key='item.idName')
+            input.input(:id='item.idName' :type='[!!item.type ? item.type : "text"]' :placeholder='item.placeholder' :required='item.required' v-model='values[item.idName]' :key='item.idName')
         //- select 类型表单
         .info.row(v-if='!!infoSelect' v-for='(item, index) in infoSelect' :key='item.idName + index')
           label.label-txt.info-left
@@ -36,6 +36,9 @@
                 .checkbox-group-item(v-for='(checkbox, index) in group.checkboxs' :key='checkbox.key + index')
                   input(type='checkbox' v-model='checkbox.checked')
                   span {{checkbox.key}}
+      .edit-btns
+        button.btn.btn-md.btn-success#save(@click='save' type='submit') 保存
+        router-link.btn.btn-default.btn-md#cancel(to='/wechat/prices') 取消
 </template>
 
 <script>
@@ -73,19 +76,22 @@
       label: '价格上限',
       idName: 'max',
       placeholder: '请填写价格上限',
-      required: false
+      required: false,
+      type: 'number'
     },
     {
       label: '价格下限',
       idName: 'min',
       placeholder: '请填写价格下限',
-      required: false
+      required: false,
+      type: 'number'
     },
     {
       label: '排序',
       idName: 'weight',
       placeholder: '排序',
-      required: true
+      required: true,
+      type: 'number'
     },
     {
       label: '备注',
@@ -114,7 +120,7 @@
         label: 'channel',
         value: true,
         isShow: false,
-        checkboxs: codeTransform('channel')
+        checkboxs: []
       }
     ]
   }
@@ -154,9 +160,9 @@
         infoSelect,
         channel,
         values: {
-          oper: '',
+          oper: 'add',
           id: '',
-          name: '',
+          name: null,
           max: '',
           min: '',
           weight: '',
@@ -173,50 +179,33 @@
       // 绑定初始数据
       let initData = this.$route.params;
       console.log(initData);
+
+      let channel_ids = initData.channel_ids;
+      
+      this.channel.groups[0].checkboxs =  codeTransform('channel').map(channelItem => {
+        if(!!channel_ids) {
+          let length = channel_ids.length;
+          for(let i = 0; i < length; i++) {
+            if(channelItem.value === channel_ids[i]) {
+              channelItem.checked = true;
+              break;
+            } else {
+              channelItem.checked = false;
+            }
+          }
+        } else {
+          channelItem.checked = false
+        }
+        
+        return channelItem
+      });
+      
+
       for(let init in initData) {
         this.values[init] = initData[init]
       }
 
-      // 获取关联频道信息
-      // codeTransform('channel').then(channel =>{
-      //   console.log(channel);
-
-      //   let initData = this.$route.params
-      //   let channel_ids = initData.channel_ids;
-
-      //   if(!!channel_ids) {
-      //     channel.forEach(channelItem => {
-      //       let length = channel_ids.length;
-      //       for(let i =0; i < length; i++) {
-      //         if(channelItem.value === channel_ids[i]) {
-      //           channelItem.checked = true;
-      //           break;
-      //         } else {
-      //           channelItem.checked = false
-      //         }
-      //       }
-      //     })
-      //   }
-        
-      //   initData.infoCheckbox = [
-      //     {
-      //       label: '关联频道',
-      //       required: false,
-      //       idName: 'channel_ids',
-      //       groups: [
-      //         {
-      //           name: 'pindao',
-      //           value: true,
-      //           isShow: false,
-      //           checkboxs: channel
-      //         }
-      //       ]
-      //     }
-      //   ];
-      //   this.initData = initData;
-      //   console.log(initData);
-        
-      // })
+      
     },
     methods: {
       // 选择图片
@@ -255,13 +244,28 @@
 
       // 保存
       save() {
-        if(this.values.is_show === -1 || this.values.type_id === -1) {
+        console.log(this.values);
+        
+        if(this.values.is_show === -1 || !this.values.name || !this.values.weight) {
           console.log('-111111111111');
           // this.toast = '请输入完整信息！'
           // showToast($('.toast'))
           this.$emit('toast', '请输入完整信息！')
         } else {
-          query('/api/banner', 'POST', this.values).then(res => {
+          let data = this.values;
+          let channel_ids = []
+
+          this.channel.groups[0].checkboxs.forEach(channel => {
+            if(channel.checked === true) {
+              channel_ids.push(channel.value)
+            }
+          })
+          data.channel_ids = channel_ids;
+
+          console.log(data);
+          
+
+          query('/api/banner', 'POST', data).then(res => {
             // this.toast = '保存成功！';
             // showToast($('.toast'), 1500)
             this.$emit('toast', '保存成功！', 1500)

@@ -3,11 +3,11 @@
     .grid-header.row
       .col-xs-4
         label.page-size 显示
-          select.input-sm
+          select.input-sm(v-model='pagesize')
             option(v-for='item in [20, 30, 50, 100]' :value='item') {{item}}
           span 条
       .tbn-group.col-xs-8
-        button.btn.btn-white.btn-info.margin-lr5 搜索 
+        button.btn.btn-white.btn-info.margin-lr5#search-btn(@click='clickSearch') 搜索 
           i.ace-icon.fa.fa-search.bigger-120.blue
         router-link(:to='{name: editUrl, params: { oper: "add" }}') 
           button.btn.btn-info.btn-sm 添加 
@@ -47,6 +47,11 @@
         li
           a(href='#')
             i.ace-icon.fa.fa-angle-double-right
+    .search-box
+      .search-box-content
+        .search-item(v-if='!!searchItems' v-for='(searchItem, index) in searchItems' :key='searchItem.name + index')
+          label {{searchItem.label}}
+          input(type='text' v-model='searchItem.value' :key='searchItem.name + "search"')
 </template>
 
 <script>
@@ -57,7 +62,17 @@
 
   export default {
     name: 'grid',
-    props: [ 'colNames', 'datas', 'editUrl', 'delUrl', 'stickTop' ],
+    props: [ 'colNames', 'datas', 'editUrl', 'delUrl', 'stickTop', 'searchItems' ],
+    data() {
+      return {
+        pagesize: 20
+      }
+    },
+    watch: {
+      pagesize: function(val) {
+        this.$emit('choosePagesize', val)
+      }
+    },
     methods: {
       // 删除记录
       delData(dataId, dataIndex, url) {
@@ -71,6 +86,9 @@
         .catch((err) => {
           console.log(err);
         })
+      },
+      clickSearch() {
+        $('.search-box').toggleClass('show')
       },
       // 置顶
       toTop() {
@@ -112,5 +130,25 @@
   }
   .tbn-group {
     text-align: right;
+  }
+  .show {
+    display: block;
+  }
+  .hide {
+    display: none;
+  }
+  .search-box {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+  }
+  .search-box-content {
+    width: 68%;
+    margin: 200px auto;
+    padding: 50px 30px;
+    background-color: #f5f5f5;
   }
 </style>

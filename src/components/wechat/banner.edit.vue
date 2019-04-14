@@ -37,6 +37,9 @@
               input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile(item.idName, $event)')
             .img-tips
             p(v-for='tip in item.tips' :key='tip') {{tip}}
+      .edit-btns
+        button.btn.btn-md.btn-success#save(@click='save' type='submit') 保存
+        router-link.btn.btn-default.btn-md#cancel(to='/wechat/prices') 取消
 </template>
 
 <script>
@@ -177,7 +180,7 @@
 
       // 保存
       save() {
-        if(this.values.is_show === -1 || this.values.type_id === -1) {
+        if(this.values.is_show === -1 || this.values.type_id === -1 || !this.values.img_url || !this.values.url || !this.values.url_name) {
           console.log('-111111111111');
           // this.toast = '请输入完整信息！'
           // showToast($('.toast'))

@@ -2,7 +2,12 @@
   .main-content-inner.pos-rel
     breadcrumbs(v-bind:breadcrumbs="pagemenu")
     .form
-      .edit-content.page-main.col-xs-12
+      form.edit-content.page-main.col-xs-12
+        .info.row(v-show='!!values.id')
+          label.label-txt.info-left 
+            span ID
+          .info-right
+            input.input(disabled v-model='values.id')
         //- text 类型表单
         .info.row(v-if='!!infoText' v-for='(item, index) in infoText' :key='item.idName + index')
           label.label-txt.info-left
@@ -19,6 +24,22 @@
             select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
               option.hide(value=-1 selected disabled) --请选择--
               option(v-for='option in item.options' :key='option.value' :value='option.value') {{option.key}}
+        //- 选择图片类型表单(单张图片)
+        .info.row(v-if='!!infoImg' v-for='(item, index) in infoImg' :key='item.idName + index')
+          label.label-txt.img-label.info-left.align-top
+            i.require-icon(v-if='item.required') * 
+            span {{item.label}}
+          .imgs.info-right.align-top
+            .imgs-wrap(:class='[!values[item.idName] ? "img-empty" : ""]')
+              img(:src='values[item.idName]', alt='images' v-show='!!values[item.idName]')
+            .img-file
+              span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择图片
+              input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile(item.idName, $event)')
+            .img-tips
+            p(v-for='tip in item.tips' :key='tip') {{tip}}
+      .edit-btns
+        button.btn.btn-md.btn-success#save(@click='save' type='submit') 保存
+        router-link.btn.btn-default.btn-md#cancel(to='/wechat/prices') 取消
 </template>
 
 <script>
@@ -145,13 +166,13 @@
         console.log(e.currentTarget);
         $(e.currentTarget).next('input.choose-imgfile').click();
       },
-      chooseFile(e) {
+      chooseFile(idName, e) {
         let that = this;
         let readFile = new FileReader()
         let file = e.currentTarget.files[0];
         readFile.readAsDataURL(file)
         readFile.onload = function() {
-          that.values.img_url = this.result;
+          that.values[idName] = this.result;
           // that.toast = '上传中，请稍等。。。'
           // $('.toast').show();
           that.$emit('toast', '上传中，请稍等。。。', 300000)
@@ -180,7 +201,7 @@
 
       // 保存
       save() {
-        if(this.values.is_show === -1 || this.values.type_id === -1) {
+        if(this.values.is_show === -1 || this.values.type_id === -1 || !this.values.img_url || !this.values.name || !this.values.url) {
           console.log('-111111111111');
           // this.toast = '请输入完整信息！'
           // showToast($('.toast'))
