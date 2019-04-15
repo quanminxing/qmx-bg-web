@@ -128,9 +128,7 @@
       short_image: '视频缩略图',
       waterfall_image: '瀑布流封面'
     }
-  ];
-
-  
+  ];  
   
 
   let queryList = async function(vue, searchData) {
