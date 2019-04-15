@@ -15,6 +15,8 @@ export const query = function (url, type, data = '') { // 请求
       data,
       success(res) {
         if (res.status === 200) {
+          console.log(res);
+          
           resolve(res);
         } else {
           reject(res);
@@ -160,6 +162,8 @@ export const codeTransform = function(type, code){
   // if(!mode[type]) {
   //   if(type === 'channel') {
   //     await query('/api/channel', 'POST').then(res => {
+  //       console.log(res);
+        
   //       res.data.forEach(item => {
   //         mode.channel = {
   //           [item.id]: item.name
@@ -186,13 +190,15 @@ export const codeTransform = function(type, code){
   //     })
   //   } 
   // }
-  if (!!code) {
-    console.log(mode[type][code]);
+  if (code !== undefined) {
+    // console.log(mode[type][code]);
     let types = mode[type];
     let length = types.length;
     let key = '';
     for (let i = 0; i < length; i++) {
-      if (types[i].value === mode) {
+      // console.log(types[i]);
+      
+      if (types[i].value === code) {
         key = types[i].key;
         break
       }
@@ -202,6 +208,7 @@ export const codeTransform = function(type, code){
     //     return item.key
     //   }
     // });
+    console.log(key);
     
     return key
   }

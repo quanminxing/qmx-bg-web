@@ -3,8 +3,8 @@
     .grid-header.row
       .col-xs-4
         label.page-size 显示
-          select.input-sm(v-model='pageSize')
-            option(v-for='item in [20, 30, 50, 100]' :value='item') {{item}}
+          select.input-sm(v-model='page.pageSize')
+            option(v-for='item in pageSizeRange' :value='item' :key='item + "pagerange"') {{item}}
           span 条
       .tbn-group.col-xs-8
         button.btn.btn-white.btn-info.margin-lr5#search-btn(@click='clickSearch') 搜索 
@@ -38,13 +38,13 @@
                 
     .grid-footer
       ul.pager
-        li.disabled
-          a(href='#')
+        li.pointer(:class='{disabled: page.pageNum <= 1}')
+          a(@click='prevPage')
             i.ace-icon.fa.fa-angle-double-left
-        li.space 第 {{pageSize}} 页
-        li.space 共 {{pageNum}} 页
-        li
-          a(href='#')
+        li.space 第 {{page.pageNum}} 页
+        li.space 共 {{Math.ceil(pageTotal / page.pageSize)}} 页
+        li(:class='{disabled: page.pageNum >= Math.ceil(pageTotal / page.pageSize)}')
+          a.pointer(@click='nextPage')
             i.ace-icon.fa.fa-angle-double-right
     .search-box
       .search-box-content
@@ -53,7 +53,7 @@
             label {{textItem.label}}: 
             input(type='text' v-model='textItem.value' :key='textItem.key + "search"')
         .select.row
-          .search-item.col-sm-4.col-xs-3(v-if='!!searchItems.select' v-for='(selectItem, index) in searchItems.select' :key='selectItem.name + index')
+          .search-item.col-sm-4.col-xs-3(v-if='!!searchItems.select' v-for='(selectItem, index) in searchItems.select' :key='selectItem.key + index')
             label {{selectItem.label}}: 
             select(v-model='selectItem.value')
               option.hide(value=-1) --请选择--
@@ -71,12 +71,7 @@
 
   export default {
     name: 'grid',
-    props: [ 'colNames', 'datas', 'editUrl', 'delUrl', 'stickTop', 'searchItems', 'pageSize', 'pageNum'],
-    watch: {
-      pagesize: function(val) {
-        this.$emit('choosePagesize', val)
-      }
-    },
+    props: [ 'colNames', 'datas', 'editUrl', 'delUrl', 'stickTop', 'searchItems', 'page', 'pageSizeRange', 'pageTotal'],
     methods: {
       // 删除记录
       delData(dataId, dataIndex, url) {
@@ -90,6 +85,12 @@
         .catch((err) => {
           console.log(err);
         })
+      },
+      prevPage() {
+        --this.$props.page.pageNum
+      },
+      nextPage() {
+        ++this.$props.page.pageNum
       },
       clickSearch() {
         $('.search-box').addClass('show')
@@ -119,6 +120,7 @@
         $(e.currentTarget).parents('.search-box').removeClass('show')
         this.$emit('search')
       }
+
     },
     computed: {
     },

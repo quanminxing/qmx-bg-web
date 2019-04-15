@@ -97,5 +97,8 @@
   text-align: center;
   transform: translateX(-50%);
 }
+.pointer {
+  cursor: pointer;
+}
 
 </style>

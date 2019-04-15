@@ -3,7 +3,7 @@
     breadcrumbs(v-bind:breadcrumbs="pagemenu")
     .page-content.row
       .page-main.col-xs-12
-        grid(v-bind='gridData' @choosePagesize='choosePagesize' @search='searchList')
+        grid(v-bind='gridData' @search='searchList')
 </template>
 
 <script>
@@ -22,7 +22,7 @@
   ];
 
   // table 数据
-  let colNames = [ 'ID', '类目', '平台', '栏目', '功能', '风格','分类', '价格', '小程序展示', '播放量', '时长', '比例', '备注' ]
+  let colNames = [ 'ID', '名称', '类目', '平台', '栏目', '功能', '风格','分类', '价格', '小程序展示', '播放量', '时长', '比例', '备注' ]
 
   let searchItems = {
     text: [
@@ -51,27 +51,27 @@
     select: [
       {
         label: '类目',
-        name: 'category_id',
+        key: 'category_id',
         value: -1,
         options: codeTransform('category')
       },{
         label: '平台',
-        name: 'platform_id',
+        key: 'platform_id',
         value: -1,
         options: codeTransform('platform')
       },{
         label: '分类',
-        name: 'classify_id',
+        key: 'classify_id',
         value: -1,
         options: codeTransform('classify')
       },{
         label: '功能',
-        name: 'usage_id',
+        key: 'usage_id',
         value: -1,
         options: codeTransform('usage')
       },{
         label: '栏目',
-        name: 'column_id',
+        key: 'column_id',
         value: -1,
         options: codeTransform('column')
       }
@@ -130,18 +130,51 @@
     }
   ];  
   
-
+  let searchData = {
+    _search: false
+  };
   let queryList = async function(vue, searchData) {
     // console.log(this);
     let queryData = {
-      pageNum: vue.gridData.pageNum,
-      pageSize: vue.gridData.pageSize,
-      
+      pageNum: vue.gridData.page.pageNum,
+      pageSize: vue.gridData.page.pageSize,
     }
-    query('/api/video/listAll', 'GET', queryData).then(res => {
 
-    }).catch(err => {
+    if(searchData._search) {
+      for(let key in searchData) {
+        queryData[key] = searchData[key]
+      }
+    }
 
+    query('/api/video/listAll', 'GET', queryData).then((res) => {
+      console.log(res.data);
+      let datas = [];
+      
+      res.data.forEach(item => {
+        datas.push({
+          id: item.id,
+          name: item.name,
+          category_id: item.category_name || '',
+          platform_id: item.platform_name || '',
+          column_id: item.column_name || '',
+          usage_id: item.usage_name || '',
+          style_id: item.style_name || '',
+          classify_id: item.classify_name || '',
+          price: item.price || '',
+          is_show: codeTransform('displayState', item.is_show) || '不显示',
+          work_id: item.work_id || 0,
+          time: item.time,
+          scale_id: item.scale_id || '',
+          description: item.description || '',
+          origin: item
+        })
+      });
+      vue.gridData.datas = datas;
+      vue.gridData.pageTotal = res.total;
+    })
+    .catch(err => {
+      console.log(err);
+      vue.$emit('toast', '网络异常，请刷新重试')
     })
   }
 
@@ -153,8 +186,12 @@
       return {
         pagemenu,
         gridData: {
-          pageSize: 20,
-          pageNum: 1,
+          pageSizeRange: [20, 30, 50, 100],
+          pageTotal: 20,
+          page: {
+            pageSize: 20,
+            pageNum: 1,
+          },
           colNames,
           stickTop: true,
           datas: [],
@@ -169,45 +206,38 @@
       grid
     },
     mounted() {
-      queryList()
+      queryList(this,searchData)
       // 视频相关信息
-      query('/api/video/listAll', 'GET', { pageNum: 1, pageSize: this.gridData.pageSize }).then((res) => {
-        console.log(res);
-        
-      })
-      .catch(err => {
-        console.log(err);
-        let data = []
-        $.each(test, (index, item) => {
-          data.push({
-            id: item.id,
-            name: item.name,
-            category_id: codeTransform('category',item.category_id),
-            platform_id: codeTransform('platform',item.platform_id),
-            column_id: codeTransform('column', item.column_id),
-            usage_id: codeTransform('usage', item.usage_id),
-            style_id: codeTransform('style', item.style_id),
-            classify_id: codeTransform('classify', item.classify_id),
-            price: item.price,
-            is_wechat: codeTransform('displayState', item.is_wechat),
-            time: item.time,
-            scale_id: codeTransform('scale', item.scale_id),
-            // type_id: urlProperty(item.type_id),
-            // is_show: isShow(item.is_show),
-            comment: item.description,
-            origin: item
-          })
-        })
-        console.log(test);
-        this.gridData.datas = data
-      })
+      
     },
     methods: {
-      choosePagesize(pagesize) {
-        this.pageSize = pagesize;
-      },
       searchList() {
-        query()
+        console.log(this);
+        searchData._search = true;
+        
+        let searchItems = this.gridData.searchItems;
+        
+        for(let type in searchItems) {
+          let thisType = searchItems[type];
+          thisType.forEach(item => {
+            if(item.value === -1) {
+              searchData[item.key] = null;
+            } else {
+              searchData[item.key] = item.value;
+            }
+            
+          })
+        }
+        console.log(searchData);
+        queryList(this, searchData)
+      }
+    },
+    watch: {
+      'gridData.page': {
+        handler: function() {
+          queryList(this, searchData)
+        },
+        deep: true
       }
     }
   }
