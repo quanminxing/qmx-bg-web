@@ -76,7 +76,7 @@
     {
       id: 1,
       label: '视频管理',
-      href: '',
+      href: '/videos/videos',
     },
     {
       id: 2,

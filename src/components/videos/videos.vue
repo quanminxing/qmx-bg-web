@@ -3,7 +3,7 @@
     breadcrumbs(v-bind:breadcrumbs="pagemenu")
     .page-content.row
       .page-main.col-xs-12
-        grid(v-bind='gridData' @choosePagesize='choosePagesize')
+        grid(v-bind='gridData' @choosePagesize='choosePagesize' @search='searchList')
 </template>
 
 <script>
@@ -24,7 +24,59 @@
   // table 数据
   let colNames = [ 'ID', '类目', '平台', '栏目', '功能', '风格','分类', '价格', '小程序展示', '播放量', '时长', '比例', '备注' ]
 
-  console.log('channel');
+  let searchItems = {
+    text: [
+      {
+        label: 'ID',
+        placeholder: 'ID',
+        key: 'id',
+        value: ''
+      },{
+        label: '名称',
+        placeholder: '名称',
+        key: 'name',
+        value: ''
+      },{
+        label: '价格上限',
+        placeholder: '价格上限',
+        key: 'max',
+        value: ''
+      },{
+        label: '价格下限',
+        placeholder: '价格下限',
+        key: 'min',
+        value: ''
+      }
+    ],
+    select: [
+      {
+        label: '类目',
+        name: 'category_id',
+        value: -1,
+        options: codeTransform('category')
+      },{
+        label: '平台',
+        name: 'platform_id',
+        value: -1,
+        options: codeTransform('platform')
+      },{
+        label: '分类',
+        name: 'classify_id',
+        value: -1,
+        options: codeTransform('classify')
+      },{
+        label: '功能',
+        name: 'usage_id',
+        value: -1,
+        options: codeTransform('usage')
+      },{
+        label: '栏目',
+        name: 'column_id',
+        value: -1,
+        options: codeTransform('column')
+      }
+    ]
+  }
 
   // 测试数据
   let test = [
@@ -49,7 +101,7 @@
       keystring: '颗粒度哒哒哒哒哒哒多多多多多多多多多',
       url: 'http://www.dddl.mp4',
       demo_pic: '详情图：img_url1,video_id1|img2_url2,video_id2|...',
-      short_image: '视频缩略图',
+      short_image: '',
       waterfall_image: '瀑布流封面'
     },
     {
@@ -78,20 +130,39 @@
     }
   ];
 
+  
+  
+
+  let queryList = async function(vue, searchData) {
+    // console.log(this);
+    let queryData = {
+      pageNum: vue.gridData.pageNum,
+      pageSize: vue.gridData.pageSize,
+      
+    }
+    query('/api/video/listAll', 'GET', queryData).then(res => {
+
+    }).catch(err => {
+
+    })
+  }
+
+  
+
   export default {
     name: 'videos',
     data() {
       return {
-        pageSize: 20,
-        
         pagemenu,
         gridData: {
+          pageSize: 20,
+          pageNum: 1,
           colNames,
           stickTop: true,
           datas: [],
           editUrl: 'videosEdit',
           delUrl: '/api/video/del',
-          searchItems: [{label: '搜索条件1', value: ''}],
+          searchItems
         }
       }
     },
@@ -100,8 +171,9 @@
       grid
     },
     mounted() {
+      queryList()
       // 视频相关信息
-      query('/api/video/listAll', 'GET', { pageNum: 1, pageSize: this.pageSize }).then((res) => {
+      query('/api/video/listAll', 'GET', { pageNum: 1, pageSize: this.gridData.pageSize }).then((res) => {
         console.log(res);
         
       })
@@ -135,6 +207,9 @@
     methods: {
       choosePagesize(pagesize) {
         this.pageSize = pagesize;
+      },
+      searchList() {
+        query()
       }
     }
   }

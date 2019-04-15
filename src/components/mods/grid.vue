@@ -3,7 +3,7 @@
     .grid-header.row
       .col-xs-4
         label.page-size 显示
-          select.input-sm(v-model='pagesize')
+          select.input-sm(v-model='pageSize')
             option(v-for='item in [20, 30, 50, 100]' :value='item') {{item}}
           span 条
       .tbn-group.col-xs-8
@@ -35,39 +35,43 @@
                   i.ace-icon.fa.fa-pencil.bigger-120
                 a.red.space.pointer(@click='delData(data.id, data.index, delUrl)')
                   i.ace-icon.fa.fa-trash-o.bigger-120
-                a.red.space.pointer(v-if='!!stickTop' @click='toTop')
-                  i.ace-icon.far.fa-arrow-alt-to-top.bigger-120
+                
     .grid-footer
       ul.pager
         li.disabled
           a(href='#')
             i.ace-icon.fa.fa-angle-double-left
-        li.space 第 {{}} 页
-        li.space 共 {{}} 页
+        li.space 第 {{pageSize}} 页
+        li.space 共 {{pageNum}} 页
         li
           a(href='#')
             i.ace-icon.fa.fa-angle-double-right
     .search-box
       .search-box-content
-        .search-item(v-if='!!searchItems' v-for='(searchItem, index) in searchItems' :key='searchItem.name + index')
-          label {{searchItem.label}}
-          input(type='text' v-model='searchItem.value' :key='searchItem.name + "search"')
+        .text.row
+          .search-item.col-sm-6.col-xs-12(v-if='!!searchItems.text' v-for='(textItem, index) in searchItems.text' :key='textItem.key + index')
+            label {{textItem.label}}: 
+            input(type='text' v-model='textItem.value' :key='textItem.key + "search"')
+        .select.row
+          .search-item.col-sm-4.col-xs-3(v-if='!!searchItems.select' v-for='(selectItem, index) in searchItems.select' :key='selectItem.name + index')
+            label {{selectItem.label}}: 
+            select(v-model='selectItem.value')
+              option.hide(value=-1) --请选择--
+              option(v-for='(option, index) in selectItem.options' :key='option.value + option.key + index' :value='option.value') {{option.key}}
+        .search-btns.row
+          button(type='reset').btn.btn-info.btn-sm.float-l(@click='reset') 重置
+          button.btn.btn-default.btn-sm(@click='searchHide') 取消
+          button.btn.btn-success.btn-sm(@click='search') 确定
 </template>
 
 <script>
   import { query } from '@/assets/js/common.js'
 
   console.log(query);
-  
 
   export default {
     name: 'grid',
-    props: [ 'colNames', 'datas', 'editUrl', 'delUrl', 'stickTop', 'searchItems' ],
-    data() {
-      return {
-        pagesize: 20
-      }
-    },
+    props: [ 'colNames', 'datas', 'editUrl', 'delUrl', 'stickTop', 'searchItems', 'pageSize', 'pageNum'],
     watch: {
       pagesize: function(val) {
         this.$emit('choosePagesize', val)
@@ -88,11 +92,32 @@
         })
       },
       clickSearch() {
-        $('.search-box').toggleClass('show')
+        $('.search-box').addClass('show')
       },
-      // 置顶
-      toTop() {
-
+      
+      searchHide(e) {
+        console.log(e);
+        
+        $(e.currentTarget).parents('.search-box').removeClass('show')
+      },
+      reset() {
+        let searchItems = this.$props.searchItems;
+        for(let key in searchItems) {
+          if(key === 'text') {
+            searchItems[key].forEach(text => {
+              text.value = '';
+            });
+          } else if(key === 'select') {
+            searchItems[key].forEach(text => {
+              text.value = -1;
+            });
+          }
+          
+        }
+      },
+      search(e) {
+        $(e.currentTarget).parents('.search-box').removeClass('show')
+        this.$emit('search')
       }
     },
     computed: {
@@ -144,11 +169,31 @@
     left: 0;
     z-index: 1;
     width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .1);
   }
   .search-box-content {
     width: 68%;
     margin: 200px auto;
-    padding: 50px 30px;
+    padding: 30px;
     background-color: #f5f5f5;
+  }
+  .search-item {
+    padding: 10px;
+  }
+  .search-item label {
+    width: 80px;
+    padding: 0 5px 0 0; 
+    text-align: right;
+  }
+  .search-btns {
+    padding: 10px 0 0 0;
+    text-align: right;
+  }
+  .search-btns button {
+    margin: 0 15px;
+  }
+  .float-l {
+    float: left;
   }
 </style>
