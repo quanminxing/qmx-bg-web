@@ -46,18 +46,18 @@
         li(:class='{disabled: page.pageNum >= Math.ceil(pageTotal / page.pageSize)}')
           a.pointer(@click='nextPage')
             i.ace-icon.fa.fa-angle-double-right
-    .search-box
+    .search-box(v-if='!!searchItems')
       .search-box-content
         .text.row
           .search-item.col-sm-6.col-xs-12(v-if='!!searchItems.text' v-for='(textItem, index) in searchItems.text' :key='textItem.key + index')
             label {{textItem.label}}: 
-            input(type='text' v-model='textItem.value' :key='textItem.key + "search"')
+            input(:type='textItem.type || "text"' v-model='textItem.value' :key='textItem.key + "search"')
         .select.row
           .search-item.col-sm-4.col-xs-3(v-if='!!searchItems.select' v-for='(selectItem, index) in searchItems.select' :key='selectItem.key + index')
             label {{selectItem.label}}: 
             select(v-model='selectItem.value')
               option.hide(value=-1) --请选择--
-              option(v-for='(option, index) in selectItem.options' :key='option.value + option.key + index' :value='option.value') {{option.key}}
+              option(v-for='(option, index) in selectItem.options' :key='option.id + option.name + index' :value='option.id') {{option.name}}
         .search-btns.row
           button(type='reset').btn.btn-info.btn-sm.float-l(@click='reset') 重置
           button.btn.btn-default.btn-sm(@click='searchHide') 取消
@@ -75,8 +75,8 @@
     methods: {
       // 删除记录
       delData(dataId, dataIndex, url) {
-        // console.log(id);
-        query(url, 'POST', { id: dataId })
+        console.log(dataId);
+        query(url, 'POST', {ids: [dataId]})
         .then(() => {
           console.log(url)
 
@@ -176,7 +176,7 @@
   }
   .search-box-content {
     width: 68%;
-    margin: 200px auto;
+    margin: 100px auto;
     padding: 30px;
     background-color: #f5f5f5;
   }

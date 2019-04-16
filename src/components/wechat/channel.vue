@@ -31,34 +31,6 @@
 
   console.log('channel');
 
-  // 测试数据
-  let test = [
-    {
-      id: 15,
-      name: '小程序下单流程',
-      img_url: "https://file.qmxpower.com/image/banner-%E4%B8%8B%E5%8D%95%E6%B5%81%E7%A8%8B.png",
-      is_show: 1,
-      oper: "edit",
-      timestamp: "2019-04-01 12:57",
-      type_id: 1,
-      url: "/pages/find/flow",
-      weight: 1,
-      comment: '备注1111111'
-    },
-    {
-      id: 14,
-      name: '小程序业务介绍',
-      img_url: "https://file.qmxpower.com/image/banner-%E4%B8%9A%E5%8A%A1%E4%BB%8B%E7%BB%8D2.png",
-      is_show: 0,
-      oper: "edit",
-      timestamp: "2019-04-01 12:56",
-      type_id: 2,
-      url: "/pages/find/business",
-      weight: 2,
-      comment: '备注33222222222222'
-    }
-  ];
-  
 
   export default {
     name: 'wechatChannel',
@@ -66,6 +38,12 @@
       return {
         pagemenu,
         gridData: {
+          pageSizeRange: [20, 30, 50, 100],
+          pageTotal: 20,
+          page: {
+            pageSize: 20,
+            pageNum: 1,
+          },
           colNames,
           stickTop: false,
           datas: [],
@@ -88,7 +66,7 @@
       .catch(err => {
         console.log(err);
         let data = []
-        $.each(test, (index, item) => {
+        /* $.each(test, (index, item) => {
           data.push({
             id: item.id,
             name: item.name,
@@ -99,8 +77,8 @@
             comment: item.comment,
             origin: item
           })
-        })
-        console.log(test);
+        }) */
+        // console.log(test);
         this.gridData.datas = data
       })
     }

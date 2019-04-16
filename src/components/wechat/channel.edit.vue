@@ -153,7 +153,7 @@
         this.values[init] = initData[init]
       }
       // if(!!initData.img_url) {
-      // //   initData.infoImg[0].imgs.push({img_url: initData.img_url});
+      //   initData.infoImg[0].imgs.push({img_url: initData.img_url});
       //   this.initData = initData;
       // }
     },
