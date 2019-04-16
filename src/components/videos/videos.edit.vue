@@ -249,17 +249,14 @@
         console.log(res.data);
         
         this.infoSelect.forEach(item => {
+          item.oper='edit'
           if(item.name !== 'is_show') {
             item.options = res.data[item.name]
           }
         })
       })
-      
-
-      for(let init in initData) {
-        this.values[init] = initData[init]
-      }
-
+      this.values = {...initData}
+    
       
     },
     methods: {

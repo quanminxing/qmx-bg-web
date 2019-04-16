@@ -16,8 +16,9 @@ export const query = function (url, type='GET', data = '') { // 请求
       url: domain + url,
       data,
       success(res) {
+
+        console.log(res);
         if (res.status === 200) {
-          console.log(res);
           
           resolve(res);
         } else {

@@ -23,8 +23,8 @@
           .info-right
             select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
               option.hide(value=-1 selected disabled) --请选择--
-              option(v-for='option in item.options' :key='option.value' :value='option.value') {{option.key}}
-        .info.row(v-if='!!channel')
+              option(v-for='option in item.options' :key='option.id' :value='option.id') {{option.name}}
+        .info.row(v-if='!!channel.groups.length > 0')
           label.label-txt.info-left.align-top
             i.require-icon(v-if='channel.required') * 
             span {{channel.label}}
@@ -106,7 +106,13 @@
       label: '状态',
       required: true,
       idName: 'is_show',
-      options: codeTransform('displayState')
+      options: [{
+        id: 0,
+        name: '不显示'
+      },{
+        id: 1,
+        name: '显示'
+      }]
     }
   ];
 
@@ -124,32 +130,6 @@
       }
     ]
   }
-
-  // 测试数据
-  let test = [
-    {
-      id: 15,
-      name: '频道1',
-      img_url: "https://file.qmxpower.com/image/banner-%E4%B8%8B%E5%8D%95%E6%B5%81%E7%A8%8B.png",
-      is_show: 1,
-      timestamp: "2019-04-01 12:57",
-      type_id: 1,
-      url: "/pages/find/flow",
-      weight: 1,
-      comment: '备注1111111'
-    },
-    {
-      id: 14,
-      name: '频道2',
-      img_url: "https://file.qmxpower.com/image/banner-%E4%B8%9A%E5%8A%A1%E4%BB%8B%E7%BB%8D2.png",
-      is_show: 0,
-      timestamp: "2019-04-01 12:56",
-      type_id: 2,
-      url: "/pages/find/business",
-      weight: 2,
-      comment: '备注33222222222222'
-    }
-  ];
 
   export default {
     name: 'wechatBannerEdit',
@@ -181,8 +161,28 @@
       console.log(initData);
 
       let channel_ids = initData.channel_ids;
-      
-      this.channel.groups[0].checkboxs =  codeTransform('channel').map(channelItem => {
+
+      // 关联频道 ??????????????????????
+      query('/api/channel', 'GET').then(res => {
+        this.channel.groups[0].checkboxs = res.data.map(channelItem => {
+          if(!!channel_ids) {
+            let length = channel_ids.length;
+            for(let i = 0; i < length; i++) {
+              if(channelItem.value === channel_ids[i]) {
+                channelItem.checked = true;
+                break;
+              } else {
+                channelItem.checked = false;
+              }
+            }
+          } else {
+            channelItem.checked = false
+          }
+          
+          return channelItem
+        })
+      })
+      /* this.channel.groups[0].checkboxs =  codeTransform('channel').map(channelItem => {
         if(!!channel_ids) {
           let length = channel_ids.length;
           for(let i = 0; i < length; i++) {
@@ -198,49 +198,12 @@
         }
         
         return channelItem
-      });
+      }); */
       
+      this.values = {...initData}
 
-      for(let init in initData) {
-        this.values[init] = initData[init]
-      }
-
-      
     },
     methods: {
-      // 选择图片
-      chooseImg(e) {
-        console.log(e.currentTarget);
-        $(e.currentTarget).next('input.choose-imgfile').click();
-      },
-      chooseFile(e) {
-        let that = this;
-        let readFile = new FileReader()
-        let file = e.currentTarget.files[0];
-        readFile.readAsDataURL(file)
-        readFile.onload = function() {
-          that.values.img_url = this.result;
-          // that.toast = '上传中，请稍等。。。'
-          // $('.toast').show();
-          that.$emit('toast', '上传中，请稍等。。。', 300000)
-          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', file.name, file, function(res) {
-            if(res.status === 200) {
-              // that.toast = '上传成功！';
-              // showToast($('.toast'), 1000)
-              that.$emit('toast', '上传成功！', 1000)
-              that.submitDisabled = false;
-            } else {
-              // that.toast = '上传失败，请重新上传！';
-              // showToast($('.toast'))
-              that.$emit('toast', '上传失败，请重新上传！')
-              that.values.img_url = ''
-            }
-            
-          })
-          that.values.submitDisabled = false;
-        }
-        
-      },
 
       // 保存
       save() {
@@ -266,15 +229,18 @@
           
 
           query('/api/banner', 'POST', data).then(res => {
-            // this.toast = '保存成功！';
-            // showToast($('.toast'), 1500)
+            
             this.$emit('toast', '保存成功！', 1500)
-            window.location.href = '/wechat/banner'
+            this.$router.push('/wechat/prices')
           }).catch(err => {
             console.log(err);
-            // this.toast = '网络异常，请重试！'
-            // showToast($('.toast'), 1500)
-            this.$emit('toast', '网络异常，请重试！', 1500)
+            if(err === 'success') {
+              this.$emit('toast', '保存成功！', 2000)
+              this.$router.push('/wechat/prices')
+            } else {
+              this.$emit('toast', '网络异常，请重试！', 2000)
+            }
+            
           })
         }
       },

@@ -29,7 +29,33 @@
   // table 数据
   let colNames = [ 'ID', '名称', '跳转链接', '链接属性', '状态', '排序', '备注' ]
 
-  console.log('channel');
+  const queryList = async function(vue) {
+    let queryData = {
+      pageNum: vue.gridData.page.pageNum,
+      pageSize: vue.gridData.page.pageSize,
+    }
+
+    query('/api/channel', 'GET', queryData).then(res => {
+      let data = [];
+      res.data.forEach(item => {
+        item.oper = 'edit'
+        data.push({
+          id: item.id,
+          name: item.name,
+          url: item.url,
+          type_id: urlProperty(item.type_id),
+          is_show: isShow(item.is_show),
+          weight: item.weight,
+          comment: item.comment,
+          origin: item
+        })
+      });
+      vue.gridData.datas = data
+    }).catch(err => {
+
+    })
+
+  }
 
 
   export default {
@@ -59,28 +85,9 @@
     mounted() {
       console.log(query);
       console.log(this);
-      query('/api/channel', 'GET', { pageNum: 1, pageSize: 20 }).then((res) => {
-        console.log(res);
-        
-      })
-      .catch(err => {
-        console.log(err);
-        let data = []
-        /* $.each(test, (index, item) => {
-          data.push({
-            id: item.id,
-            name: item.name,
-            url: item.url,
-            type_id: urlProperty(item.type_id),
-            is_show: isShow(item.is_show),
-            weight: item.weight,
-            comment: item.comment,
-            origin: item
-          })
-        }) */
-        // console.log(test);
-        this.gridData.datas = data
-      })
+
+      queryList(this)
+
     }
   }
 </script>

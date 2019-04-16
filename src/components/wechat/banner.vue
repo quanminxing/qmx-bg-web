@@ -30,14 +30,33 @@
   let colNames = [ 'ID', '名称', '跳转链接', '链接属性', '状态' ];
 
   // 请求数据列表函数
-  let queryList = async function(vue) {
+  const queryList = async function(vue) {
     let queryData = {
       pageNum: vue.gridData.page.pageNum,
       pageSize: vue.gridData.page.pageSize,
     }
 
-    query('/api/banner/all', 'GET').then(res => {
+    query('/api/banner/listAll', 'GET', queryData).then(res => {
       console.log(res);
+        let data = []
+
+        res.data.forEach(item => {
+          let is_show = item.is_show === 1 ? '显示' : '不显示'
+          item.oper = 'edit';
+          data.push({
+            id: item.id,
+            url_name: item.url_name,
+            url: item.url,
+            type_id: urlProperty(item.type_id),
+            is_show: is_show,
+            origin: item
+          })
+        });
+        vue.gridData.datas = data
+    })
+    .catch(err => {
+      console.log(err);
+      
     })
   };
 
@@ -66,49 +85,8 @@
       grid
     },
     mounted() {
-      console.log(query);
-      console.log(this);
-      query('/api/banner/listAll', 'GET').then((res) => {
-        console.log(res);
-        let data = []
-
-        res.data.forEach(item => {
-          let is_show = item.is_show === 1 ? '显示' : '不显示'
-          item.oper = 'edit';
-          data.push({
-            id: item.id,
-            url_name: item.url_name,
-            url: item.url,
-            type_id: urlProperty(item.type_id),
-            is_show: is_show,
-            origin: item
-          })
-        });
-        this.gridData.datas = data
-      })
-      .catch(err => {
-        console.log(err);
-        let data = []
-        /* $.each(test, (index, item) => {
-          item.oper = 'edit';
-          data.push({
-            id: item.id,
-            url_name: item.url_name,
-            url: item.url,
-            type_id: urlProperty(item.type_id),
-            is_show: isShow(item.is_show),
-            origin: item
-          })
-        }) */
-        
-        // this.gridData.datas = data
-      })
-
-      console.log('banner mouted');
-      this.$nextTick(function() {
-        console.log('banner nextTick');
-        
-      })
+      
+      queryList(this)
     }
   }
 </script>

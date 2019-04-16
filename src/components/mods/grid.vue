@@ -87,10 +87,18 @@
         })
       },
       prevPage() {
-        --this.$props.page.pageNum
+        if(this.$props.page.pageNum > 1) {
+          --this.$props.page.pageNum
+        }
+        
       },
       nextPage() {
-        ++this.$props.page.pageNum
+        console.log(this.$props.page.pageNum)
+        console.log(Math.ceil(this.$props.pageTotal / this.$props.page.pageSize))
+        if(this.$props.page.pageNum < Math.ceil(this.$props.pageTotal / this.$props.page.pageSize)) {
+          ++this.$props.page.pageNum
+        }
+        
       },
       clickSearch() {
         $('.search-box').addClass('show')

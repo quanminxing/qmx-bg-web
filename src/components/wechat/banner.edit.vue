@@ -23,23 +23,23 @@
           .info-right
             select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
               option.hide(value=-1 selected disabled) --请选择--
-              option(v-for='option in item.options' :key='option.value' :value='option.value') {{option.key}}
+              option(v-for='option in item.options' :key='option.id + item.idName' :value='option.id') {{option.name}}
         //- 选择图片类型表单(单张图片)
         .info.row(v-if='!!infoImg' v-for='(item, index) in infoImg' :key='item.idName + index')
           label.label-txt.img-label.info-left.align-top
             i.require-icon(v-if='item.required') * 
             span {{item.label}}
           .imgs.info-right.align-top
-            .imgs-wrap(:class='[!values[item.idName] ? "img-empty" : ""]')
-              img(:src='values[item.idName]', alt='images' v-show='!!values[item.idName]')
+            .imgs-wrap(:class='[!item.img_url ? "img-empty" : ""]')
+              img(:src='item.img_url', alt='images' v-show='!!item.img_url')
             .img-file
               span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择图片
-              input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile(item.idName, $event)')
+              input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile(item.idName, index, $event)')
             .img-tips
             p(v-for='tip in item.tips' :key='tip') {{tip}}
       .edit-btns
         button.btn.btn-md.btn-success#save(@click='save' type='submit') 保存
-        router-link.btn.btn-default.btn-md#cancel(to='/wechat/prices') 取消
+        router-link.btn.btn-default.btn-md#cancel(to='/wechat/banner') 取消
 </template>
 
 <script>
@@ -87,14 +87,29 @@
       required: true,
       idName: 'type_id',
       placeholder: '请填写链接属性',
-      options:codeTransform('wechatUrl')
+      options:[{
+        id: 1,
+        name: '非tab页'
+      },{
+        id: 2,
+        name: 'tab页'
+      },{
+        id: 3,
+        name: '外链'
+      }]
     },
     {
       label: '状态',
       required: true,
       idName: 'is_show',
       placeholder: '请填写显示状态',
-      options: codeTransform('displayState')
+      options: [{
+        id: 0,
+        name: '不显示'
+      },{
+        id: 1,
+        name: '显示'
+      }]
     }
   ];
 
@@ -132,10 +147,13 @@
       // 绑定初始数据
       let initData = this.$route.params;
       console.log(initData);
+      infoImg.forEach(item => {
+        item.img_url = initData.img_url
+      })
       
-      for(let init in initData) {
-        this.values[init] = initData[init]
-      }
+      this.values = {...initData}
+      console.log(this.values);
+      
     },
     methods: {
       // 选择图片
@@ -143,37 +161,28 @@
         console.log(e.currentTarget);
         $(e.currentTarget).next('input.choose-imgfile').click();
       },
-      chooseFile(idName, e) {
+      chooseFile(idName, index, e) {
         let that = this;
         let readFile = new FileReader()
-        console.log();
+        console.log(idName);
         
         let file = e.currentTarget.files[0];
         readFile.readAsDataURL(file)
         readFile.onload = function() {
-          that.values[idName] = this.result;
-          // that.toast = '上传中，请稍等。。。'
-          // $('.toast').show();
+          that.infoImg[index].img_url = this.result;
           that.$emit('toast', '上传中，请稍等。。。', 300000)
-          // let networkTimeout = setTimeout(() => {
-          //   that.$emit('toast', '网络超时，请重试')
-          // }, 120000)
           putimage('https://test.qmxpower.com/api/getSTS?filetype=image', file.name, file, function(res) {
-            // clearTimeout(networkTimeout)
+            
             if(res.status === 200) {
-              // that.toast = '上传成功！';
-              // showToast($('.toast'), 1000)
+              console.log(res);
+              that.values[idName] = res.urls[0]
               that.$emit('toast', '上传成功！', 1000)
-              that.submitDisabled = false;
             } else {
-              // that.toast = '上传失败，请重新上传！';
-              // showToast($('.toast'))
               that.$emit('toast', '上传失败，请重新上传！')
-              that.values.img_url = ''
+              that.infoImg[index].img_url = ''
             }
             
           })
-          that.values.submitDisabled = false;
         }
         
       },
@@ -190,12 +199,20 @@
             // this.toast = '保存成功！';
             // showToast($('.toast'), 1500)
             this.$emit('toast', '保存成功！', 1500)
-            window.location.href = '/wechat/banner'
+            this.$router.push('/wechat/banner')
+            // window.location.href = '/wechat/banner'
           }).catch(err => {
             console.log(err);
+            if(err === 'success') {
+              this.$emit('toast', '保存成功！', 1500)
+              this.$router.push('/wechat/banner')
+              // window.location.href = '/wechat/banner'
+            } else {
+              this.$emit('toast', '网络异常，请重试！', 2000)
+            }
             // this.toast = '网络异常，请重试！'
             // showToast($('.toast'), 1500)
-            this.$emit('toast', '网络异常，请重试！', 1500)
+            
           })
         }
       },

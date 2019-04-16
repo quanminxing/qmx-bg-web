@@ -31,33 +31,33 @@
 
   console.log('price');
 
-  // 测试数据
-  let test = [
-    {
-      id: 15,
-      name: null,
-      max: null,
-      min: null,
-      is_show: 1,
-      oper: "edit",
-      timestamp: "2019-04-01 12:57",
-      weight: 1,
-      channel_ids: [],
-      comment: ''
-    },
-    {
-      id: 14,
-      name: 'null',
-      max: null,
-      min: null,
-      is_show: 1,
-      oper: "edit",
-      timestamp: "2019-04-01 12:56",
-      weight: 1,
-      channel_ids: [1,3],
-      comment: "小程序业务介绍"
+  // 请求数据列表函数
+  const queryList = async function(vue) {
+    let queryData = {
+      pageNum: vue.gridData.page.pageNum,
+      pageSize: vue.gridData.page.pageSize,
     }
-  ];
+
+    query('/api/priceRange', 'GET', queryData).then(res => {
+      res.data.forEach(item => {
+        item.oper = 'edit';
+        data.push({
+          id: item.id,
+          name: item.name,
+          max: item.max,
+          min: item.min,
+          is_show: isShow(item.is_show),
+          weight: item.weight,
+          origin: item
+        })
+      });
+      vue.gridData.datas = data
+    })
+    .catch(err => {
+      console.log(err);
+      
+    })
+  } 
   
 
   export default {
@@ -66,6 +66,12 @@
       return {
         pagemenu,
         gridData: {
+          pageSizeRange: [20, 30, 50, 100],
+          pageTotal: 20,
+          page: {
+            pageSize: 20,
+            pageNum: 1,
+          },
           colNames,
           stickTop: false,
           datas: [],
@@ -79,30 +85,8 @@
       grid
     },
     mounted() {
-      console.log(query);
-      console.log(this);
-      query('/api/priceRange', 'GET', {pageNum: 1, pageSize: 20}).then((res) => {
-        console.log(res);
-        
-      })
-      .catch(err => {
-        console.log(err);
-        let data = []
-        $.each(test, (index, item) => {
-          item.oper = 'edit';
-          data.push({
-            id: item.id,
-            name: item.name,
-            max: item.max,
-            min: item.min,
-            is_show: isShow(item.is_show),
-            weight: item.weight,
-            origin: item
-          })
-        })
-        console.log(test);
-        this.gridData.datas = data
-      })
+      
+      queryList(this)
     }
   }
 </script>
