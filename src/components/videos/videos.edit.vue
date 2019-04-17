@@ -54,7 +54,7 @@
           .imgs.info-right.align-top
             .imgs-wrap(:class='[infoDetail.details.length > 0 ? "" : "img-empty"]')
               .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='infoDetail.details.length > 0')
-                img(:src='detail.img_url', alt='images')
+                img(:src='detail.img_url', alt='images' :key='detail.img_url + detail.video_id')
                 label 关联视频
                 input(type='number' v-model='detail.video_id' :key='detail.video_id+index')
             .img-file
@@ -62,9 +62,9 @@
               input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseDetails(infoDetail, $event)')
             .img-tips
             p(v-for='tip in infoDetail.tips' :key='tip') {{tip}}
-      .edit-btns
-        button.btn.btn-md.btn-success#save(@click='save' type='submit') 保存
-        router-link.btn.btn-default.btn-md#cancel(to='/videos/videos') 取消
+        .edit-btns
+          button.btn.btn-md.btn-success#save(@click='save' type='submit') 保存
+          router-link.btn.btn-default.btn-md#cancel(to='/videos/videos') 取消
 </template>
 
 <script>
@@ -277,14 +277,12 @@
       console.log(initData);
       
       if(!!initData.demo_pic) {
+        that.infoDetail.details = [];
         let details = initData.demo_pic.split('|');
         console.log(details);
         details.forEach(item => {
           let itemInfo = item.split(',')
-          /* initData.infoDetail.push({
-            img_url: itemInfo[0],
-            video_id: itemInfo[1]
-          }) */
+          
           that.infoDetail.details.push({
             img_url: itemInfo[0],
             video_id: itemInfo[1]
@@ -370,6 +368,8 @@
           
           putimage('https://test.qmxpower.com/api/getSTS?filetype=image', file.name, file, function(res) {
             if(res.status === 200) {
+              console.log(that);
+              
               that.values.infoDetail.push(res.urls[0])
               that.$emit('toast', '上传成功！')
               
