@@ -7,7 +7,7 @@ import router from './router'
 Vue.config.productionTip = false
 
 console.log('mainjs');
-console.log($('#sidebar'));
+//console.log($('#sidebar'));
 
 
 /* eslint-disable no-new */

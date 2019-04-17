@@ -4,7 +4,7 @@
     //- sidebar 列表
     ul.nav.nav-list
       li.active.top-menu(@click='menuActive')
-        router-link(to='/')
+        a(href='/manager/index')
           i.menu-icon.fa.fa-home
           span 首页
         b.arrow
