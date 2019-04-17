@@ -35,7 +35,7 @@
       pageSize: vue.gridData.page.pageSize,
     }
 
-    query('/api/channel', 'GET', queryData).then(res => {
+    query('/api/channel/listAll', 'GET', queryData).then(res => {
       let data = [];
       res.data.forEach(item => {
         item.oper = 'edit'
@@ -88,6 +88,14 @@
 
       queryList(this)
 
+    },
+    watch: {
+      'gridData.page': {
+        handler: function() {
+          queryList(this)
+        },
+        deep: true
+      }
     }
   }
 </script>

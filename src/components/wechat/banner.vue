@@ -87,6 +87,14 @@
     mounted() {
       
       queryList(this)
+    },
+    watch: {
+      'gridData.page': {
+        handler: function() {
+          queryList(this)
+        },
+        deep: true
+      }
     }
   }
 </script>

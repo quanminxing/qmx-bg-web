@@ -208,22 +208,14 @@
           this.$emit('toast', '请输入完整信息！')
         } else {
           query('/api/channel', 'POST', this.values).then(res => {
-            // this.toast = '保存成功！';
-            // showToast($('.toast'), 1500)
-            this.$emit('toast', '保存成功！', 1500)
-            this.$router.push('/wechat/channel')
+            if(res.status === 200) {
+              this.$emit('toast', '保存成功！', 1500)
+              this.$router.push('/wechat/channel')
+            }
+            
           }).catch(err => {
             console.log(err);
-            if(err === 'success') {
-              this.$emit('toast', '保存成功！', 2000)
-              this.$router.push('/wechat/channel')
-              // window.location.href = '/wechat/banner'
-            } else {
-              this.$emit('toast', '网络异常，请重试！', 2000)
-            }
-            // this.toast = '网络异常，请重试！'
-            // showToast($('.toast'), 1500)
-            
+            this.$emit('toast', '网络异常，请重试！', 2000)
           })
         }
       },

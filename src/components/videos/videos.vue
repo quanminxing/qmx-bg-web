@@ -108,7 +108,6 @@
         } else {
           queryData[key] = searchData[key]
         }
-        
       }
       
       queryData.price = `${min},${max}`
@@ -183,7 +182,10 @@
     mounted() {
 
       // 请求列表数据
-      queryList(this,searchData)
+      queryList(this,searchData).catch(err => {
+        console.log(err);
+        
+      })
 
       query('/api/info/operateVideo' , 'GET').then(res => {
         console.log(res.data);

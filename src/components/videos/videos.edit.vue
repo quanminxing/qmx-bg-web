@@ -52,14 +52,14 @@
             i.require-icon(v-if='infoDetail.required') * 
             span {{infoDetail.label}}
           .imgs.info-right.align-top
-            .imgs-wrap(:class='[values.infoDetail.length > 0 ? "" : "img-empty"]')
-              .detail-item(v-for='(detail, index) in values.infoDetail' :key='detail + index' v-show='values.infoDetail.length > 0')
-                img(:src='values.infoDetail[index]', alt='images')
+            .imgs-wrap(v-show='infoDetail.details.length > 0')
+              .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='detail.length > 0')
+                img(:src='detail.img_url', alt='images')
                 label 关联视频
-                input(type='text')
+                input(type='text' v-model='detail.video_id')
             .img-file
               span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择详情图
-              input.hide.choose-imgfile(type='file' multiple accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseDetails(infoDetail, $event)')
+              input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseDetails(infoDetail, $event)')
             .img-tips
             p(v-for='tip in infoDetail.tips' :key='tip') {{tip}}
       .edit-btns
@@ -198,15 +198,7 @@
     required: false,
     idName: 'demo_pic',
     label: '详情图',
-    details: [
-      {
-        img_url: '',
-        video_id: ''
-      },{
-        img_url: '',
-        video_id: ''
-      }
-    ],
+    details: [],
     tips: ['建议尺寸：750 * 300', '在保证清晰度的前提下图片大小尽量不要超过100K'],
   }
 
@@ -244,6 +236,7 @@
       // 绑定初始数据
       let initData = this.$route.params;
       console.log(initData);
+      let that = this
 
       query('/api/info/operateVideo' , 'GET').then(res => {
         console.log(res.data);
@@ -255,8 +248,38 @@
           }
         })
       })
+      console.log(initData);
+      
+      if(!!initData.demo_pic) {
+        let details = initData.demo_pic.split('|');
+        console.log(details);
+        details.forEach(item => {
+          let itemInfo = item.split(',')
+          /* initData.infoDetail.push({
+            img_url: itemInfo[0],
+            video_id: itemInfo[1]
+          }) */
+          that.infoDetail.details.push({
+            img_url: itemInfo[0],
+            video_id: itemInfo[1]
+          })
+        })
+        
+      }else {
+        initData.infoDetail = []
+      }
+
+      if(!initData.short_image) {
+        initData.short_image = ''
+      }
+      if(!initData.waterfall_image) {
+        initData.waterfall_image = ''
+      }
+
+
       this.values = {...initData}
-    
+      console.log(this.values);
+      
       
     },
     methods: {
@@ -275,8 +298,7 @@
         readFile.onload = function() {
           const uploadInfo = function(res) {
             if(res.status === 200) {
-              // that.toast = '上传成功！';
-              // showToast($('.toast'), 1000)
+              that.values[idName] = res.urls[0]
               that.$emit('toast', '上传成功！', 1000)
             } else {
               // that.toast = '上传失败，请重新上传！';
@@ -306,20 +328,50 @@
       chooseDetails(details, e) {
         console.log(e);
         let that = this;
-        let files = e.currentTarget.files;
-        console.log(files);
+        let file = e.currentTarget.files[0];
+        let readFile = new FileReader();
+        readFile.readAsDataURL(file)
+        readFile.onload = function() {
+          console.log(this.result);
+          
+          that.infoDetail.details.push({
+            img_url: this.result,
+            video_id: null
+          })
+          
+          
+          that.$emit('toast', '上传中，请稍等。。。', 300000)
+          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', file.name, file, function(res) {
+            if(res.status === 200) {
+              that.values.infoDetail.push(res.urls[0])
+              that.$emit('toast', '上传成功！')
+              
+            } else {
+              that.$emit('toast', '上传失败，请重新上传！')
+              that.infoDetail.details.pop()
+            }
+            
+          })
+        }
+        
+
+        /* console.log(files);
         for(let index in files) {
           console.log(index);
           if(index !== 'length' && index !== 'item') {
             let readFile = new FileReader()
             readFile.readAsDataURL(files[index])
             readFile.onload = function() { 
-              that.values.infoDetail.push(this.result)
+              that.values.infoDetail.push({
+                img_url: this.result,
+                video_id: null
+              })
               
               that.$emit('toast', '上传中，请稍等。。。', 300000)
             }
             putimage('https://test.qmxpower.com/api/getSTS?filetype=image', files[index].name, files[index], function(res) {
               if(res.status === 200) {
+                
                 if(index >= files.length) {
                   that.$emit('toast', '上传中成功！')
                 }
@@ -330,7 +382,7 @@
               
             })
           }
-        }
+        } */
         
       },
 
@@ -355,7 +407,7 @@
             }
           })
           data.channel_ids = channel_ids;
- */
+          */
           // console.log(data);
           
 
