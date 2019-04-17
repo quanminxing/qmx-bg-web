@@ -52,11 +52,11 @@
             i.require-icon(v-if='infoDetail.required') * 
             span {{infoDetail.label}}
           .imgs.info-right.align-top
-            .imgs-wrap(v-show='infoDetail.details.length > 0')
-              .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='detail.length > 0')
+            .imgs-wrap(:class='[infoDetail.details.length > 0 ? "" : "img-empty"]')
+              .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='infoDetail.details.length > 0')
                 img(:src='detail.img_url', alt='images')
                 label 关联视频
-                input(type='text' v-model='detail.video_id')
+                input(type='number' v-model='detail.video_id' :key='detail.video_id+index')
             .img-file
               span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择详情图
               input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseDetails(infoDetail, $event)')
@@ -97,8 +97,27 @@
       label: '价格',
       idName: 'price',
       placeholder: '请填写价格上限',
-      required: false,
+      required: true,
       type: 'number'
+    },
+    {
+      label: '时长',
+      idName: 'time',
+      placeholder: '视频时长',
+      required: true,
+      type: 'text'
+    },
+    {
+      label: '视频比例',
+      idName: 'scale_id',
+      placeholder: '请填写视频比例',
+      required: true,
+    },
+    {
+      label: '视频格式',
+      idName: 'format',
+      placeholder: '请填写视频格式',
+      required: true,
     },
     {
       label: '品牌',
@@ -122,7 +141,13 @@
       idName: 'description',
       placeholder: '备注',
       required: false
-    }
+    },
+    {
+      label: '颗粒度',
+      idName: 'keystring',
+      placeholder: '',
+      required: false,
+    },
   ];
 
   let infoSelect = [
@@ -175,14 +200,14 @@
     {
       required: true,
       idName: 'short_image',
-      label: '封面1',
-      tips: ['建议尺寸：750 * 300', '在保证清晰度的前提下图片大小尽量不要超过100K'],
+      label: '封面1（16:9）',
+      tips: ['建议尺寸：1125 * 633（16:9）', '在保证清晰度的前提下图片大小尽量不要超过100K'],
       img_url: ''
     },{
       required: false,
       idName: 'waterfall_image',
       label: '封面2',
-      tips: ['建议尺寸：750 * 300', '在保证清晰度的前提下图片大小尽量不要超过100K'],
+      tips: ['建议尺寸：1125 * 633（16:9）；560*746（3:4, 9:16）；560*420（4:3）；560*560（1:1）', '在保证清晰度的前提下图片大小尽量不要超过100K'],
       img_url: ''
     }
   ];
@@ -199,7 +224,7 @@
     idName: 'demo_pic',
     label: '详情图',
     details: [],
-    tips: ['建议尺寸：750 * 300', '在保证清晰度的前提下图片大小尽量不要超过100K'],
+    tips: ['建议尺寸：1125 * 633（16:9）', '在保证清晰度的前提下图片大小尽量不要超过100K'],
   }
 
   export default {
@@ -238,6 +263,7 @@
       console.log(initData);
       let that = this
 
+
       query('/api/info/operateVideo' , 'GET').then(res => {
         console.log(res.data);
         
@@ -263,6 +289,7 @@
             img_url: itemInfo[0],
             video_id: itemInfo[1]
           })
+          that.values.infoDetail.push(itemInfo[1])
         })
         
       }else {
@@ -330,6 +357,8 @@
         let that = this;
         let file = e.currentTarget.files[0];
         let readFile = new FileReader();
+
+        that.$emit('toast', '上传中，请稍等。。。', 300000)
         readFile.readAsDataURL(file)
         readFile.onload = function() {
           console.log(this.result);
@@ -339,8 +368,6 @@
             video_id: null
           })
           
-          
-          that.$emit('toast', '上传中，请稍等。。。', 300000)
           putimage('https://test.qmxpower.com/api/getSTS?filetype=image', file.name, file, function(res) {
             if(res.status === 200) {
               that.values.infoDetail.push(res.urls[0])
@@ -354,72 +381,88 @@
           })
         }
         
-
-        /* console.log(files);
-        for(let index in files) {
-          console.log(index);
-          if(index !== 'length' && index !== 'item') {
-            let readFile = new FileReader()
-            readFile.readAsDataURL(files[index])
-            readFile.onload = function() { 
-              that.values.infoDetail.push({
-                img_url: this.result,
-                video_id: null
-              })
-              
-              that.$emit('toast', '上传中，请稍等。。。', 300000)
-            }
-            putimage('https://test.qmxpower.com/api/getSTS?filetype=image', files[index].name, files[index], function(res) {
-              if(res.status === 200) {
-                
-                if(index >= files.length) {
-                  that.$emit('toast', '上传中成功！')
-                }
-              } else {
-                that.$emit('toast', '上传失败，请重新上传！')
-                that.values.infoDetail = []
-              }
-              
-            })
-          }
-        } */
-        
       },
 
       // 保存
       save() {
         console.log(this.values);
+
+        /* let demo_pic = ''
+          this.values.infoDetail.forEach((img_url,index) => {
+            console.log(img_url);
+            demo_pic += img_url + ',' + infoDetail.details[index].video_id + '|'
+          })
+          console.log(demo_pic);
+
+          let data = this.values;
+
+          data.demo_pic = demo_pic;
+
+          console.log(this.values)
+          console.log(data);
+
+          query('/api/video', 'POST', data).then(res => {
+            
+            this.$emit('toast', '保存成功！', 1500)
+            this.$router.push('/videos/videos')
+          }).catch(err => {
+            console.log(err);
+            
+            this.$emit('toast', '网络异常，请刷新重试！', 1500)
+          }) */
         
         if(this.values.is_show === -1 || !this.values.name) {
           console.log('-111111111111');
-          // this.toast = '请输入完整信息！'
-          // showToast($('.toast'))
+          let data = {
+            "oper":"add",
+            "name":"测试视频",
+            "description": "",
+            "demo_description": "",
+            "demo_pic":"",
+            "category_id": 74,
+            "price": 99999.00,
+            "business": "码上春秋",
+            "time": "0:30",
+            "format": "MP4",
+            "url":"",
+            "is_show": true,
+            "is_top": false,
+            "short_image":"",
+            "platform_id": 31,
+            "column_id": "",
+            "keystring": "",
+            "style_id": "",
+            "usage_id": "",
+            "brand": "快手",
+            "classify_id":""
+          }
+          
           this.$emit('toast', '请输入完整信息！')
-        } else {
-          let data = this.values;
-          console.log(data);
-          
-          /* let channel_ids = []
 
-          this.channel.groups[0].checkboxs.forEach(channel => {
-            if(channel.checked === true) {
-              channel_ids.push(channel.value)
-            }
-          })
-          data.channel_ids = channel_ids;
-          */
-          // console.log(data);
+
+        } else {
           
+          let demo_pic = ''
+          this.values.infoDetail.forEach((img_url,index) => {
+            console.log(img_url);
+            demo_pic += img_url + ',' + infoDetail.details[index].video_id + '|'
+          })
+          console.log(demo_pic);
+
+          let data = this.values;
+
+          data.demo_pic = demo_pic;
+
+          console.log(this.values)
+          console.log(data);
 
           query('/api/video', 'POST', data).then(res => {
-            // this.toast = '保存成功！';
-            // showToast($('.toast'), 1500)
+            
             this.$emit('toast', '保存成功！', 1500)
-            window.location.href = '/wechat/banner'
+            this.$router.push('/videos/videos')
           }).catch(err => {
             console.log(err);
-            // this.toast = '网络异常，请重试！'
-            // showToast($('.toast'), 1500)
+            
             this.$emit('toast', '网络异常，请刷新重试！', 1500)
           })
         }
