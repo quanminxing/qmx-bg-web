@@ -97,8 +97,27 @@
       label: '价格',
       idName: 'price',
       placeholder: '请填写价格上限',
-      required: false,
+      required: true,
       type: 'number'
+    },
+    {
+      label: '时长',
+      idName: 'time',
+      placeholder: '视频时长',
+      required: true,
+      type: 'text'
+    },
+    {
+      label: '视频比例',
+      idName: 'scale_id',
+      placeholder: '请填写视频比例',
+      required: true,
+    },
+    {
+      label: '视频格式',
+      idName: 'format',
+      placeholder: '请填写视频格式',
+      required: true,
     },
     {
       label: '品牌',
@@ -122,7 +141,13 @@
       idName: 'description',
       placeholder: '备注',
       required: false
-    }
+    },
+    {
+      label: '颗粒度',
+      idName: 'keystring',
+      placeholder: '',
+      required: false,
+    },
   ];
 
   let infoSelect = [
