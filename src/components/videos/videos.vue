@@ -144,7 +144,7 @@
         })
       });
       vue.gridData.datas = datas;
-      vue.gridData.pageTotal = res.total;
+      vue.gridData.pageTotal = res.total || 1;
     })
     .catch(err => {
       console.log(err);

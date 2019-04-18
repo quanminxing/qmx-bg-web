@@ -39,7 +39,7 @@
             p(v-for='tip in item.tips' :key='tip') {{tip}}
       .edit-btns
         button.btn.btn-md.btn-success#save(@click='save' type='submit') 保存
-        router-link.btn.btn-default.btn-md#cancel(to='/wechat/prices') 取消
+        router-link.btn.btn-default.btn-md#cancel(to='/wechat/channel') 取消
 </template>
 
 <script>
