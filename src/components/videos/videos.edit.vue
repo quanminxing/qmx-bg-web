@@ -259,6 +259,10 @@
     },
     mounted() {
       // 绑定初始数据
+      console.log('33333333333333333333333333333333333333');
+      
+      this.infoDetail.details = [];
+      this.values.infoDetail = []
       let initData = this.$route.params;
       console.log(initData);
       let that = this
@@ -277,30 +281,40 @@
       console.log(initData);
       
       if(!!initData.demo_pic) {
-        that.infoDetail.details = [];
+        
         let details = initData.demo_pic.split('|');
         console.log(details);
         details.forEach(item => {
-          let itemInfo = item.split(',')
+          if(!!item) {
+            let itemInfo = item.split(',')
           
-          that.infoDetail.details.push({
-            img_url: itemInfo[0],
-            video_id: itemInfo[1]
-          })
-          that.values.infoDetail.push(itemInfo[1])
+            that.infoDetail.details.push({
+              img_url: itemInfo[0],
+              video_id: itemInfo[1] || null
+            })
+            that.values.infoDetail.push({
+              img_url: itemInfo[0],
+              video_id: itemInfo[1] || null
+            })
+            }
+          
         })
+
+        console.log((that.values.infoDetail));
+        
         
       }else {
         initData.infoDetail = []
       }
-
+      //  hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+      console.log((that.values.infoDetail));
       if(!initData.short_image) {
         initData.short_image = ''
       }
       if(!initData.waterfall_image) {
         initData.waterfall_image = ''
       }
-
+      console.log(initData)
 
       this.values = {...initData}
       console.log(this.values);
@@ -443,6 +457,8 @@
         } else {
           
           let demo_pic = ''
+          console.log(this.values);
+          this.values.infoDetail
           this.values.infoDetail.forEach((img_url,index) => {
             console.log(img_url);
             demo_pic += img_url + ',' + infoDetail.details[index].video_id + '|'
