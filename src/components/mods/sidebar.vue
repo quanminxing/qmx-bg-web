@@ -39,11 +39,11 @@
   const sidebars = [
     {
       id: 1,
-      label: '人员管理',
+      label: '扩展',
       active: false,
       icon: 'fa-cogs',
       href: '/',
-      vueSide: false,
+      vueSide: true,
       submenus: []
     },
     {
