@@ -55,7 +55,7 @@
             .imgs-wrap(:class='[infoDetail.details.length > 0 ? "" : "img-empty"]')
               .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='infoDetail.details.length > 0')
                 img(:src='detail.img_url', alt='images' :key='detail.img_url + detail.video_id')
-                label 关联视频
+                span 关联视频
                 input(type='number' v-model='detail.video_id' :key='detail.video_id+index')
             .img-file
               span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择详情图
@@ -165,7 +165,7 @@
       options: []
     },{
       label: '栏目',
-      required: false,
+      required: true,
       idName: 'column_id',
       name: 'column',
       options: []
@@ -174,6 +174,12 @@
       required: true,
       idName: 'usage_id',
       name: 'usage',
+      options: []
+    },{
+      label: '风格',
+      required: false,
+      idName: 'style_id',
+      name: 'style',
       options: []
     },{
       label: '是否小程序展示',
@@ -204,7 +210,7 @@
       tips: ['建议尺寸：1125 * 633（16:9）', '在保证清晰度的前提下图片大小尽量不要超过100K'],
       img_url: ''
     },{
-      required: false,
+      required: true,
       idName: 'waterfall_image',
       label: '封面2',
       tips: ['建议尺寸：1125 * 633（16:9）；560*746（3:4, 9:16）；560*420（4:3）；560*560（1:1）', '在保证清晰度的前提下图片大小尽量不要超过100K'],
@@ -214,7 +220,7 @@
 
   let infoVideo = {
     label: '视频',
-    required: false,
+    required: true,
     idName: 'video_id',
     url: ''
   }
@@ -262,11 +268,12 @@
       console.log('33333333333333333333333333333333333333');
       
       this.infoDetail.details = [];
-      this.values.infoDetail = []
+
+      this.values.infoDetail = [];
+
       let initData = this.$route.params;
       console.log(initData);
       let that = this
-
 
       query('/api/info/operateVideo' , 'GET').then(res => {
         console.log(res.data);
@@ -279,35 +286,46 @@
         })
       })
       console.log(initData);
+      if(!initData.oper) {
+        initData.oper = 'add'
+      }
       
       if(!!initData.demo_pic) {
+        console.log(initData.demo_pic);
         
+        initData.infoDetail = [];
         let details = initData.demo_pic.split('|');
         console.log(details);
         details.forEach(item => {
           if(!!item) {
             let itemInfo = item.split(',')
-          
+            console.log(itemInfo)
             that.infoDetail.details.push({
               img_url: itemInfo[0],
               video_id: itemInfo[1] || null
             })
-            that.values.infoDetail.push({
+            initData.infoDetail.push({
               img_url: itemInfo[0],
               video_id: itemInfo[1] || null
             })
-            }
+          }
+          console.log(initData.infoDetail);
           
         })
 
-        console.log((that.values.infoDetail));
+        console.log(initData.infoDetail);
         
         
-      }else {
+      } else {
+        that.infoDetail.details = [];
         initData.infoDetail = []
+
       }
       //  hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
       console.log((that.values.infoDetail));
+      if(!initData.url) {
+        initData.url = '';
+      }
       if(!initData.short_image) {
         initData.short_image = ''
       }
@@ -383,8 +401,13 @@
           putimage('https://test.qmxpower.com/api/getSTS?filetype=image', file.name, file, function(res) {
             if(res.status === 200) {
               console.log(that);
-              
-              that.values.infoDetail.push(res.urls[0])
+              if(!that.values.infoDetail) {
+                that.values.infoDetail = []
+              }
+              that.values.infoDetail.push({
+                img_url: res.urls[0],
+                video_id: null
+              })
               that.$emit('toast', '上传成功！')
               
             } else {
@@ -400,57 +423,23 @@
       // 保存
       save() {
         console.log(this.values);
-
-        /* let demo_pic = ''
-          this.values.infoDetail.forEach((img_url,index) => {
-            console.log(img_url);
-            demo_pic += img_url + ',' + infoDetail.details[index].video_id + '|'
-          })
-          console.log(demo_pic);
-
-          let data = this.values;
-
-          data.demo_pic = demo_pic;
-
-          console.log(this.values)
-          console.log(data);
-
-          query('/api/video', 'POST', data).then(res => {
-            
-            this.$emit('toast', '保存成功！', 1500)
-            this.$router.push('/videos/videos')
-          }).catch(err => {
-            console.log(err);
-            
-            this.$emit('toast', '网络异常，请刷新重试！', 1500)
-          }) */
         
-        if(this.values.is_show === -1 || !this.values.name) {
+        if(this.values.is_show === -1 || !this.values.name || !this.values.price || !this.values.time || !this.values.format || !this.values.scale_id || this.values.category_id === -1 || this.values.platform_id === -1 || this.values.column_id === -1 || this.values.usage_id === -1 || !this.values.url || !this.values.short_image) {
           console.log('-111111111111');
-          let data = {
-            "oper":"add",
-            "name":"测试视频",
-            "description": "",
-            "demo_description": "",
-            "demo_pic":"",
-            "category_id": 74,
-            "price": 99999.00,
-            "business": "码上春秋",
-            "time": "0:30",
-            "format": "MP4",
-            "url":"",
-            "is_show": true,
-            "is_top": false,
-            "short_image":"",
-            "platform_id": 31,
-            "column_id": "",
-            "keystring": "",
-            "style_id": "",
-            "usage_id": "",
-            "brand": "快手",
-            "classify_id":""
-          }
+          console.log(this.values.is_show === -1);
+          console.log(!this.values.name);
+          console.log(!this.values.price);
+          console.log(!this.values.time);
+          console.log(!this.values.format);
+          console.log(!this.values.scale_id);
+          console.log(this.values.category_id === -1);
+          console.log(this.values.platform_id === -1);
+          console.log(this.values.column_id === -1);
+          console.log(this.values.usage_id === -1);
+          console.log(!this.values.url);
+          console.log(!this.values.short_image);
           
+      
           this.$emit('toast', '请输入完整信息！')
 
 
@@ -458,19 +447,23 @@
           
           let demo_pic = ''
           console.log(this.values);
-          this.values.infoDetail
-          this.values.infoDetail.forEach((img_url,index) => {
-            console.log(img_url);
-            demo_pic += img_url + ',' + infoDetail.details[index].video_id + '|'
-          })
+          if(!!this.values.infoDetail) {
+            this.values.infoDetail.forEach((item,index) => {
+              console.log(item.img_url);
+              demo_pic += item.img_url + ',' + this.infoDetail.details[index].video_id + '|'
+            })
+          }
+          
           console.log(demo_pic);
-
-          let data = this.values;
+          this.values.infoDetail = null;
+          let data = {...this.values};
 
           data.demo_pic = demo_pic;
 
           console.log(this.values)
           console.log(data);
+          // data.infoDetail = null;
+          
 
           query('/api/video', 'POST', data).then(res => {
             
