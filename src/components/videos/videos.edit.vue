@@ -55,8 +55,12 @@
             .imgs-wrap(:class='[infoDetail.details.length > 0 ? "" : "img-empty"]')
               .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='infoDetail.details.length > 0')
                 img(:src='detail.img_url', alt='images' :key='detail.img_url + detail.video_id')
-                span 关联视频
-                input(type='number' v-model='detail.video_id' :key='detail.video_id+index')
+                .detail-operate
+                  .detail-video.detail-operate-item
+                    span 关联视频
+                    input(type='number' v-model='detail.video_id' :key='detail.video_id+index')
+                  .detail-del.detail-operate-item(@click='delDetailImg(index, $event)')
+                    button.btn.btn-sm 删除图片
             .img-file
               span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择详情图
               input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseDetails(infoDetail, $event)')
@@ -383,11 +387,13 @@
         
       },
       chooseDetails(details, e) {
+        if(!$(e.currentTarget).val()) return;
         console.log(e);
         let that = this;
         let file = e.currentTarget.files[0];
         let readFile = new FileReader();
 
+        console.log('chooseDetails4444444444444444')
         that.$emit('toast', '上传中，请稍等。。。', 300000)
         readFile.readAsDataURL(file)
         readFile.onload = function() {
@@ -418,6 +424,11 @@
           })
         }
         
+      },
+      delDetailImg(index, e) {
+        console.log(index)
+        this.infoDetail.details.splice(index, 1)
+        this.values.infoDetail.splice(index, 1)
       },
 
       // 保存
