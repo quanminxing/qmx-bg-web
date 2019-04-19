@@ -136,7 +136,7 @@
           style_id: item.style_name || null,
           classify_id: item.classify_name || null,
           price: item.price || null,
-          //is_show: is_show,
+          //is_show: item.is_show,
           is_wechat: is_wechat,
           time: item.time,
           scale_id: item.scale_id || null,

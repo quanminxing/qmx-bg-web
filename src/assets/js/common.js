@@ -6,7 +6,7 @@ export const query = function (url, type='GET', data = '') { // 请求
   };
   // const domain = 'https://test.qmxpower.com';
   //const domain = 'https://admin.qmxpower.com';
-  const domain = '192.168.2.60:7001'
+  const domain = 'http://192.168.2.60:7001'
   //const domain = '127.0.0.1:7001'
   
 
