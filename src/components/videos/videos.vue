@@ -124,7 +124,7 @@
       let datas = [];
       
       res.data.forEach(item => {
-        let is_show = item.is_show === 1 ? '显示' : '不显示'
+        let is_wechat = item.is_wechat === 1 ? '显示' : '不显示'
         item.oper = 'edit';
         datas.push({
           id: item.id || item.video_id,
@@ -136,7 +136,7 @@
           style_id: item.style_name || null,
           classify_id: item.classify_name || null,
           price: item.price || null,
-          is_show: is_show,
+          is_wechat: is_wechat,
           time: item.time,
           scale_id: item.scale_id || null,
           description: item.description || null,
@@ -194,6 +194,8 @@
         selecItems.forEach(item => {
           item.options = res.data[item.name]
         })
+      }).catch(err => {
+        console.log(err)
       })
     },
     methods: {

@@ -188,8 +188,8 @@
     },{
       label: '是否小程序展示',
       required: true,
-      idName: 'is_show',
-      name: 'is_show',
+      idName: 'is_wechat',
+      name: 'is_wechat',
       options: [{
         id: 0,
         name: '不显示'
@@ -257,7 +257,7 @@
           max: '',
           min: '',
           weight: '',
-          is_show: -1,
+          is_wechat: -1,
           channel_ids: null,
           comment: '',
           infoDetail: []
@@ -284,7 +284,7 @@
         
         this.infoSelect.forEach(item => {
           item.oper='edit'
-          if(item.name !== 'is_show') {
+          if(item.name !== 'is_wechat') {
             item.options = res.data[item.name]
           }
         })
@@ -435,9 +435,8 @@
       save() {
         console.log(this.values);
         
-        if(this.values.is_show === -1 || !this.values.name || !this.values.price || !this.values.time || !this.values.format || !this.values.scale_id || this.values.category_id === -1 || this.values.platform_id === -1 || this.values.column_id === -1 || this.values.usage_id === -1 || !this.values.url || !this.values.short_image) {
+        if(this.values.is_wechat === -1 || !this.values.name || !this.values.price || !this.values.time || !this.values.format || !this.values.scale_id || this.values.category_id === -1 || this.values.platform_id === -1 || this.values.column_id === -1 || this.values.usage_id === -1 || !this.values.url || !this.values.short_image) {
           console.log('-111111111111');
-          console.log(this.values.is_show === -1);
           console.log(!this.values.name);
           console.log(!this.values.price);
           console.log(!this.values.time);
