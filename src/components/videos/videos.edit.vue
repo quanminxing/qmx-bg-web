@@ -370,11 +370,11 @@
           // $('.toast').show();
           that.$emit('toast', '上传中，请稍等。。。', 300000)
           if(type === 'image') {
-            putimage('https://test.qmxpower.com/api/getSTS?filetype=image', file.name, file, function(res) {
+            putimage('https://test.qmxpower.com/api/getSTS?filetype=image', new Date() + file.name, file, function(res) {
               uploadInfo(res)
             })
           } else {
-            putvideo('https://test.qmxpower.com/api/getSTS?filetype=video', file.name, file, function(res) {
+            putvideo('https://test.qmxpower.com/api/getSTS?filetype=video', new Date() + file.name, file, function(res) {
               uploadInfo(res)
             })
           }
@@ -398,7 +398,7 @@
             video_id: null
           })
           
-          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', file.name, file, function(res) {
+          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', new Date() + file.name, file, function(res) {
             if(res.status === 200) {
               console.log(that);
               if(!that.values.infoDetail) {
@@ -450,6 +450,9 @@
           if(!!this.values.infoDetail) {
             this.values.infoDetail.forEach((item,index) => {
               console.log(item.img_url);
+              if(!this.infoDetail.details[index].video_id) {
+                this.infoDetail.details[index].video_id = ''
+              }
               demo_pic += item.img_url + ',' + this.infoDetail.details[index].video_id + '|'
             })
           }
