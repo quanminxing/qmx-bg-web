@@ -54,11 +54,11 @@
           .imgs.info-right.align-top
             .imgs-wrap(:class='[infoDetail.details.length > 0 ? "" : "img-empty"]')
               .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='infoDetail.details.length > 0')
-                img(:src='detail.img_url', alt='images' :key='detail.img_url + detail.video_id')
+                img(:src='detail.img_url', alt='images' :key='detail.img_url + index')
                 .detail-operate
                   .detail-video.detail-operate-item
                     span 关联视频
-                    input(type='number' v-model='detail.video_id' :key='detail.video_id+index')
+                    input(type='number' v-model='detail.video_id' :key='detail.video_id + "detailVideoId"')
                   .detail-del.detail-operate-item(@click='delDetailImg(index, $event)')
                     button.btn.btn-sm 删除图片
             .img-file
@@ -191,11 +191,11 @@
       idName: 'is_wechat',
       name: 'is_wechat',
       options: [{
-        id: 0,
-        name: '不显示'
-      }, {
         id: 1,
         name: '显示'
+      }, {
+        id: 0,
+        name: '不显示'
       }]
     },{
       label: '分类',
