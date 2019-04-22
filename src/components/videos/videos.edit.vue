@@ -58,7 +58,7 @@
                 .detail-operate
                   .detail-video.detail-operate-item
                     span 关联视频
-                    input(type='number' v-model='detail.video_id' :key='detail.video_id + "detailVideoId"')
+                    input(type='number' v-model='detail.video_id')
                   .detail-del.detail-operate-item(@click='delDetailImg(index, $event)')
                     button.btn.btn-sm 删除图片
             .img-file
