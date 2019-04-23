@@ -171,7 +171,7 @@
         readFile.onload = function() {
           that.infoImg[index].img_url = this.result;
           that.$emit('toast', '上传中，请稍等。。。', 300000)
-          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', new Date() + file.name, file, function(res) {
+          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', Date.parse(new Date()) + file.name, file, function(res) {
             
             if(res.status === 200) {
               console.log(res);

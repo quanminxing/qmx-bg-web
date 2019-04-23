@@ -90,6 +90,7 @@
     }
   ];
 
+  // text类型表单
   let infoText = [
     {
       label: '名称',
@@ -154,6 +155,7 @@
     },
   ];
 
+  // select类型表单
   let infoSelect = [
     {
       label: '类目',
@@ -206,6 +208,7 @@
     }
   ];
 
+  // file（单张图片）类型表单
   let infoImg = [
     {
       required: true,
@@ -222,6 +225,7 @@
     }
   ];
 
+  // file（单个视频）类型表单
   let infoVideo = {
     label: '视频',
     required: true,
@@ -229,6 +233,7 @@
     url: ''
   }
 
+  // file（多张图片）类型表单
   let infoDetail = {
     required: false,
     idName: 'demo_pic',
@@ -362,8 +367,7 @@
               that.values[idName] = res.urls[0]
               that.$emit('toast', '上传成功！', 1000)
             } else {
-              // that.toast = '上传失败，请重新上传！';
-              // showToast($('.toast'))
+              
               that.$emit('toast', '上传失败，请重新上传！')
               that.values[idName] = ''
             }
@@ -374,11 +378,11 @@
           // $('.toast').show();
           that.$emit('toast', '上传中，请稍等。。。', 300000)
           if(type === 'image') {
-            putimage('https://test.qmxpower.com/api/getSTS?filetype=image', new Date() + file.name, file, function(res) {
+            putimage('https://test.qmxpower.com/api/getSTS?filetype=image', Date.parse(new Date()) + file.name, file, function(res) {
               uploadInfo(res)
             })
           } else {
-            putvideo('https://test.qmxpower.com/api/getSTS?filetype=video', new Date() + file.name, file, function(res) {
+            putvideo('https://test.qmxpower.com/api/getSTS?filetype=video', Date.parse(new Date()) + file.name, file, function(res) {
               uploadInfo(res)
             })
           }
@@ -404,7 +408,7 @@
             video_id: null
           })
           
-          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', new Date() + file.name, file, function(res) {
+          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', Date.parse(new Date()) + file.name, file, function(res) {
             if(res.status === 200) {
               console.log(that);
               if(!that.values.infoDetail) {
@@ -436,18 +440,6 @@
         console.log(this.values);
         
         if(this.values.is_wechat === -1 || !this.values.name || !this.values.price || !this.values.time || !this.values.format || !this.values.scale_id || this.values.category_id === -1 || this.values.platform_id === -1 || this.values.column_id === -1 || this.values.usage_id === -1 || !this.values.url || !this.values.short_image) {
-          console.log('-111111111111');
-          console.log(!this.values.name);
-          console.log(!this.values.price);
-          console.log(!this.values.time);
-          console.log(!this.values.format);
-          console.log(!this.values.scale_id);
-          console.log(this.values.category_id === -1);
-          console.log(this.values.platform_id === -1);
-          console.log(this.values.column_id === -1);
-          console.log(this.values.usage_id === -1);
-          console.log(!this.values.url);
-          console.log(!this.values.short_image);
           
       
           this.$emit('toast', '请输入完整信息！')
