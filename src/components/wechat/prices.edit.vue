@@ -22,7 +22,7 @@
             span {{item.label}}
           .info-right
             select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
-              option.hide(value=-1 selected disabled) --请选择--
+              option.hide(value=-1 disabled) --请选择--
               option(v-for='option in item.options' :key='option.id' :value='option.id') {{option.name}}
         .info.row(v-if='!!channel.groups.length > 0')
           label.label-txt.info-left.align-top

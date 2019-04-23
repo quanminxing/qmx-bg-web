@@ -54,9 +54,13 @@
           .imgs.info-right.align-top
             .imgs-wrap(:class='[infoDetail.details.length > 0 ? "" : "img-empty"]')
               .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='infoDetail.details.length > 0')
-                img(:src='detail.img_url', alt='images' :key='detail.img_url + detail.video_id')
-                span 关联视频
-                input(type='number' v-model='detail.video_id' :key='detail.video_id+index')
+                img(:src='detail.img_url', alt='images' :key='detail.img_url + index')
+                .detail-operate
+                  .detail-video.detail-operate-item
+                    span 关联视频
+                    input(type='number' v-model='detail.video_id')
+                  .detail-del.detail-operate-item(@click='delDetailImg(index, $event)')
+                    button.btn.btn-sm 删除图片
             .img-file
               span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择详情图
               input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseDetails(infoDetail, $event)')
@@ -86,6 +90,7 @@
     }
   ];
 
+  // text类型表单
   let infoText = [
     {
       label: '名称',
@@ -150,6 +155,7 @@
     },
   ];
 
+  // select类型表单
   let infoSelect = [
     {
       label: '类目',
@@ -187,11 +193,11 @@
       idName: 'is_wechat',
       name: 'is_wechat',
       options: [{
-        id: 0,
-        name: '不显示'
-      }, {
         id: 1,
         name: '显示'
+      }, {
+        id: 0,
+        name: '不显示'
       }]
     },{
       label: '分类',
@@ -202,6 +208,7 @@
     }
   ];
 
+  // file（单张图片）类型表单
   let infoImg = [
     {
       required: true,
@@ -218,6 +225,7 @@
     }
   ];
 
+  // file（单个视频）类型表单
   let infoVideo = {
     label: '视频',
     required: true,
@@ -225,6 +233,7 @@
     url: ''
   }
 
+  // file（多张图片）类型表单
   let infoDetail = {
     required: false,
     idName: 'demo_pic',
@@ -253,7 +262,6 @@
           max: '',
           min: '',
           weight: '',
-          //is_show: -1,
           is_wechat: -1,
           channel_ids: null,
           comment: '',
@@ -359,8 +367,7 @@
               that.values[idName] = res.urls[0]
               that.$emit('toast', '上传成功！', 1000)
             } else {
-              // that.toast = '上传失败，请重新上传！';
-              // showToast($('.toast'))
+              
               that.$emit('toast', '上传失败，请重新上传！')
               that.values[idName] = ''
             }
@@ -371,11 +378,11 @@
           // $('.toast').show();
           that.$emit('toast', '上传中，请稍等。。。', 300000)
           if(type === 'image') {
-            putimage('https://test.qmxpower.com/api/getSTS?filetype=image', new Date() + file.name, file, function(res) {
+            putimage('https://test.qmxpower.com/api/getSTS?filetype=image', Date.parse(new Date()) + file.name, file, function(res) {
               uploadInfo(res)
             })
           } else {
-            putvideo('https://test.qmxpower.com/api/getSTS?filetype=video', new Date() + file.name, file, function(res) {
+            putvideo('https://test.qmxpower.com/api/getSTS?filetype=video', Date.parse(new Date()) + file.name, file, function(res) {
               uploadInfo(res)
             })
           }
@@ -384,11 +391,13 @@
         
       },
       chooseDetails(details, e) {
+        if(!$(e.currentTarget).val()) return;
         console.log(e);
         let that = this;
         let file = e.currentTarget.files[0];
         let readFile = new FileReader();
 
+        console.log('chooseDetails4444444444444444')
         that.$emit('toast', '上传中，请稍等。。。', 300000)
         readFile.readAsDataURL(file)
         readFile.onload = function() {
@@ -399,7 +408,7 @@
             video_id: null
           })
           
-          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', new Date() + file.name, file, function(res) {
+          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', Date.parse(new Date()) + file.name, file, function(res) {
             if(res.status === 200) {
               console.log(that);
               if(!that.values.infoDetail) {
@@ -420,25 +429,17 @@
         }
         
       },
+      delDetailImg(index, e) {
+        console.log(index)
+        this.infoDetail.details.splice(index, 1)
+        this.values.infoDetail.splice(index, 1)
+      },
 
       // 保存
       save() {
         console.log(this.values);
         
         if(this.values.is_wechat === -1 || !this.values.name || !this.values.price || !this.values.time || !this.values.format || !this.values.scale_id || this.values.category_id === -1 || this.values.platform_id === -1 || this.values.column_id === -1 || this.values.usage_id === -1 || !this.values.url || !this.values.short_image) {
-          console.log('-111111111111');
-          //console.log(this.values.is_show === -1);
-          console.log(!this.values.name);
-          console.log(!this.values.price);
-          console.log(!this.values.time);
-          console.log(!this.values.format);
-          console.log(!this.values.scale_id);
-          console.log(this.values.category_id === -1);
-          console.log(this.values.platform_id === -1);
-          console.log(this.values.column_id === -1);
-          console.log(this.values.usage_id === -1);
-          console.log(!this.values.url);
-          console.log(!this.values.short_image);
           
       
           this.$emit('toast', '请输入完整信息！')

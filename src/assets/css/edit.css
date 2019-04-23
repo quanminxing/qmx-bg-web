@@ -75,3 +75,10 @@
 .checkbox-groups {
   padding: 0 30px 0 0;
 }
+
+.detail-operate {
+  display: inline-block;
+}
+.detail-operate-item {
+  margin: 15px 0;
+}

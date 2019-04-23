@@ -122,7 +122,7 @@
     query('/api/video/listAll', 'GET', queryData).then((res) => {
       console.log(res.data);
       let datas = [];
-      
+      console.log(res.total)
       res.data.forEach(item => {
         let is_wechat = item.is_wechat === 1 ? '显示' : '不显示'
         item.oper = 'edit';
@@ -195,6 +195,8 @@
         selecItems.forEach(item => {
           item.options = res.data[item.name]
         })
+      }).catch(err => {
+        console.log(err)
       })
     },
     methods: {
@@ -215,6 +217,7 @@
             
           })
         }
+        this.gridData.page.pageNum = 1
         console.log(searchData);
         queryList(this, searchData)
       }

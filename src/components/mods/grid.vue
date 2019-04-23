@@ -33,7 +33,7 @@
               div.btn-group
                 router-link.blue.space(:to='{name: editUrl, params: data.origin}')
                   i.ace-icon.fa.fa-pencil.bigger-120
-                a.red.space.pointer.bootbox-confirm(@click='delData(data.id, index, delUrl, $event)')
+                a.red.space.pointer(@click='delData(data.id, index, delUrl, $event)')
                   i.ace-icon.fa.fa-trash-o.bigger-120
     .grid-footer
       ul.pager
@@ -72,50 +72,34 @@
     name: 'grid',
     props: [ 'colNames', 'datas', 'editUrl', 'delUrl', 'stickTop', 'searchItems', 'page', 'pageSizeRange', 'pageTotal'],
     methods: {
-      // 删除记录
-      delData(dataId, dataIndex, url, e) {
-        console.log(dataId);
+      // 删除数据
+      delData(dataId, dataIndex, url, eq) {
         let that = this;
-        /* $(e.currentTarget).on(ace.click_event, function(callback) {
-          console.log('alert');
-          
-          bootbox.confirm({
-            message: '确定删除？',
-            buttons: {
-              confirm: {
-                label: '确定',
-                className: 'btn-success btn-sm'
-              },
-              cancel: {
-                label: '取消',
-                className: 'btn-sm'
-              }
+        bootbox.confirm({
+          message: '确定删除？',
+          buttons: {
+            confirm: {
+              label: '确定',
+              className: 'btn-success btn-sm'
             },
-            callback: function(result) {
-              if(result) {
-                query(url, 'POST', {ids: [dataId]})
-                .then((res) => {
-                  console.log(resizeBy)
-
-                  that.$props.datas.splice(dataIndex, 1)
-                })
-                .catch((err) => {
-                  console.log(err);
-                })
-              }
+            cancel: {
+              label: '取消',
+              className: 'btn-sm'
             }
-          })
-        }) */
+          },
+          callback: function(result) {
+            if(result) {
+              query(url, 'POST', {ids: [dataId]})
+              .then((res) => {
+                console.log(resizeBy)
 
-        query(url, 'POST', {ids: [dataId]})
-        .then(() => {
-          console.log(url)
-          console.log(dataIndex);
-          
-          this.$props.datas.splice(dataIndex, 1)
-        })
-        .catch((err) => {
-          console.log(err);
+                that.$props.datas.splice(dataIndex, 1)
+              })
+              .catch((err) => {
+                console.log(err);
+              })
+            }
+          }
         })
       },
       prevPage() {
@@ -182,6 +166,8 @@
         if(this.checked) $row.addClass(active_class);
         else $row.removeClass(active_class);
       });
+
+      
 
       /* $('.bootbox-confirm').on(ace.click_event, function(callback) {
         console.log('alert confirm');
@@ -256,5 +242,14 @@
   }
   .float-l {
     float: left;
+  }
+
+  .del-msg {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: blue;
+    color: #fff;
   }
 </style>
