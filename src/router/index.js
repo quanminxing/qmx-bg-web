@@ -8,6 +8,8 @@ import wechatPrices from '@/components/wechat/prices'
 import wechatPricesEdit from '@/components/wechat/prices.edit'
 import videos from '@/components/videos/videos'
 import videosEdit from '@/components/videos/videos.edit'
+import order from '@/components/bill/order'
+import orderEdit from '@/components/bill/order.edit'
 
 Vue.use(Router)
 
@@ -45,6 +47,14 @@ export default new Router({
       path: '/videos/videos/edit',
       name: 'videosEdit',
       component: videosEdit
+    }, {
+      path: '/bill/order',
+      name: 'order',
+      component: order
+    }, {
+      path: '/bill/order/edit',
+      name: 'orderEdit',
+      component: orderEdit
     }
   ]
 })

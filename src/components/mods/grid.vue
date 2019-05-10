@@ -6,7 +6,7 @@
           select.input-sm(v-model='page.pageSize')
             option(v-for='item in pageSizeRange' :value='item' :key='item + "pagerange"') {{item}}
           span 条
-      .tbn-group.col-xs-8
+      .btn-group.col-xs-8
         button.btn.btn-white.btn-info.margin-lr5#search-btn(@click='clickSearch') 搜索 
           i.ace-icon.fa.fa-search.bigger-120.blue
         router-link(:to='{name: editUrl, params: { oper: "add" }}') 
