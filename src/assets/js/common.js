@@ -27,6 +27,7 @@ export const query = function (url, type='GET', data = '') { // 请求
         }
       },
       error(xml, err) {
+        console.log(err)
         reject(err)
       }
     }

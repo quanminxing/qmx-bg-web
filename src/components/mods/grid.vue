@@ -152,7 +152,7 @@
       let active_class = 'active';
       $('th input[type=checkbox], td input[type=checkbox]').prop('checked', false);
       $('#simple-table > thead > tr > th input[type=checkbox]').eq(0).on('click', function(){
-        let th_checked = this.checked;//checkbox inside "TH" table header
+        let th_checked = this.checked;
         
         $(this).closest('table').find('tbody > tr').each(function(){
           let row = this;
