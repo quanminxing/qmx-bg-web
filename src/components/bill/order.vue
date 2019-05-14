@@ -6,7 +6,7 @@
         .grid
           .grid-header.align-right
             .btn-group
-              button.btn.btn-white.btn-info.margin-lr5#search-btn(@click='showSearch') 搜索 
+              button.btn.btn-white.btn-info.margin-lr5#search-btn(@click='showModal("search")') 搜索 
                 i.ace-icon.fa.fa-search.bigger-120.blue
           .grid-content
             table.table.table-bordered.table-hover#simple-table(v-for='(order, orderIndex) in orders' :key='order.id')
@@ -31,7 +31,7 @@
                     p {{order.video_name}}
                   td.align-middle
                     p ￥{{order.price}}
-                      span.blue.padding.pointer(v-if='order.pay_status === "待付款"')
+                      span.blue.padding.pointer(v-if='order.pay_status === "待付款" || order.pay_status === "未付款"' @click='showModal("price", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
                     p {{order.pay_status}}
@@ -41,18 +41,18 @@
                     p
                       span.padding {{order.work_id}}
                       span.padding {{order.worker_name}}
-                      span.blue.padding.pointer
+                      span.blue.padding.pointer(@click='showModal("worker", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
                     p {{order.trade_status}}
-                      span.blue.padding.pointer(v-if='order.trade_status !== "交易完成"')
+                      span.blue.padding.pointer(v-if='order.trade_status !== "退款完成"' @click='showModal("tradeStatus", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
                     router-link(:to='{name: "orderEdit"}') 查看详情
                 tr
                   td.align-middle(colspan='3') 买家留言：{{order.comment}}
                   td.align-middle(colspan='6') 销售备注：{{order.work_comment}}
-                    span.blue.padding.pointer
+                    span.blue.padding.pointer(@click='showModal("workComment", order)')
                       i.ace-icon.fa.fa-pencil.bigger-120
           .grid-footer
             ul.pager
@@ -64,14 +64,14 @@
               li(:class='{disabled: page.pageNum >= Math.ceil(pageTotal / page.pageSize)}')
                 a.pointer(@click='nextPage')
                   i.ace-icon.fa.fa-angle-double-right
-        .modal(@click.self='hideModal' style='display:block;')
+        .modal(@click.self='hideModal')
           .search-wrap.modal-wrap(v-if='modal.modalType === "search"')
             .row.search-header
               p 搜索
             .row.search-content
               .search-item.search-text.col-sm-6.col-xs-12(v-if='searchItems.text' v-for='(textItem, textIndex) in searchItems.text' :key='textItem.label + "searchText"')
                 label {{textItem.label}}:
-                input(:type='textItem.type || "text"' v-model='textItem.value')
+                input(:type='textItem.type || "text"' v-model='textItem.value' :placeholder='textItem.placeholder')
               .search-item.col-xs-12.order-time
                 label 下单时间：
                 input(type='datetime-local', name='order-time-start' v-model='searchItems.order_time.start')
@@ -83,29 +83,29 @@
                   option.hide(value='') --请选择--
                   option(v-for='(option, optionIndex) in selectItem.options' :key='optionIndex + "searchSelectOption"' :value='option.value || option') {{option.value ? option.value + " " + option.key : option}}
             .row.search-footer.align-right
-              button(type='reset').btn.btn-info.btn-sm.float-l 重置
+              button.btn.btn-info.btn-sm.float-l(@click='resetSearch') 重置
               button.btn.btn-default.btn-sm(@click='hideModal') 取消
               button.btn.btn-success.btn-sm(@click='search') 确定
           .revise-wrap.modal-wrap(v-if='modal.modalType !== "search"')
             .revise-cancel.close(@click='hideModal')
               i.ace-icon.fa.fa-times
             .revise-work-commnet.revise-content(v-if='modal.modalType === "workComment"')
-              h3.title.align-center {{modal.workComment.title}}
+              h4.title.align-center {{modal.workComment.title}}
               .content
                 .margin 订单编号：{{modal.workComment.id}}
                 .margin.align-center
                   textarea(v-model='modal.workComment.work_comment' style='width: 100%;  max-width: 100%; height: 200px')
             .revise-price.revise-content(v-if='modal.modalType === "price"')
-              h3.title.align-center {{modal.price.title}}
+              h4.title.align-center {{modal.price.title}}
               .content
                 .margin 订单编号：{{modal.price.id}}
                 .margin 订单价格： ￥{{modal.price.oldPrice}}
                 .margin
                   label 修改后价格： ￥
-                  input(type='number' min='0')
-                .margin.tips(v-if='modal.tradeStatus.tips') {{modal.price.tips}}
+                  input(type='number' min='1' v-model='modal.price.price')
+                .margin.tips(v-if='modal.price.tips') {{modal.price.tips}}
             .revise-worker.revise-content(v-if='modal.modalType === "worker"')
-              h3.title.align-center {{modal.worker.title}}
+              h4.title.align-center {{modal.worker.title}}
               .content
                 .margin 订单编号：{{modal.worker.id}}
                 .margin 跟进销售：{{modal.worker.oldWorker.work_id}} {{modal.worker.oldWorker.worker_name}}
@@ -113,9 +113,9 @@
                   label 修改后销售：
                   select(v-model='modal.worker.work_id')
                     option(v-for='(workerOption, workerIndex) in searchItems.select[2].options' :key='workerOption.value + "reviseWorker"' :value='workerOption.value') {{workerOption.value + " " + workerOption.key}}
-                .margin.tips(v-if='modal.price.tips') 操作失败：{{modal.price.tips}}
+                .margin.tips(v-if='modal.worker.tips') 操作失败：{{modal.worker.tips}}
             .revise-trade-status.revise-content(v-if='modal.modalType === "tradeStatus"')
-              h3.title.align-center {{modal.tradeStatus.title}}
+              h4.title.align-center {{modal.tradeStatus.title}}
               .content
                 .margin 订单编号：{{modal.tradeStatus.id}}
                 .margin 交易状态：{{modal.tradeStatus.old_trade_status}}
@@ -146,41 +146,71 @@
       active: true
     }
   ]
+  let data = [
+          {"id":466,"trade_status":"进行中","pay_status":"待付款","name":"周星","work_id":15,"price":"618","status":0,"business":"商家","scale":null,"channel":null,"timestamp":"2019-05-10 15:52","phone":"18667044623","category_id":77,"platform_id":31,"column_id":36,"video_id":642,"comment":"三条","email":"sam@aitenw.com","video_name":"综合展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2020%3A19%3A13%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E7%BB%BC%E5%90%88%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2020%3A22%3A26%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2","video_time":"00:30","worker_name":"汪涛","worker_id":15},{"id":465,"trade_status":"待付款","pay_status":"已付款","name":"程光辉","work_id":19,"price":"318","status":0,"business":"杭州北鼻象商贸有限公司","scale":null,"channel":null,"timestamp":"2019-05-10 11:46","phone":"13738010360","category_id":76,"platform_id":31,"column_id":36,"video_id":636,"comment":"","email":"13738010360@163.com","video_name":"外观展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A22%3A31%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%A4%96%E8%A7%82%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A21%3A11%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"00:30","worker_name":"陈婷婷","worker_id":19},{"id":464,"trade_status":"待确认","name":"程光辉","work_id":19,"price":"318","status":0,"business":"杭州北鼻象商贸有限公司","scale":null,"channel":null,"timestamp":"2019-05-10 11:43","phone":"13738010360","category_id":76,"platform_id":31,"column_id":36,"video_id":636,"comment":"","email":"13738010360@163.com","video_name":"外观展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A22%3A31%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%A4%96%E8%A7%82%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A21%3A11%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"00:30","worker_name":"陈婷婷","worker_id":19},{"id":463,"trade_status":"待寄送","name":"艺宣","work_id":16,"price":"518","status":0,"business":"汇网","scale":null,"channel":null,"timestamp":"2019-05-09 11:16","phone":"13567189550","category_id":96,"platform_id":31,"column_id":36,"video_id":639,"comment":"待样品完善","email":"1127381613@qq.com","video_name":"场景展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A55%3A14%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%9C%BA%E6%99%AF%E6%BC%94%E7%BB%8E%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A53%3A18%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"00:30","worker_name":"李超","worker_id":16},{"id":462,"trade_status":"交易成功","name":"艺宣","work_id":16,"price":"318","status":0,"business":"汇网","scale":null,"channel":null,"timestamp":"2019-05-09 11:14","phone":"13567189550","category_id":77,"platform_id":31,"column_id":36,"video_id":633,"comment":"产品还未全部到齐，待收集齐开拍","email":"1127381613@qq.com","video_name":"外观展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A12%3A48%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%A4%96%E8%A7%82%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A14%3A18%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"00:30","worker_name":"李超","worker_id":16},{"id":461,"trade_status":"退款中","name":"测试使用","work_id":20,"price":"","status":0,"business":"测试","scale":null,"channel":null,"timestamp":"2019-05-08 18:43","phone":"13253314257","category_id":0,"platform_id":0,"column_id":0,"video_id":0,"comment":"","email":"13253314257@163.com","video_name":null,"video_url":null,"video_short_image":null,"video_time":null,"worker_name":"卢先锋","worker_id":20},{"id":460,"trade_status":"退款完成","name":"测试使用","work_id":21,"price":"618","status":0,"business":"测试","scale":null,"channel":null,"timestamp":"2019-05-08 18:40","phone":"13253314257","category_id":74,"platform_id":31,"column_id":36,"video_id":643,"comment":"","email":"13253314257@163.com","video_name":"综合展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2020%3A25%3A17%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E7%BB%BC%E5%90%88%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2020%3A27%3A54%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2","video_time":"00:30","worker_name":"徐珍珍","worker_id":21},{"id":459,"trade_status":"交易关闭","name":"测试下单","work_id":0,"price":"768","status":0,"business":"测试","scale":null,"channel":null,"timestamp":"2019-05-08 18:39","phone":"13640972721","category_id":74,"platform_id":31,"column_id":36,"video_id":648,"comment":"","email":"123@qq.com","video_name":"演员表演","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2020%3A46%3A50%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E6%A8%A1%E7%89%B9%E8%A1%A8%E6%BC%94%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2020%3A45%3A36%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2","video_time":"00:30","worker_name":null,"worker_id":null},{"id":458,"name":"李松","work_id":8,"price":"768","status":0,"business":"商家","scale":null,"channel":null,"timestamp":"2019-05-08 18:29","phone":"13640972721","category_id":77,"platform_id":31,"column_id":36,"video_id":634,"comment":"","email":"abc@123.com","video_name":"演员表演","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A34%3A54%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E6%BC%94%E5%91%98%E8%A1%A8%E6%BC%94%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A15%3A50%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"0:30","worker_name":"admin111","worker_id":8},{"id":457,"name":"测试使用","work_id":15,"price":"768","status":0,"business":"测试","scale":null,"channel":null,"timestamp":"2019-05-08 16:27","phone":"13253314257","category_id":74,"platform_id":31,"column_id":36,"video_id":615,"comment":"","email":"13253314257@163.com","video_name":"Dior粉底液","video_url":"https://file.qmxpower.com/video/1556272516000MZ-TB-TT-17%E7%B2%89%E5%BA%95%E6%B6%B2.mp4","video_short_image":"https://file.qmxpower.com/image/1556272498000MZ-TB-TT-17%E7%B2%89%E5%BA%95%E6%B6%B2.jpg","video_time":"00:30","worker_name":"汪涛","worker_id":15}
+  ];
 
+  let searchData = {
+    _search: false
+  }
+
+  const queryOrders = function(vue, searchData) {
+    
+    let queryData = {};
+    if(searchData._search) {
+      queryData = searchData;
+    }
+    queryData.pageNum = vue.page.pageNum;
+    queryData.pageSize = vue.page.pageSize;
+
+    console.log('请求参数')
+    console.log(queryData)
+
+    return query('/api/bill', 'POST', queryData).then(res => {
+          console.log('搜索结果')
+          
+          vue.pageTotal = res.total;
+          vue.orders = res.data;
+        }).catch(err => {
+          console.log('搜索结果出错')
+          vue.pageTotal = 99;
+          vue.orders = data;
+        })
+  }
+  
   export default {
     name: 'order',
     data() {
       return {
         pagemenu,
         colNames: ['买家信息','联系方式','关联视频','订单价格','付款状态','退款金额','跟进销售','交易状态','操作'],
-        orders: [
-          {"id":466,"name":"周星","work_id":15,"price":"618","status":0,"business":"商家","scale":null,"channel":null,"timestamp":"2019-05-10 15:52","phone":"18667044623","category_id":77,"platform_id":31,"column_id":36,"video_id":642,"comment":"三条","email":"sam@aitenw.com","video_name":"综合展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2020%3A19%3A13%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E7%BB%BC%E5%90%88%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2020%3A22%3A26%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2","video_time":"00:30","worker_name":"汪涛","worker_id":15},{"id":465,"name":"程光辉","work_id":19,"price":"318","status":0,"business":"杭州北鼻象商贸有限公司","scale":null,"channel":null,"timestamp":"2019-05-10 11:46","phone":"13738010360","category_id":76,"platform_id":31,"column_id":36,"video_id":636,"comment":"","email":"13738010360@163.com","video_name":"外观展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A22%3A31%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%A4%96%E8%A7%82%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A21%3A11%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"00:30","worker_name":"陈婷婷","worker_id":19},{"id":464,"name":"程光辉","work_id":19,"price":"318","status":0,"business":"杭州北鼻象商贸有限公司","scale":null,"channel":null,"timestamp":"2019-05-10 11:43","phone":"13738010360","category_id":76,"platform_id":31,"column_id":36,"video_id":636,"comment":"","email":"13738010360@163.com","video_name":"外观展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A22%3A31%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%A4%96%E8%A7%82%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A21%3A11%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"00:30","worker_name":"陈婷婷","worker_id":19},{"id":463,"name":"艺宣","work_id":16,"price":"518","status":0,"business":"汇网","scale":null,"channel":null,"timestamp":"2019-05-09 11:16","phone":"13567189550","category_id":96,"platform_id":31,"column_id":36,"video_id":639,"comment":"待样品完善","email":"1127381613@qq.com","video_name":"场景展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A55%3A14%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%9C%BA%E6%99%AF%E6%BC%94%E7%BB%8E%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A53%3A18%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"00:30","worker_name":"李超","worker_id":16},{"id":462,"name":"艺宣","work_id":16,"price":"318","status":0,"business":"汇网","scale":null,"channel":null,"timestamp":"2019-05-09 11:14","phone":"13567189550","category_id":77,"platform_id":31,"column_id":36,"video_id":633,"comment":"产品还未全部到齐，待收集齐开拍","email":"1127381613@qq.com","video_name":"外观展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A12%3A48%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%A4%96%E8%A7%82%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A14%3A18%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"00:30","worker_name":"李超","worker_id":16},{"id":461,"name":"测试使用","work_id":20,"price":"","status":0,"business":"测试","scale":null,"channel":null,"timestamp":"2019-05-08 18:43","phone":"13253314257","category_id":0,"platform_id":0,"column_id":0,"video_id":0,"comment":"","email":"13253314257@163.com","video_name":null,"video_url":null,"video_short_image":null,"video_time":null,"worker_name":"卢先锋","worker_id":20},{"id":460,"name":"测试使用","work_id":21,"price":"618","status":0,"business":"测试","scale":null,"channel":null,"timestamp":"2019-05-08 18:40","phone":"13253314257","category_id":74,"platform_id":31,"column_id":36,"video_id":643,"comment":"","email":"13253314257@163.com","video_name":"综合展示","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2020%3A25%3A17%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E7%BB%BC%E5%90%88%E5%B1%95%E7%A4%BA%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2020%3A27%3A54%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2","video_time":"00:30","worker_name":"徐珍珍","worker_id":21},{"id":459,"name":"测试下单","work_id":0,"price":"768","status":0,"business":"测试","scale":null,"channel":null,"timestamp":"2019-05-08 18:39","phone":"13640972721","category_id":74,"platform_id":31,"column_id":36,"video_id":648,"comment":"","email":"123@qq.com","video_name":"演员表演","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2020%3A46%3A50%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E6%A8%A1%E7%89%B9%E8%A1%A8%E6%BC%94%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2020%3A45%3A36%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2","video_time":"00:30","worker_name":null,"worker_id":null},{"id":458,"name":"李松","work_id":8,"price":"768","status":0,"business":"商家","scale":null,"channel":null,"timestamp":"2019-05-08 18:29","phone":"13640972721","category_id":77,"platform_id":31,"column_id":36,"video_id":634,"comment":"","email":"abc@123.com","video_name":"演员表演","video_url":"https://file.qmxpower.com/video/Fri%20Apr%2019%202019%2019%3A34%3A54%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E6%BC%94%E5%91%98%E8%A1%A8%E6%BC%94%E7%B1%BB%E8%A7%86%E9%A2%91.mp4","video_short_image":"https://file.qmxpower.com/image/Fri%20Apr%2019%202019%2019%3A15%3A50%20GMT%2B0800%20(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)%E5%B0%81%E9%9D%A2.jpg","video_time":"0:30","worker_name":"admin111","worker_id":8},{"id":457,"name":"测试使用","work_id":15,"price":"768","status":0,"business":"测试","scale":null,"channel":null,"timestamp":"2019-05-08 16:27","phone":"13253314257","category_id":74,"platform_id":31,"column_id":36,"video_id":615,"comment":"","email":"13253314257@163.com","video_name":"Dior粉底液","video_url":"https://file.qmxpower.com/video/1556272516000MZ-TB-TT-17%E7%B2%89%E5%BA%95%E6%B6%B2.mp4","video_short_image":"https://file.qmxpower.com/image/1556272498000MZ-TB-TT-17%E7%B2%89%E5%BA%95%E6%B6%B2.jpg","video_time":"00:30","worker_name":"汪涛","worker_id":15}
-        ],
+        orders: [],
         modal: {
-          modalType: 'tradeStatus',
+          modalType: '',
           workComment: {
-            title: '',
+            title: '编辑销售备注',
             id: '',
             work_comment: ''
           },
           price: {
-            title: '',
+            title: '修改订单价格',
             id: '',
             oldPrice: '',
             price: '',
-            tips: 'lllllll哒哒哒哒哒哒多多多多多多多多多多多多多多多'
+            tips: ''
           },
           worker: {
-            title: '',
+            title: '修改订单销售',
             id: '',
             oldWorker: {
               work_id: '',
               worker_name: ''
             },
-            work_id: ''
+            work_id: '',
+            tips: ''
           },
           tradeStatus: {
-            title: '',
+            title: '修改交易状态',
             id: '',
             old_trade_status: '',
             trade_status: '',
@@ -193,7 +223,7 @@
           text: [
             {
               label: '订单ID',
-              placeholder: 'id',
+              placeholder: '订单ID',
               key: 'id',
               value: '',
               type: ''
@@ -254,29 +284,176 @@
       breadcrumbs
     },
     methods: {
-      // 搜索
-      search() {},
-      // 显示搜索
-      showSearch() {
-        this.modal.modalType = 'search'
+      //  显示 modal：搜索、备注等
+      showModal(type, data) {
+        console.log(type)
+        
+        this.modal.modalType = type
         $('.modal').show();
+        if(!!this.modal[type] && data) {
+          this.modal[type].id = data.id
+          let modal = {
+            workComment: () => {
+              // this.modal.workComment.id = data.id
+            },
+            price: () => {
+              // this.modal.price.id = data.id;
+              this.modal.price.oldPrice = data.price;
+            },
+            worker: () => {
+              // this.modal.worker.id = data.id;
+              this.modal.worker.oldWorker = {
+                work_id: data.work_id,
+                worker_name: data.worker_name
+              }
+            },
+            tradeStatus: () => {
+              this.modal.tradeStatus.old_trade_status = data.trade_status;
+              this.modal.tradeStatus.price = data.price;
+            }
+          }
+          modal[type]();
+        }
       },
+
       // 隐藏 modal：取消搜索等
       hideModal() {
         $('.modal').hide()
       },
+
       // 搜索
       search() {
+        this.page.pageNum = 1;
 
+        let text = this.searchItems.text;
+        let select = this.searchItems.select;
+        let order_time = this.searchItems.order_time;
+
+        searchData._search = true;
+
+        text.forEach(item => {
+          let value = item.value.trim();
+          if(!!value) {
+            searchData[item.key] = value;
+          }
+        })
+        select.forEach(item => {
+          console.log(item)
+          let value = item.value.trim();
+          if(!!value) {
+            searchData[item.key] = value;
+          }
+        })
+        if(!!order_time.start || !!order_time.end) {
+          searchData.order_time = order_time.start + ',' + order_time.end
+        }
+
+        queryOrders(this, searchData).then(() => {
+          $('.modal').hide();
+        });
       },
+
+      // 重置搜索
+      resetSearch() {
+        searchData = {
+          _search: false
+          
+        }
+        this.searchItems.text.forEach(item => {
+          item.value = ''
+        })
+        this.searchItems.select.forEach(item => {
+          item.value = ''
+        })
+        this.searchItems.order_time = {
+          start: '',
+          end: ''
+        }
+      },
+
       // 修改
       revise(type) {
-        console.log('tradeStatustradeStatustradeStatustradeStatustradeStatus')
         console.log(type)
+        const reviseType = {
+          'workComment': () => {
+            let data = this.modal.workComment
+            query('/api/bill/workComment', 'Post', {
+              id: data.id,
+              work_comment: data.work_comment
+            }).then(() => {
+              queryOrders(this, searchData)
+            })
+          },
+          'price': () => {
+            let data = this.modal.price;
+            console.log(data.price)
+            if(data.price <= 0) {
+              this.modal.price.tips = '订单价格必须大于0'
+            } else {
+              query('/api/bill/price', 'Post', {
+                id: data.id,
+                price: data.price
+              }).then(() => {
+                queryOrders(this, searchData)
+              }).catch(err => {
+                console.log('修改出错')
+                this.modal.price.tips = err;
+              })
+            }
+            
+          },
+          'worker': () => {
+            let data = this.modal.worker;
+            query('/api/bill/work', 'Post', {
+              id: data.id,
+              work_id: data.work_id
+            }).then(() => {
+              queryOrders(this, searchData)
+            }).catch(err => {
+              console.log(err)
+              console.log('修改出错')
+              this.modal.worker.tips = err;
+            })
+          },
+          'tradeStatus': () => {
+            let data = this.modal.tradeStatus;
+            if(data.refund_price < 0 || data.refund_price > data.price) {
+              this.modal.tradeStatus.tips = '退款金额不能大于订单金额'
+            } else {
+              query('/api/bill/tradeStatus', 'Post', {
+                id: data.id,
+                trade_status: data.trade_status,
+                refund_price: data.refund_price
+              }).then(() => {
+                queryOrders(this, searchData)
+              }).catch(err => {
+                console.log('修改出错')
+                this.modal.tradeStatus.tips = err;
+              })
+            }
+          },
+        }
+        reviseType[type]();
       },
 
+      // 分页
+      prevPage() {
+        console.log('上一页')
+        if(this.page.pageNum > 1) {
+          --this.page.pageNum;
+        }
+      },
+      nextPage() {
+        console.log('下一页')
+        if(this.page.pageNum * this.page.pageSize < this.pageTotal) {
+          ++this.page.pageNum
+        }
+      },
     },
     mounted() {
+      // 获取订单列表
+      queryOrders(this, this.page);
+
       // 获取跟进销售
       query('/api/info/worker').then(res => {
         console.log('跟进销售')
@@ -290,6 +467,15 @@
 
       })
     },
+    watch: {
+      page: {
+        handler: function() {
+          console.log('上、下一页')
+          queryOrders(this, searchData)
+        },
+        deep: true
+      }
+    }
   }
 </script>
 
