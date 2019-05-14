@@ -166,7 +166,7 @@
     console.log('请求参数')
     console.log(queryData)
 
-    return query('/api/bill', 'POST', queryData).then(res => {
+    return query('/api/bill', 'GET', queryData).then(res => {
           console.log('搜索结果')
           
           vue.pageTotal = res.total;

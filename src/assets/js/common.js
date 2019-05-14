@@ -9,13 +9,17 @@ export const query = function (url, type='GET', data = '') { // 请求
   // const domain = 'https://admin.qmxpower.com';
   // const domain = 'http://192.168.2.60:7001'
   //const domain = '127.0.0.1:7001'
-  
+  console.log()
   return new Promise((resolve, reject) => {
     console.log(domain + url)
     let ajaxData = {
       header,
       type,
       url: domain + url,
+      // url: '/request' + url,
+      xhrFields: {
+        withCredentials: true
+      },
       data,
       success(res) {
         console.log(res);
