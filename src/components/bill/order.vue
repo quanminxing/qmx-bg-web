@@ -166,7 +166,6 @@
 
     return query('/api/bill', 'GET', queryData).then(res => {
           console.log('搜索结果')
-          $(window).scrollTop(0);
           vue.pageTotal = res.total;
           vue.orders = res.data;
         }).catch(err => {
@@ -356,6 +355,8 @@
         }
 
         queryOrders(this, searchData).then(() => {
+          
+          $(window).scrollTop(0);
           $('.modal').hide();
         });
       },
@@ -483,7 +484,10 @@
       page: {
         handler: function() {
           console.log('上、下一页')
-          queryOrders(this, searchData)
+          queryOrders(this, searchData).then(() => {
+            
+            $(window).scrollTop(0);
+          })
         },
         deep: true
       }
