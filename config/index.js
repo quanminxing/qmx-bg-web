@@ -15,9 +15,9 @@ module.exports = {
         target: 'https://test.qmxpower.com',
         changeOrigin: true,
         // secure: false,
-        pathRewrite: {
-          '^/api': '/request'
-        }
+        // pathRewrite: {
+        //   '^/api': '/api'
+        // }
       }
     },
 
