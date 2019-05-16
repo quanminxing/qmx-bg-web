@@ -127,7 +127,7 @@
       label: '订单管理',
       active: false,
       icon: 'fa-pencil-square-o',
-      href: '/bill//order',
+      href: '/bill/order',
       // href: '/manager/bill',
       vueSide: false,
       submenus: []
