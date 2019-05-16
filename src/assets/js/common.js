@@ -20,6 +20,7 @@ export const query = function (url, type='GET', data = '') { // 请求
       xhrFields: {
         withCredentials: true
       },
+      crossDomain: true,
       data,
       success(res) {
         console.log(res);
