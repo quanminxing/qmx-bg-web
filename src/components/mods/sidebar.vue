@@ -129,7 +129,7 @@
       icon: 'fa-pencil-square-o',
       href: '/bill/order',
       // href: '/manager/bill',
-      vueSide: false,
+      vueSide: true,
       submenus: []
     },
     {
