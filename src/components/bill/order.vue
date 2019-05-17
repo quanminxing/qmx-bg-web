@@ -14,7 +14,7 @@
                 tr.bgc-d5e3ef
                   td.align-middle(colspan='9')
                     .col-xs-3 订单编号：{{order.id}}
-                    .col-xs-3 下单时间：{{order.timestamp}}
+                    .col-xs-3 下单时间：{{order.order_time}}
                     .col-xs-3 退款完成时间：{{order.refund_time || '——'}}
                     .col-xs-3.align-right 交易状态：{{order.trade_status}}
                 tr.bgc-dceefc
@@ -75,7 +75,7 @@
                 input(:type='textItem.type || "text"' v-model='textItem.value' :placeholder='textItem.placeholder')
               .search-item.col-xs-12.order-time
                 label 下单时间：
-                //- input#date-picker(v-model='searchItems.timestamp.start')
+                //- input#date-picker(v-model='searchItems.order_time.start')
                 input(type='date' name='order-time-start' v-model='searchItems.order_time.start')
                 span.padding  — — 
                 input(type='date', name='order-time-end' v-model='searchItems.order_time.end')
