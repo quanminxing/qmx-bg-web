@@ -354,8 +354,9 @@
           }
         })
         if(!!order_time.start || !!order_time.end) {
-          let start = order_time.start || order_time.end
-          let end = order_time.end || order_time.start
+
+          let start = order_time.start || '2010-01-01'
+          let end = order_time.end || '2090-01-01'
           searchData.order_time = start + ',' + end
         }
         console.log(searchData.order_time)
@@ -499,7 +500,7 @@
       },
     },
     mounted() {
-      console.log($)
+      console.log($('td'))
       // 获取订单列表
       queryOrders(this, this.page);
 
