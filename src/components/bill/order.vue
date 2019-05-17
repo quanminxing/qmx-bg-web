@@ -37,7 +37,7 @@
                   td.align-middle
                     p {{order.pay_status || '——'}}
                   td.align-middle
-                    p {{order.refund_price || '——'}}
+                    p {{((order.trade_status === '退款完成' && order.refund_price == 0) || order.refund_price > 0) ? order.refund_price : '——'}}
                   td.align-middle
                     p
                       span.padding {{order.work_id}}
@@ -49,9 +49,9 @@
                       span.blue.padding.pointer(v-if='order.trade_status !== "退款完成"' @click='showModal("tradeStatus", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
-                    router-link(:to='{name: "orderEdit"}') 查看详情
+                    //- router-link(:to='{name: "orderEdit"}') 查看详情
                 tr
-                  td.align-middle(colspan='3') 买家留言：{{order.comment}}
+                  td.td-width.align-middle(colspan='3') 买家留言：{{order.comment}}
                   td.align-middle(colspan='6') 销售备注：{{order.work_comment}}
                     span.blue.padding.pointer(@click='showModal("workComment", order)')
                       i.ace-icon.fa.fa-pencil.bigger-120
@@ -75,9 +75,10 @@
                 input(:type='textItem.type || "text"' v-model='textItem.value' :placeholder='textItem.placeholder')
               .search-item.col-xs-12.order-time
                 label 下单时间：
-                input(type='date', name='order-time-start' v-model='searchItems.timestamp.start')
+                //- input#date-picker(v-model='searchItems.timestamp.start')
+                input(type='date' name='order-time-start' v-model='searchItems.order_time.start')
                 span.padding  — — 
-                input(type='date', name='order-time-end' v-model='searchItems.timestamp.end')
+                input(type='date', name='order-time-end' v-model='searchItems.order_time.end')
               .search-item.search-select.col-sm-6.col-xs-12(v-if='searchItems.select' v-for='(selectItem, selectIndex) in searchItems.select' :key='selectItem.label + "searchSelect"')
                 label {{selectItem.label}}:
                 select(v-model='selectItem.value')
@@ -114,7 +115,7 @@
                   label 修改后销售：
                   select(v-model='modal.worker.work_id')
                     option(v-for='(workerOption, workerIndex) in searchItems.select[2].options' :key='workerOption.value + "reviseWorker"' :value='workerOption.value') {{workerOption.value + " " + workerOption.key}}
-                .margin.tips(v-if='modal.worker.tips') 操作失败：{{modal.worker.tips}}
+                .margin.tips(v-if='modal.worker.tips') {{modal.worker.tips}}
             .revise-trade-status.revise-content(v-if='modal.modalType === "tradeStatus"')
               h4.title.align-center {{modal.tradeStatus.title}}
               .content
@@ -130,7 +131,7 @@
                     label 退款金额： ￥
                     input(type='number' min='0' v-model='modal.tradeStatus.refund_price')
                   .margin.tip 注意：完成退款后，订单信息将无法再修改，请仔细确认清楚后再提交！
-                .margin.tips(v-if='modal.tradeStatus.tips') 操作失败：{{modal.tradeStatus.tips}}
+                .margin.tips(v-if='modal.tradeStatus.tips') {{modal.tradeStatus.tips}}
             .revise-btns.align-center
               button.btn.btn-success.btn-sm(@click='revise(modal.modalType)') 提交
 </template>
@@ -175,11 +176,10 @@
   
   export default {
     name: 'order',
+    props: ['user'],
     data() {
       return {
-        user: {
-          position: ''
-        },
+        
         pagemenu,
         colNames: ['买家信息','联系方式','关联视频','订单价格','付款状态','退款金额','跟进销售','交易状态','操作'],
         orders: [],
@@ -261,12 +261,12 @@
             },{
               label: '跟进销售',
               name: '',
-              key: 'datetime-local',
+              key: 'work_id',
               value: '',
               options: []
             }
           ],
-          timestamp: {
+          order_time: {
             start: '',
             end: ''
           }
@@ -330,11 +330,11 @@
 
         let text = this.searchItems.text;
         let select = this.searchItems.select;
-        let timestamp = this.searchItems.timestamp;
+        let order_time = this.searchItems.order_time;
 
         console.log(text)
         console.log(select)
-        console.log(timestamp)
+        console.log(order_time)
 
         searchData = {
           _search: true
@@ -348,14 +348,17 @@
         })
         select.forEach(item => {
           console.log(item)
-          let value = item.value.trim();
+          let value = item.value;
           if(!!value) {
             searchData[item.key] = value;
           }
         })
-        if(!!timestamp.start || !!timestamp.end) {
-          searchData.timestamp = timestamp.start.replace(/T/, ' ') + ',' + timestamp.end.replace(/T/, ' ')
+        if(!!order_time.start || !!order_time.end) {
+          let start = order_time.start || order_time.end
+          let end = order_time.end || order_time.start
+          searchData.order_time = start + ',' + end
         }
+        console.log(searchData.order_time)
 
         queryOrders(this, searchData).then(() => {
           
@@ -376,7 +379,7 @@
         this.searchItems.select.forEach(item => {
           item.value = ''
         })
-        this.searchItems.timestamp = {
+        this.searchItems.order_time = {
           start: '',
           end: ''
         }
@@ -385,6 +388,17 @@
       // 修改
       revise(type) {
         console.log(type)
+
+        const checkNum = function(num) {
+          let newNum = num * 1;
+          if(newNum >= 0 && newNum < 0.01) {
+            newNum = 0
+          } else {
+            newNum = newNum.toFixed(2)
+          }
+          return newNum * 1;
+        }
+
         const reviseType = {
           'workComment': () => {
             let data = this.modal.workComment
@@ -431,22 +445,40 @@
             })
           },
           'tradeStatus': () => {
+            // checkNum(this)
             let data = this.modal.tradeStatus;
-            if(data.trade_status === '退款完成' && (data.refund_price < 0 || data.refund_price === '' || data.refund_price > data.price)) {
-              this.modal.tradeStatus.tips = '退款金额不能为空和大于订单金额'
-            } else {
-              query('/api/bill/tradeStatus', 'Post', {
-                id: data.id,
-                trade_status: data.trade_status,
-                refund_price: data.refund_price
-              }).then(() => {
-                queryOrders(this, searchData)
-                this.hideModal()
-              }).catch(err => {
-                console.log('修改出错')
-                this.modal.tradeStatus.tips = err != 'error' ? err.err_message : '网络出错，请重试！';
-              })
+
+            if(data.trade_status === '退款完成') {
+              if(data.refund_price === '') {
+                this.modal.tradeStatus.tips = '请输入退款金额'
+                return
+              } else if (data.refund_price < 0) {
+                this.modal.tradeStatus.tips = '请输入合理的退款金额'
+                return
+              } else if(data.refund_price > data.price) {
+                this.modal.tradeStatus.tips = '退款金额不能大于订单金额'
+                return
+              }
             }
+
+            console.log(checkNum(data.refund_price))
+
+            query('/api/bill/tradeStatus', 'Post', {
+              id: data.id,
+              trade_status: data.trade_status,
+              refund_price: checkNum(data.refund_price)
+              // refund_price: data.refund_price
+            }).then(() => {
+              queryOrders(this, searchData)
+              this.hideModal()
+            }).catch(err => {
+              console.log('修改出错')
+
+              if(err == 'error') {
+
+              }
+              this.modal.tradeStatus.tips = err != 'error' ? err.err_message : '网络出错，请重试！';
+            })
           },
         }
         reviseType[type]();
@@ -467,6 +499,7 @@
       },
     },
     mounted() {
+      console.log($)
       // 获取订单列表
       queryOrders(this, this.page);
 
@@ -484,14 +517,23 @@
       })
 
       // 当前用户信息（管理员/非管理员）
-      query('/api/user/me').then(res => {
-        console.log('获取用户信息成功')
-        console.log(res)
-        // this.user.position = '非管理员'
-        this.user.position = res.data.user.position
-      }).catch(err => {
-        console.log('获取用户信息错误')
-      })
+      // query('/api/user/me').then(res => {
+      //   console.log('获取用户信息成功')
+      //   console.log(res)
+      //   // this.user.position = '非管理员'
+      //   this.user.position = res.data.user.position
+      // }).catch(err => {
+      //   console.log('获取用户信息错误')
+      // })
+
+      // console.log($('#date-picker'))
+
+      // console.log($('input'))
+
+      // $( "#datepicker" ).datepicker({
+      //   showOtherMonths: true,
+			// 	selectOtherMonths: false,
+      // })
     },
     watch: {
       page: {
@@ -511,6 +553,9 @@
 <style>
   .padding {
     padding: 0 5px;
+  }
+  .td-width {
+    width: 35%;
   }
   .bgc-d5e3ef {
     background-color: #f5f5f5;

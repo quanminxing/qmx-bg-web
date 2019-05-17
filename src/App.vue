@@ -1,10 +1,10 @@
 <template lang="pug">
   .vh#app
-    navbar
+    navbar(:user='user')
     .main-container.ace-save-state.vh#main-container
       sidebar
       .main-content.vh.position-relative
-        router-view(@toast='toastShow')
+        router-view(@toast='toastShow' :user='user')
         .toast
           .alert.alert-info {{toast}}
       a.btn-scroll-up.btn.btn-sm.btn-inverse#btn-scroll-up(href='#')
@@ -15,7 +15,7 @@
 <script>
   import navbar from '../src/components/mods/navbar.vue'
   import sidebar from '../src/components/mods/sidebar.vue'
-  import { showToast } from '@/assets/js/common.js'
+  import { showToast, query } from '@/assets/js/common.js'
   
 
   try{
@@ -26,7 +26,11 @@
     name: 'App',
     data() {
       return {
-        toast: '提示信息！'
+        toast: '提示信息！',
+        user: {
+          position: '欢迎',
+          cname: ''
+        }
       }
     },
     components: {
@@ -38,6 +42,16 @@
       this.$nextTick(function() {
         console.log('app nextTick');
         
+      })
+
+      query('/api/user/me').then(res => {
+        console.log('获取用户信息成功')
+        console.log(res)
+        // this.user.position = '非管理员'
+        this.user.position = res.data.user.position
+        this.user.cname = res.data.user.cname
+      }).catch(err => {
+        console.log('获取用户信息错误')
       })
     },
     methods:{

@@ -22,10 +22,10 @@
             a.dropdown-toggle(href="#" data-toggle="dropdown")
               img.nav-user-photo(src="../../../static/ace/images/avatars/admin.png" alt="管理员")
               span.user-info
-                small 欢迎
-                span  admin
-              i.ace-icon.fa.fa-caret-down
-            //- 下拉列表
+                small {{user.position}}
+                span {{user.cname}}
+              //- i.ace-icon.fa.fa-caret-down
+          //- 下拉列表
             ul.user-menu.dropdown-menu-right.dropdown-menu.dropdown-yellow.dropdown-caret.dropdown-close
               li
                 a(href="#")
@@ -45,6 +45,7 @@
 
 <script>
   export default {
-    name: 'navbar'
+    name: 'navbar',
+    props: ['user']
   }
 </script>
