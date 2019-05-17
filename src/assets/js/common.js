@@ -1,8 +1,7 @@
 // 请求：url：请求路径；type：请求方式；data：请求需传送的数据
 export const query = function (url, type='GET', data = '') { // 请求
   const header = {
-    Accept: 'application/json; charset=utf-8',
-    Cookie: 'EGG_SESS=dJrZPNMvUtbRppfOZCQPTkeWd0B7BnqxnTANmi3c7yoHWjQVwq63eHgcUvq8NBe1U1FazePys33zEXwm1y3rKFuuroodcdbqgxCODE6fFYWSd2znT09I6ptHXoWX_dPqgkUWfMxGPSPHwMpl8KwFRFFjZ8w2EQ4TvnIrJPQDthgjewpaSN935SHxf3pI74yEvd7FC0oOcX01-b4Vq-ZTC3UgAiwJym-fSIzU7aeQZ32CnhFZvfiGAkY9KL1XWAlYH6SYI78eeiXHr0PlwW4OfBBvldhuF1sw3Zq37xNl5sNSlMcmX3wAP49JHpSWjsaMxCv6bV_HuurB0f6pm8qgZxHBRU-ggFNMF4ZEL1atw9gyjOUS4TuKuFTuEqld9Tnhxq5OOoGurpDyffQFTWbVVD-QiIk5NXVs8pIuR132Xd3yQ3ZnRQ_lPt_D4U3tl6KGHWu6FskJHg62Lht7oYcFMQ=='
+    Accept: 'application/json; charset=utf-8'
   };
 
   const domain = 'https://test.qmxpower.com';
