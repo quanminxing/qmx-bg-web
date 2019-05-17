@@ -35,14 +35,14 @@
                       span.blue.padding.pointer(v-if='order.pay_status === "待付款" || order.pay_status === "未付款"' @click='showModal("price", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
-                    p {{order.pay_status}}
+                    p {{order.pay_status || '——'}}
                   td.align-middle
                     p {{order.refund_price || '——'}}
                   td.align-middle
                     p
                       span.padding {{order.work_id}}
                       span.padding {{order.worker_name}}
-                      span.blue.padding.pointer(@click='showModal("worker", order)')
+                      span.blue.padding.pointer(v-if='user.position === "管理员"' @click='showModal("worker", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
                     p {{order.trade_status}}
@@ -177,6 +177,9 @@
     name: 'order',
     data() {
       return {
+        user: {
+          position: ''
+        },
         pagemenu,
         colNames: ['买家信息','联系方式','关联视频','订单价格','付款状态','退款金额','跟进销售','交易状态','操作'],
         orders: [],
@@ -478,6 +481,16 @@
         })
       }).catch(err => {
         console.log('获取跟进销售出错')
+      })
+
+      // 当前用户信息（管理员/非管理员）
+      query('/api/user/me').then(res => {
+        console.log('获取用户信息成功')
+        console.log(res)
+        // this.user.position = '非管理员'
+        this.user.position = res.data.user.position
+      }).catch(err => {
+        console.log('获取用户信息错误')
       })
     },
     watch: {
