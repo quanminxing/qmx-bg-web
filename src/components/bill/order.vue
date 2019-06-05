@@ -12,11 +12,13 @@
             table.table.table-bordered.table-hover#simple-table(v-for='(order, orderIndex) in orders' :key='order.id')
               tbody
                 tr.bgc-d5e3ef
-                  td.align-middle(colspan='9')
-                    .col-xs-3 订单编号：{{order.id}}
-                    .col-xs-3 下单时间：{{order.order_time}}
+                  td.align-middle(colspan='12')
+                    .col-xs-3 订单编号：{{order.order_id}}
+                    .col-xs-2 下单时间：{{order.order_time}}
                     .col-xs-3 退款完成时间：{{order.refund_time || '——'}}
-                    .col-xs-3.align-right 交易状态：{{order.trade_status}}
+                    .col-xs-2 退款金额：{{order.refund_price || '——'}}
+                    .col-xs-2.align-right 交易状态：
+                      span.c-169BD5(:class='[order.trade_status === "交易成功" ? "c-green" : ""]') {{order.trade_status}}
                 tr.bgc-dceefc
                   th.center.align-middle(v-for='(colName, index) in colNames' :key='index + "order"') {{colName}}
                 tr.center
@@ -30,14 +32,23 @@
                     p {{order.video_id}}
                     p {{order.video_name}}
                   td.align-middle
-                    p ￥{{order.price}}
-                    //-
-                      span.blue.padding.pointer(v-if='order.pay_status === "待付款" || order.pay_status === "未付款"' @click='showModal("price", order)')
+                    p {{order.settle_status || '（默认）全款'}}
+                      span.blue.padding.pointer(v-if='order.pay_status === "待付款" || order.pay_status === "未付款"' @click='showModal("settleStatus", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
                     p {{order.pay_status || '——'}}
                   td.align-middle
-                    p {{((order.trade_status === '退款完成' && order.refund_price == 0) || order.refund_price > 0) ? order.refund_price : '——'}}
+                    p ￥{{order.price}}
+                      span.blue.padding.pointer(v-if='order.pay_status === "待付款" || order.pay_status === "未付款"' @click='showModal("price", order)')
+                        i.ace-icon.fa.fa-pencil.bigger-120
+                  td.align-middle
+                    p {{order.earnest_price || 0}}
+                      span.blue.padding.pointer(v-if='(order.pay_status === "待付款" || order.pay_status === "未付款") && order.settle_status === "定金+尾款"' @click='showModal("settleStatus", order)')
+                        i.ace-icon.fa.fa-pencil.bigger-120
+                  td.align-middle
+                    p {{order.paid_price || 0}}
+                  td.align-middle
+                    p {{((order.sale_status === '退款完成' && order.refund_price == 0) || order.refund_price > 0) ? order.refund_price : '——'}}
                   td.align-middle
                     p
                       span.padding {{order.work_id}}
@@ -45,14 +56,16 @@
                       span.blue.padding.pointer(v-if='user.position === "管理员"' @click='showModal("worker", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
-                    p {{order.trade_status}}
-                      span.blue.padding.pointer(v-if='order.trade_status !== "退款完成"' @click='showModal("tradeStatus", order)')
+                    p {{order.sale_status}}
+                      span.blue.padding.pointer(v-if='order.sale_status !== "退款完成"' @click='showModal("saleStatus", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
-                    //- router-link(:to='{name: "orderEdit"}') 查看详情
+                    a(href='#') 查看详情
+                  //-
+                    router-link(:to='{name: "orderEdit", params: {id: order.id}}') 查看详情
                 tr
-                  td.td-width.align-middle(colspan='3') 买家留言：{{order.comment}}
-                  td.align-middle(colspan='6') 销售备注：{{order.work_comment}}
+                  td.td-width.align-middle(colspan='5') 买家留言：{{order.comment}}
+                  td.align-middle(colspan='7') 销售备注：{{order.work_comment}}
                     span.blue.padding.pointer(@click='showModal("workComment", order)')
                       i.ace-icon.fa.fa-pencil.bigger-120
           .grid-footer
@@ -94,13 +107,13 @@
             .revise-work-commnet.revise-content(v-if='modal.modalType === "workComment"')
               h4.title.align-center {{modal.workComment.title}}
               .content
-                .margin 订单编号：{{modal.workComment.id}}
+                .margin 订单编号：{{modal.workComment.order_id}}
                 .margin.align-center
                   textarea(v-model='modal.workComment.work_comment' style='width: 100%;  max-width: 100%; height: 200px')
             .revise-price.revise-content(v-if='modal.modalType === "price"')
               h4.title.align-center {{modal.price.title}}
               .content
-                .margin 订单编号：{{modal.price.id}}
+                .margin 订单编号：{{modal.price.order_id}}
                 .margin 订单价格： ￥{{modal.price.oldPrice}}
                 .margin
                   label 修改后价格： ￥
@@ -109,29 +122,46 @@
             .revise-worker.revise-content(v-if='modal.modalType === "worker"')
               h4.title.align-center {{modal.worker.title}}
               .content
-                .margin 订单编号：{{modal.worker.id}}
+                .margin 订单编号：{{modal.order.id}}
                 .margin 跟进销售：{{modal.worker.oldWorker.work_id}} {{modal.worker.oldWorker.worker_name}}
                 .margin
                   label 修改后销售：
                   select(v-model='modal.worker.work_id')
                     option(v-for='(workerOption, workerIndex) in searchItems.select[2].options' :key='workerOption.value + "reviseWorker"' :value='workerOption.value') {{workerOption.value + " " + workerOption.key}}
                 .margin.tips(v-if='modal.worker.tips') {{modal.worker.tips}}
-            .revise-trade-status.revise-content(v-if='modal.modalType === "tradeStatus"')
-              h4.title.align-center {{modal.tradeStatus.title}}
+            .revise-sale-status.revise-content(v-if='modal.modalType === "saleStatus"')
+              h4.title.align-center {{modal.saleStatus.title}}
               .content
-                .margin 订单编号：{{modal.tradeStatus.id}}
-                .margin 交易状态：{{modal.tradeStatus.old_trade_status}}
+                .margin 订单编号：{{modal.saleStatus.order_id}}
+                .margin 当前进度：{{modal.saleStatus.old_sale_status}}
                 .margin 
-                  label 修改后交易状态：
-                  select(v-model='modal.tradeStatus.trade_status')
-                    option(v-for='(statusOption, statusIndex) in searchItems.select[0].options' :key='statusOption + "reviseStatus"' :value='statusOption') {{statusOption}}
-                div(v-if='modal.tradeStatus.trade_status === "退款完成"')
-                  .margin 订单金额： ￥{{modal.tradeStatus.price}}
+                  label 修改后进度：
+                  select(v-model='modal.saleStatus.sale_status')
+                    option(v-for='(statusOption, statusIndex) in searchItems.select[1].options' :key='statusOption + "reviseStatus"' v-if='statusOption !== "已支付定金" && statusOption !== "已支付尾款" && statusOption !== "已支付全款"' :value='statusOption') {{statusOption}}
+                div(v-if='modal.saleStatus.sale_status === "退款完成"')
+                  .margin 已付金额： ￥{{modal.saleStatus.paid_price}}
                   .margin
                     label 退款金额： ￥
-                    input(type='number' min='0' v-model='modal.tradeStatus.refund_price')
+                    input(type='number' min='0' v-model='modal.saleStatus.refund_price')
                   .margin.tip 注意：完成退款后，订单信息将无法再修改，请仔细确认清楚后再提交！
-                .margin.tips(v-if='modal.tradeStatus.tips') {{modal.tradeStatus.tips}}
+                .margin.tips(v-if='modal.saleStatus.tips') {{modal.saleStatus.tips}}
+            .revise-settle-status.revise-content(v-if='modal.modalType === "settleStatus"')
+              h4.title.align-center {{modal.settleStatus.title}}
+              .content
+                .margin 订单编号：{{modal.settleStatus.order_id}}
+                .margin
+                  label 结算方式：
+                  select(v-model='modal.settleStatus.settle_status')
+                    option(v-for='(statusOption, statusIndex) in modal.settleStatus.options' :key='statusOption + "settleStatus"' :value='statusOption') {{statusOption}}
+                .margin
+                  label 订单价格： ￥
+                  input(type='number' min='1' v-model='modal.settleStatus.price')
+                .margin(v-if='modal.settleStatus.settle_status === "定金+尾款"')
+                  label 定金金额： ￥
+                  input(type='number' min='1' v-model='modal.settleStatus.earnest_price')
+                .margin(v-if='modal.settleStatus.settle_status === "定金+尾款"')
+                  label 尾款金额： ￥ {{modal.settleStatus.tail_price}}
+                .margin.tips(v-if='modal.settleStatus.tips') {{modal.settleStatus.tips}}
             .revise-btns.align-center
               button.btn.btn-success.btn-sm(@click='revise(modal.modalType)') 提交
 </template>
@@ -181,18 +211,20 @@
       return {
         
         pagemenu,
-        colNames: ['买家信息','联系方式','关联视频','订单价格','付款状态','退款金额','跟进销售','交易状态','操作'],
+        colNames: ['买家信息','联系方式','关联视频','结算方式','付款状态','订单价格','定金金额','已付金额','退款金额','跟进销售','销售进度','操作'],
         orders: [],
         modal: {
           modalType: '',
           workComment: {
             title: '编辑销售备注',
             id: '',
+            order_id: '',
             work_comment: ''
           },
           price: {
             title: '修改订单价格',
             id: '',
+            order_id: '',
             oldPrice: '',
             price: '',
             tips: ''
@@ -200,6 +232,7 @@
           worker: {
             title: '修改订单销售',
             id: '',
+            order_id: '',
             oldWorker: {
               work_id: '',
               worker_name: ''
@@ -207,22 +240,33 @@
             work_id: '',
             tips: ''
           },
-          tradeStatus: {
-            title: '修改交易状态',
+          saleStatus: {
+            title: '修改销售进度',
             id: '',
-            old_trade_status: '',
-            trade_status: '',
-            price: '',
+            order_id: '',
+            old_sale_status: '',
+            sale_status: '',
+            paid_price: '',
             refund_price: '',
             tips: ''
+          },
+          settleStatus: {
+            title: '修改结算方式、定金',
+            id: '',
+            order_id: '',
+            settle_status: '',
+            price: '',
+            earnest_price: '',
+            tips: '',
+            options: ['全款', '定金+尾款']
           }
         },
         searchItems: {
           text: [
             {
-              label: '订单ID',
-              placeholder: '订单ID',
-              key: 'id',
+              label: '订单编号',
+              placeholder: '订单编号',
+              key: 'order_id',
               value: '',
               type: ''
             },{
@@ -252,6 +296,12 @@
               key: 'trade_status',
               value: '',
               options: ['进行中', '待付款', '待确认', '待寄送', '交易成功', '退款中', '退款完成', '交易关闭']
+            },{
+              label: '销售进度',
+              name: '',
+              key: 'sale_status',
+              value: '',
+              options: ['待沟通', '需求沟通中', '需求不可行', '需求已确认', '待支付定金', '已支付定金', '待支付全款', '已支付全款', '脚本策划中', '待确认脚本', '脚本修改中', '脚本已确认', '待寄送样品', '样品已寄到', '拍摄排期中', '拍摄中', '后期排期中', '后期制作中', '待确认样片', '样片修改中', '样片已确认', '待支付尾款', '已支付尾款', '等待成片', '成片已交付', '交易成功', '退款中', '退款完成']
             },{
               label: '支付状态',
               name: '',
@@ -288,31 +338,51 @@
         
         this.modal.modalType = type
         $('.modal').show();
+
         if(!!this.modal[type] && data) {
           this.modal[type].id = data.id
+          this.modal[type].order_id = data.order_id
           let modal = {
             workComment: () => {
-              this.modal.workComment.work_comment = data.work_comment || ''
+              let modalData = this.modal.workComment;
+
+              modalData.work_comment = data.work_comment || ''
             },
             price: () => {
-              this.modal.price.tips = '';
-              this.modal.price.oldPrice = data.price;
-              this.modal.price.price = ''
+              let modalData = this.modal.price;
+
+              modalData.tips = '';
+              modalData.oldPrice = data.price;
+              modalData.price = ''
             },
             worker: () => {
-              this.modal.worker.tips = '';
-              this.modal.worker.oldWorker = {
+              let modalData = this.modal.worker;
+
+              modalData.tips = '';
+              modalData.work_id = ''
+              modalData.oldWorker = {
                 work_id: data.work_id,
                 worker_name: data.worker_name
               }
-              this.modal.worker.work_id = ''
             },
-            tradeStatus: () => {
-              this.modal.tradeStatus.tips = '';
-              this.modal.tradeStatus.old_trade_status = data.trade_status;
-              this.modal.tradeStatus.trade_status = '';
-              this.modal.tradeStatus.refund_price = '';
-              this.modal.tradeStatus.price = data.price;
+            saleStatus: () => {
+              let modalData = this.modal.saleStatus;
+
+              modalData.old_sale_status = data.sale_status;
+              modalData.sale_status = '';
+              modalData.refund_price = '';
+              modalData.paid_price = data.paid_price;
+              modalData.tips = '';
+            },
+            settleStatus: () => {
+              let modalData = this.modal.settleStatus;
+
+              modalData.tips = '';
+              modalData.settle_status = data.settle_status || '全款'
+              modalData.price = data.price || ''
+              modalData.earnest_price = data.earnest_price || 0,
+              modalData.tail_price = (modalData.price - modalData.earnest_price).toFixed(2)
+              modalData.tips = ''
             }
           }
           modal[type]();
@@ -355,11 +425,12 @@
         })
         if(!!order_time.start || !!order_time.end) {
 
-          let start = order_time.start || '2010-01-01'
-          let end = order_time.end || '2090-01-01'
+          let start = order_time.start || '3010-01-01'
+          let end = order_time.end || '3090-01-01'
           searchData.order_time = start + ',' + end
+
+          console.log(searchData.order_time)
         }
-        console.log(searchData.order_time)
 
         queryOrders(this, searchData).then(() => {
           
@@ -403,7 +474,7 @@
         const reviseType = {
           'workComment': () => {
             let data = this.modal.workComment
-            query('/api/bill/workComment', 'Post', {
+            query('/api/bill/workComment', 'POST', {
               id: data.id,
               work_comment: data.work_comment
             }).then(() => {
@@ -415,9 +486,9 @@
             let data = this.modal.price;
             console.log(data.price)
             if(data.price <= 0) {
-              this.modal.price.tips = '订单价格必须大于0'
+              data.tips = '订单价格必须大于0'
             } else {
-              query('/api/bill/price', 'Post', {
+              query('/api/bill/price', 'POST', {
                 id: data.id,
                 price: data.price
               }).then(() => {
@@ -425,14 +496,14 @@
                 this.hideModal()
               }).catch(err => {
                 console.log('修改出错')
-                this.modal.price.tips = err != 'error' ? err.err_message : '网络出错，请重试！';
+                data.tips = err != 'error' ? err.err_message : '网络出错，请重试！';
               })
             }
             
           },
           'worker': () => {
             let data = this.modal.worker;
-            query('/api/bill/work', 'Post', {
+            query('/api/bill/work', 'POST', {
               id: data.id,
               work_id: data.work_id
             }).then(() => {
@@ -445,30 +516,29 @@
               this.modal.worker.tips = err != 'error' ? err.err_message : '网络出错，请重试！';
             })
           },
-          'tradeStatus': () => {
+          'saleStatus': () => {
             // checkNum(this)
-            let data = this.modal.tradeStatus;
+            let data = this.modal.saleStatus;
 
-            if(data.trade_status === '退款完成') {
+            if(data.sale_status === '退款完成') {
               if(data.refund_price === '') {
-                this.modal.tradeStatus.tips = '请输入退款金额'
+                this.modal.saleStatus.tips = '请输入退款金额'
                 return
               } else if (data.refund_price < 0) {
-                this.modal.tradeStatus.tips = '请输入合理的退款金额'
+                this.modal.saleStatus.tips = '请输入合理的退款金额'
                 return
-              } else if(data.refund_price > data.price) {
-                this.modal.tradeStatus.tips = '退款金额不能大于订单金额'
+              } else if(data.refund_price > data.paid_price) {
+                this.modal.saleStatus.tips = '退款金额不能大于已付金额'
                 return
               }
             }
 
             console.log(checkNum(data.refund_price))
 
-            query('/api/bill/tradeStatus', 'Post', {
+            query('/api/bill/saleStatus', 'POST', {
               id: data.id,
-              trade_status: data.trade_status,
-              refund_price: checkNum(data.refund_price)
-              // refund_price: data.refund_price
+              sale_status: data.sale_status,
+              refund_price: checkNum(data.refund_price) || ''
             }).then(() => {
               queryOrders(this, searchData)
               this.hideModal()
@@ -478,9 +548,42 @@
               if(err == 'error') {
 
               }
-              this.modal.tradeStatus.tips = err != 'error' ? err.err_message : '网络出错，请重试！';
+              this.modal.saleStatus.tips = err != 'error' ? err.err_message : '网络出错，请重试！';
             })
           },
+          'settleStatus': () => {
+            let data = this.modal.settleStatus;
+            console.log('settles 00000000000000000000000000')
+
+            if(data.price <= 0) {
+              data.tips = '操作失败，订单价格必须大于0'
+
+              return
+            } else if(data.settle_status !== '全款') {
+              if(data.earnest_price <= 0) {
+                data.tips = '操作失败，定金金额必须大于0'
+
+              return
+              } else if(data.earnest_price > data.price) {
+                data.tips = '操作失败，定金金额必须小于订单价格'
+
+              return
+              }
+            }
+            
+            let settle = query('/api/bill/settleStatus', 'POST', {
+              id: data.id,
+              settle_status: data.settle_status,
+              earnest_price: data.earnest_price || '',
+              price: data.price
+            }).then(() => {
+              queryOrders(this, searchData)
+              this.hideModal()
+            }).catch((err) => {
+              console.log('修改出错')
+              data.tips = err != 'error' ? err.err_message : '网络出错，请重试！';
+            })
+          }
         }
         reviseType[type]();
       },
@@ -516,25 +619,6 @@
       }).catch(err => {
         console.log('获取跟进销售出错')
       })
-
-      // 当前用户信息（管理员/非管理员）
-      // query('/api/user/me').then(res => {
-      //   console.log('获取用户信息成功')
-      //   console.log(res)
-      //   // this.user.position = '非管理员'
-      //   this.user.position = res.data.user.position
-      // }).catch(err => {
-      //   console.log('获取用户信息错误')
-      // })
-
-      // console.log($('#date-picker'))
-
-      // console.log($('input'))
-
-      // $( "#datepicker" ).datepicker({
-      //   showOtherMonths: true,
-			// 	selectOtherMonths: false,
-      // })
     },
     watch: {
       page: {
@@ -544,6 +628,19 @@
             
             $(window).scrollTop(0);
           })
+        },
+        deep: true
+      },
+      'modal.settleStatus': {
+        handler: function(val) {
+          console.log('bbbbbbbbbbbbbbbbbbbbb')
+          let settleStatus = this.modal.settleStatus;
+          settleStatus.tail_price = (settleStatus.price - settleStatus.earnest_price).toFixed(2)
+          // if(val < 0) {
+          //   settleStatus.tips = '操作失败，订单价格和定金金额必须大于0'
+          // }else if(settleStatus.tail_price < 0) {
+          //   settleStatus.tips = '操作失败，定金金额必须小于订单价格'
+          // }
         },
         deep: true
       }
@@ -567,6 +664,12 @@
   .pointer {
     cursor: pointer;
   }
+  .c-169BD5 {
+    color: #169BD5;
+  }
+  .c-green {
+    color: green;
+  }
 
   .grid-header {
     padding: 0 0 15px 0;
@@ -585,6 +688,9 @@
   }
   .revise-wrap {
     width: 40%;
+  }
+  .revise-wrap .title {
+    padding: 0 0 15px 0;
   }
   .search-header {
     border-bottom: 1px solid #eee;

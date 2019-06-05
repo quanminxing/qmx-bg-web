@@ -22,7 +22,7 @@
   ];
 
   // table 数据
-  let colNames = [ 'ID', '名称', '类目', '平台', '栏目', '功能', '风格','分类', '价格', '小程序展示', '时长', '比例', '备注' ]
+  let colNames = [ 'ID', '名称', '类目', '平台', '栏目', '功能', '风格','分类', '价格', '小程序展示','模特', '场景', '关联视频', '时长', '比例', '备注' ]
 
   let searchItems = {
     text: [
@@ -122,29 +122,32 @@
     query('/api/video/listAll', 'GET', queryData).then((res) => {
       console.log(res.data);
       let datas = [];
+      let resData = res.data;
       console.log(res.total)
-      res.data.forEach(item => {
-        let is_wechat = item.is_wechat === 1 ? '显示' : '不显示'
+      resData.forEach(item => {
         item.oper = 'edit';
         datas.push({
           id: item.id || item.video_id,
           name: item.name,
-          category_id: item.categroy_name || null,
-          platform_id: item.platform_name || null,
-          column_id: item.column_name || null,
-          usage_id: item.usage_name || null,
-          style_id: item.style_name || null,
-          classify_id: item.classify_name || null,
-          price: item.price || null,
-          //is_show: item.is_show,
-          is_wechat: is_wechat,
+          category_id: item.categroy_name || '',
+          platform_id: item.platform_name || '',
+          column_id: item.column_name || '',
+          usage_id: item.usage_name || '',
+          style_id: item.style_name || '',
+          classify_id: item.classify_name || '',
+          price: item.price || '',
+          is_wechat: item.is_wechat === 1 ? '显示' : '不显示',
+          is_model: item.is_model ? '有' : '无',
+          sence: item.sence || '其他',
+          related_id: item.related_id + ' - ' + item.related_name,
           time: item.time,
-          scale_id: item.scale_id || null,
-          description: item.description || null,
+          scale_id: item.scale_id || '',
+          description: item.description || '',
           origin: item
         })
       });
       vue.gridData.datas = datas;
+      vue.gridData.datas.uv = resData.uv
       vue.gridData.pageTotal = res.total || 1;
     })
     .catch(err => {

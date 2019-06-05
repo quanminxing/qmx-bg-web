@@ -2,71 +2,77 @@
   .main-content-inner.pos-rel
     breadcrumbs(v-bind:breadcrumbs="pagemenu")
     .form
-      form.edit-content.page-main.col-xs-12
-        .info.row(v-show='!!values.id')
-          label.label-txt.info-left 
-            span ID
-          .info-right
-            input.input(disabled v-model='values.id')
-        //- text 类型表单
-        .info.row(v-if='!!infoText' v-for='(item, index) in infoText' :key='item.idName + index')
-          label.label-txt.info-left
-            i.require-icon(v-if='item.required') * 
-            span {{item.label}}
-          .info-right
-            input.input(:id='item.idName' :type='[!!item.type ? item.type : "text"]' :placeholder='item.placeholder' :required='item.required' v-model='values[item.idName]' :key='item.idName')
-        //- select 类型表单
-        .info.row(v-if='!!infoSelect' v-for='(item, index) in infoSelect' :key='item.idName + index')
-          label.label-txt.info-left
-            i.require-icon(v-if='item.required') * 
-            span {{item.label}}
-          .info-right
-            select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
-              option.hide(value=-1 selected disabled) --请选择--
-              option(v-for='option in item.options' :key='option.id + "select"' :value='option.id') {{option.name}}
-        //- 选择图片类型表单(单张图片)
-        .info.row(v-if='!!infoImg' v-for='(item, index) in infoImg' :key='item.idName + index')
-          label.label-txt.img-label.info-left.align-top
-            i.require-icon(v-if='item.required') * 
-            span {{item.label}}
-          .imgs.info-right.align-top
-            .imgs-wrap(:class='[!values[item.idName] ? "img-empty" : ""]')
-              img(:src='values[item.idName]', alt='images' v-show='!!values[item.idName]')
-            .img-file
-              span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择图片
-              input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile(item.idName, "image", $event)')
-            .img-tips
-            p(v-for='tip in item.tips' :key='tip') {{tip}}
-        .info.row
-          label.label-txt.img-label.info-left.align-top
-            i.require-icon(v-if='infoVideo.required') * 
-            span {{infoVideo.label}}
-          .imgs.info-right.align-top
-            .imgs-wrap(:class='[!values.url ? "img-empty" : ""]')
-              video(:src='values.url' v-show='!!values.url' controls)
-            .img-file
-              span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择视频
-              input.hide.choose-imgfile(type='file' accept='video/*' @change='chooseFile("url","video", $event)')
-        .info.row(v-if='!!infoDetail')
-          label.label-txt.img-label.info-left.align-top
-            i.require-icon(v-if='infoDetail.required') * 
-            span {{infoDetail.label}}
-          .imgs.info-right.align-top
-            .imgs-wrap(:class='[infoDetail.details.length > 0 ? "" : "img-empty"]')
-              .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='infoDetail.details.length > 0')
-                img(:src='detail.img_url', alt='images' :key='detail.img_url + index')
-                .detail-operate
-                  .detail-video.detail-operate-item
-                    span 关联视频
-                    input(type='number' v-model='detail.video_id')
-                  .detail-del.detail-operate-item(@click='delDetailImg(index, $event)')
-                    button.btn.btn-sm 删除图片
-            .img-file
-              span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择详情图
-              input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseDetails(infoDetail, $event)')
-            .img-tips
-            p(v-for='tip in infoDetail.tips' :key='tip') {{tip}}
-        .edit-btns
+      form.edit-content.page-main
+        .edit-main.row
+          .info.col-xs-12.col-sm-6(v-show='!!values.id')
+            label.label-txt.info-left 
+              span ID
+            .info-right {{values.id}}
+          .info.col-xs-12.col-sm-6(v-show='!!uv')
+            label.label-txt.info-left 
+              span 播放量
+            .info-right {{uv}}
+          //- text 类型表单
+          .info.col-xs-12.col-sm-6(v-if='!!infoText' v-for='(item, index) in infoText' :key='item.idName + "text"')
+            label.label-txt.info-left
+              i.require-icon(v-if='item.required') * 
+              span {{item.label}}
+            .info-right
+              input.input(:id='item.idName' :type='[!!item.type ? item.type : "text"]' :placeholder='item.placeholder' :required='item.required' v-model='values[item.idName]' :key='item.idName')
+          //- select 类型表单
+          .info.col-xs-12.col-sm-6(v-if='!!infoSelect' v-for='(item, index) in infoSelect' :key='item.idName + "select"')
+            label.label-txt.info-left
+              i.require-icon(v-if='item.required') * 
+              span {{item.label}}
+            .info-right
+              select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
+                option.hide(value=-1 selected disabled) --请选择--
+                option(v-for='option in item.options' :key='option.id + "select"' :value='option.id') {{option.name}}
+          //- 选择图片类型表单(单张图片)
+          .info.col-xs-12(v-if='!!infoImg' v-for='(item, index) in infoImg' :key='item.idName + "img"')
+            label.label-txt.img-label.info-left.align-top
+              i.require-icon(v-if='item.required') * 
+              span {{item.label}}
+            .imgs.info-right.align-top
+              .imgs-wrap(:class='[!values[item.idName] ? "img-empty" : ""]')
+                img(:src='values[item.idName]', alt='images' v-show='!!values[item.idName]')
+              .img-file
+                span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择图片
+                input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile(item.idName, "image", $event)')
+              .img-tips
+                p(v-for='(tip, index) in item.tips' :key='"img" + tip + index') {{tip}}
+          //- 视频
+          .info.col-xs-12
+            label.label-txt.img-label.info-left.align-top
+              i.require-icon(v-if='infoVideo.required') * 
+              span {{infoVideo.label}}
+            .imgs.info-right.align-top
+              .imgs-wrap(:class='[!values.url ? "img-empty" : ""]')
+                video(:src='values.url' v-show='!!values.url' controls)
+              .img-file
+                span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择视频
+                input.hide.choose-imgfile(type='file' accept='video/*' @change='chooseFile("url","video", $event)')
+          //- 详情图
+          .info.col-xs-12(v-if='!!infoDetail')
+            label.label-txt.img-label.info-left.align-top
+              i.require-icon(v-if='infoDetail.required') * 
+              span {{infoDetail.label}}
+            .imgs.info-right.align-top
+              .imgs-wrap(:class='[infoDetail.details.length > 0 ? "" : "img-empty"]')
+                .detail-item(v-for='(detail, index) in infoDetail.details' :key='detail + index' v-show='infoDetail.details.length > 0')
+                  img(:src='detail.img_url', alt='images' :key='detail.img_url + index')
+                  .detail-operate
+                    .detail-video.detail-operate-item
+                      span 关联视频
+                      input(type='number' v-model='detail.video_id')
+                    .detail-del.detail-operate-item(@click='delDetailImg(index, $event)')
+                      button.btn.btn-sm 删除图片
+              .img-file
+                span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择详情图
+                input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseDetails(infoDetail, $event)')
+              .img-tips
+                p(v-for='(tip, index) in infoDetail.tips' :key='"detail" + tip + index') {{tip}}
+        .edit-btns.row
           button.btn.btn-md.btn-success#save(@click='save' type='submit') 保存
           router-link.btn.btn-default.btn-md#cancel(to='/videos/videos') 取消
 </template>
@@ -188,6 +194,30 @@
       name: 'style',
       options: []
     },{
+      label: '模特',
+      required: true,
+      idName: 'is_model',
+      name: 'is_model',
+      options: [{
+        id: 1,
+        name: '有'
+      }, {
+        id: 0,
+        name: '无'
+      }]
+    },{
+      label: '场景',
+      required: true,
+      idName: 'sence',
+      name: 'sence',
+      options: ['室内', '室外', '棚拍']
+    },{
+      label: '关联视频',
+      required: true,
+      idName: 'related_id',
+      name: 'related_id',
+      options: []
+    },{
       label: '是否小程序展示',
       required: true,
       idName: 'is_wechat',
@@ -247,6 +277,7 @@
     data() {
       return {
         pagemenu,
+        uv: 0,
         infoText,
         infoSelect,
         infoImg,
@@ -274,8 +305,7 @@
     },
     mounted() {
       // 绑定初始数据
-      console.log('33333333333333333333333333333333333333');
-      
+    
       this.infoDetail.details = [];
 
       this.values.infoDetail = [];
@@ -283,6 +313,8 @@
       let initData = this.$route.params;
       console.log(initData);
       let that = this
+
+      this.uv = initData.uv || 0
 
       query('/api/info/operateVideo' , 'GET').then(res => {
         console.log(res.data);
@@ -330,7 +362,7 @@
         initData.infoDetail = []
 
       }
-      //  hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+      
       console.log((that.values.infoDetail));
       if(!initData.url) {
         initData.url = '';

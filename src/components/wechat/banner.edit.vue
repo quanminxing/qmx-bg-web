@@ -36,7 +36,7 @@
               span.choose-img.btn.btn-info.btn-xs(@click='chooseImg') 选择图片
               input.hide.choose-imgfile(type='file' accept='image/png, image/jpeg, image/gif, image/jpg' @change='chooseFile(item.idName, index, $event)')
             .img-tips
-            p(v-for='tip in item.tips' :key='tip') {{tip}}
+              p(v-for='tip in item.tips' :key='tip') {{tip}}
       .edit-btns
         button.btn.btn-md.btn-success#save(@click='save' type='submit') 保存
         router-link.btn.btn-default.btn-md#cancel(to='/wechat/banner') 取消
