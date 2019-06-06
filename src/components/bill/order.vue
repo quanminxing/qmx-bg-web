@@ -32,14 +32,14 @@
                     p {{order.video_id}}
                     p {{order.video_name}}
                   td.align-middle
-                    p {{order.settle_status || '（默认）全款'}}
+                    p {{order.settle_status}}
                       span.blue.padding.pointer(v-if='order.pay_status === "待付款" || order.pay_status === "未付款"' @click='showModal("settleStatus", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
                     p {{order.pay_status || '——'}}
                   td.align-middle
                     p ￥{{order.price}}
-                      span.blue.padding.pointer(v-if='order.pay_status === "待付款" || order.pay_status === "未付款"' @click='showModal("price", order)')
+                      span.blue.padding.pointer(v-if='order.pay_status === "待付款" || order.pay_status === "未付款"' @click='showModal("settleStatus", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
                     p {{order.earnest_price || 0}}
@@ -60,9 +60,8 @@
                       span.blue.padding.pointer(v-if='order.sale_status !== "退款完成"' @click='showModal("saleStatus", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
-                    a(href='#') 查看详情
-                  //-
                     router-link(:to='{name: "orderEdit", params: {id: order.id}}') 查看详情
+                  
                 tr
                   td.td-width.align-middle(colspan='5') 买家留言：{{order.comment}}
                   td.align-middle(colspan='7') 销售备注：{{order.work_comment}}
@@ -122,7 +121,7 @@
             .revise-worker.revise-content(v-if='modal.modalType === "worker"')
               h4.title.align-center {{modal.worker.title}}
               .content
-                .margin 订单编号：{{modal.order.id}}
+                .margin 订单编号：{{modal.order_id}}
                 .margin 跟进销售：{{modal.worker.oldWorker.work_id}} {{modal.worker.oldWorker.worker_name}}
                 .margin
                   label 修改后销售：
@@ -307,7 +306,7 @@
               name: '',
               key: 'pay_status',
               value: '',
-              options: ['未付款', '已付款']
+              options: ['未付款', '已支付定金', '已支付尾款', '已支付全款']
             },{
               label: '跟进销售',
               name: '',
@@ -340,8 +339,12 @@
         $('.modal').show();
 
         if(!!this.modal[type] && data) {
+          console.log(this.modal[type].id)
+          console.log(data.id)
+
           this.modal[type].id = data.id
           this.modal[type].order_id = data.order_id
+          console.log('workerndk6666666666666666666666')
           let modal = {
             workComment: () => {
               let modalData = this.modal.workComment;
@@ -356,6 +359,7 @@
               modalData.price = ''
             },
             worker: () => {
+              console.log('workerndk6666666666666666666666')
               let modalData = this.modal.worker;
 
               modalData.tips = '';
@@ -364,6 +368,7 @@
                 work_id: data.work_id,
                 worker_name: data.worker_name
               }
+              console.log('workerndk6666666666666666666666')
             },
             saleStatus: () => {
               let modalData = this.modal.saleStatus;
@@ -385,6 +390,7 @@
               modalData.tips = ''
             }
           }
+          console.log('workerndk6666666666666666666666')
           modal[type]();
         }
       },
@@ -603,14 +609,15 @@
       },
     },
     mounted() {
-      console.log($('td'))
       // 获取订单列表
       queryOrders(this, this.page);
 
       // 获取跟进销售
       query('/api/info/worker').then(res => {
         console.log('跟进销售')
-        this.searchItems.select[2].options = res.data.map(item => {
+        console.log(res)
+        this.searchItems.select[3].options = res.data.map(item => {
+
           return {
             key: item.cname,
             value: item.id
@@ -636,11 +643,6 @@
           console.log('bbbbbbbbbbbbbbbbbbbbb')
           let settleStatus = this.modal.settleStatus;
           settleStatus.tail_price = (settleStatus.price - settleStatus.earnest_price).toFixed(2)
-          // if(val < 0) {
-          //   settleStatus.tips = '操作失败，订单价格和定金金额必须大于0'
-          // }else if(settleStatus.tail_price < 0) {
-          //   settleStatus.tips = '操作失败，定金金额必须小于订单价格'
-          // }
         },
         deep: true
       }

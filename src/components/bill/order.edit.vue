@@ -14,7 +14,7 @@
                   span.label {{orderItem.label}}：
                   span.value {{orderItem.value}}
                   span.blue.revise(v-if='orderItem.revise' @click='showModal(orderItem)')
-                    i.ace-icon.fa.fa-pencil.bigger-120  修改
+                    i.ace-icon.fa.fa-pencil  修改
           .content-customer.margin-top
             .content-heading 客户信息
             .content-body.row
@@ -30,7 +30,7 @@
                   span.label {{saleItem.label}}：
                   span.value {{saleItem.value}}
                   span.revise(v-if='saleItem.revise' @click='showModal(saleItem)')
-                    i.ace-icon.fa.fa-pencil.bigger-120  修改
+                    i.ace-icon.fa.fa-pencil  修改
           .content-video.margin-top
             .content-heading 视频信息
             .content-body.row
@@ -280,7 +280,7 @@
             key: 'price',
             value: '',
             revise: false,
-            type: 'price',
+            type: 'settleStatus',
             col: 'col-xs-3'
           },{
             label: '结算方式',
