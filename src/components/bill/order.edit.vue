@@ -147,24 +147,16 @@
         })
 
         let sale = that.sale;
-        // console.log(data.worker_name)
         sale.forEach(item => {
           item.value = data.work_id + '  ' + data.worker_name;
         })
+        sale[0].revise = that.$props.user.position === "管理员" ? true : false
 
         let video = that.video;
         video.forEach(item => {
           item.value = data[item.key]
         })
 
-        // if(that.$props.user.position === "管理员") {
-        //   sale[0].revise = true
-        // }
-        sale[0].revise = that.$props.user.position === "管理员" ? true : false
-
-        // if(detail.sale_status !== "退款完成") {
-        //   order[11].revise = true
-        // }
         order[11].revise = detail.sale_status !== "退款完成" ? true : false
         
         if(detail.pay_status === "待付款" || detail.pay_status === "未付款") {
@@ -177,9 +169,6 @@
           order[6].revise = false
         }
 
-        // if((detail.pay_status === "待付款" || detail.pay_status === "未付款") && detail.settle_status === '定金+尾款') {
-        //   order[6].revise = true
-        // }
         order[6].revise = (detail.pay_status === "待付款" || detail.pay_status === "未付款") && detail.settle_status === '定金+尾款' ? true : false
 
         let payInfo = data.pay_info;

@@ -42,7 +42,7 @@
                       span.blue.padding.pointer(v-if='order.pay_status === "待付款" || order.pay_status === "未付款"' @click='showModal("settleStatus", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
-                    p {{order.earnest_price || 0}}
+                    p {{order.earnest_price || '——'}}
                       span.blue.padding.pointer(v-if='(order.pay_status === "待付款" || order.pay_status === "未付款") && order.settle_status === "定金+尾款"' @click='showModal("settleStatus", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
@@ -51,8 +51,8 @@
                     p {{((order.sale_status === '退款完成' && order.refund_price == 0) || order.refund_price > 0) ? order.refund_price : '——'}}
                   td.align-middle
                     p
-                      span.padding {{order.work_id}}
-                      span.padding {{order.worker_name}}
+                      span.padding {{order.work_id || '——'}}
+                      span.padding {{order.worker_name || ''}}
                       span.blue.padding.pointer(v-if='user.position === "管理员"' @click='showModal("worker", order)')
                         i.ace-icon.fa.fa-pencil.bigger-120
                   td.align-middle
@@ -126,7 +126,7 @@
                 .margin
                   label 修改后销售：
                   select(v-model='modal.worker.work_id')
-                    option(v-for='(workerOption, workerIndex) in searchItems.select[2].options' :key='workerOption.value + "reviseWorker"' :value='workerOption.value') {{workerOption.value + " " + workerOption.key}}
+                    option(v-for='(workerOption, workerIndex) in searchItems.select[3].options' :key='workerIndex + "reviseWorker"' :value='workerOption.value') {{workerOption.value + " " + workerOption.key}}
                 .margin.tips(v-if='modal.worker.tips') {{modal.worker.tips}}
             .revise-sale-status.revise-content(v-if='modal.modalType === "saleStatus"')
               h4.title.align-center {{modal.saleStatus.title}}
