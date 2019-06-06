@@ -603,7 +603,7 @@
             let settle = query('/api/bill/settleStatus', 'POST', {
               id,
               settle_status: data.settle_status,
-              earnest_price: earnestPrice || '',
+              earnest_price: data.settle_status === '全款' ? '' : earnestPrice || '',
               price
             }).then(() => {
               queryInfo({ id }, this);
