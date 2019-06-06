@@ -138,7 +138,7 @@
 
         let order = that.order;
         order.forEach(item => {
-          item.value = data[item.key] || '——'
+          item.value = data[item.key] !== '' ? data[item.key] : '——'
         })
 
         let customer = that.customer;
@@ -212,6 +212,12 @@
         
       })
     })
+  }
+  const checkNum = function(num) {
+    let newNum = ((num * 100) + '').split('.')[0] / 100;
+    newNum = newNum === -0 ? 0.00 : newNum.toFixed(2)
+
+    return newNum * 1
   }
 
   export default {
@@ -432,7 +438,7 @@
             tips: ''
           },
           settleStatus: {
-            title: '修改结算方式、定金',
+            title: '修改结算方式、价格、定金',
             settle_status: '',
             price: '',
             earnest_price: '',
@@ -486,16 +492,6 @@
       revise(type) {
         console.log(type)
 
-        const checkNum = function(num) {
-          let newNum = num * 1;
-          if(newNum >= 0 && newNum < 0.01) {
-            newNum = 0
-          } else {
-            newNum = newNum.toFixed(2)
-          }
-          return newNum * 1;
-        }
-
         const reviseType = {
           'workComment': () => {
             let data = this.modal.workComment
@@ -511,13 +507,14 @@
           'price': () => {
             let data = this.modal.price;
             let id = this.detail.id;
-            console.log(data.price)
-            if(data.price <= 0) {
+            let price = checkNum(data.price)
+            console.log(price)
+            if(price <= 0) {
               data.tips = '订单价格必须大于0'
             } else {
               query('/api/bill/price', 'POST', {
                 id,
-                price: data.price
+                price
               }).then(() => {
                 queryInfo({ id }, this);
                 this.hideModal()
@@ -548,26 +545,27 @@
             // checkNum(this)
             let data = this.modal.saleStatus;
             let id = this.detail.id;
-
+            let refundPrice = checkNum(data.refund_price)
+            console.log(data.refund_price)
             if(data.sale_status === '退款完成') {
               if(data.refund_price === '') {
                 this.modal.saleStatus.tips = '请输入退款金额'
                 return
-              } else if (data.refund_price < 0) {
+              } else if (refundPrice < 0) {
                 this.modal.saleStatus.tips = '请输入合理的退款金额'
                 return
-              } else if(data.refund_price > data.paid_price) {
+              } else if(refundPrice > checkNum(data.paid_price)) {
                 this.modal.saleStatus.tips = '退款金额不能大于已付金额'
                 return
               }
             }
 
-            console.log(checkNum(data.refund_price))
+            console.log(refundPrice)
 
             query('/api/bill/saleStatus', 'POST', {
               id,
               sale_status: data.sale_status,
-              refund_price: checkNum(data.refund_price) || ''
+              refund_price: refundPrice || ''
             }).then(() => {
               queryInfo({ id }, this);
               this.hideModal()
@@ -583,17 +581,19 @@
           'settleStatus': () => {
             let data = this.modal.settleStatus;
             let id = this.detail.id;
+            let earnestPrice = checkNum(data.earnest_price);
+            let price = checkNum(data.price);
             
-            if(data.price <= 0) {
+            if(price <= 0) {
               data.tips = '操作失败，订单价格必须大于0'
 
               return
             } else if(data.settle_status !== '全款') {
-              if(data.earnest_price <= 0) {
+              if(earnestPrice <= 0) {
                 data.tips = '操作失败，定金金额必须大于0'
 
               return
-              } else if(data.earnest_price > data.price) {
+              } else if(earnestPrice > price) {
                 data.tips = '操作失败，定金金额必须小于订单价格'
 
               return
@@ -603,8 +603,8 @@
             let settle = query('/api/bill/settleStatus', 'POST', {
               id,
               settle_status: data.settle_status,
-              earnest_price: data.earnest_price || '',
-              price: data.price
+              earnest_price: earnestPrice || '',
+              price
             }).then(() => {
               queryInfo({ id }, this);
               this.hideModal()
@@ -619,10 +619,10 @@
     },
     watch: {
       'modal.settleStatus.earnest_price': function(val) {
-        console.log('bbbbbbbbbbbbbbbbbbbbb')
+        
         let settleStatus = this.modal.settleStatus;
-        settleStatus.tail_price = (settleStatus.price - val).toFixed(2)
-        if(val < 0) {
+        settleStatus.tail_price = (checkNum(settleStatus.price) - checkNum(val)).toFixed(2)
+        if(checkNum(val) < 0) {
           settleStatus.tips = '操作失败，定金金额必须大于0'
         }else if(settleStatus.tail_price < 0) {
           settleStatus.tips = '操作失败，定金金额必须小于订单价格'
