@@ -6,9 +6,10 @@
           select.input-sm(v-model='page.pageSize')
             option(v-for='item in pageSizeRange' :value='item' :key='item + "pagerange"') {{item}}
           span 条
-      .btn-group.col-xs-8
-        button.btn.btn-white.btn-info.margin-lr5#search-btn(@click='clickSearch') 搜索 
-          i.ace-icon.fa.fa-search.bigger-120.blue
+      .btn-group.col-xs-8.align-right
+        span
+          button.btn.btn-white.btn-info.margin-lr5#search-btn(@click='clickSearch') 搜索 
+            i.ace-icon.fa.fa-search.bigger-120.blue
         router-link(:to='{name: editUrl, params: { oper: "add" }}') 
           button.btn.btn-info.btn-sm 添加 
             i.ace-icon.fa.fa-print.align-top.bigger-120.icon-on-right
@@ -28,7 +29,7 @@
               label.pos-rel
                 input.ace(type='checkbox')
                 span.lbl
-            td.center(v-for='(value, key) in data' :key='key' v-if='key !== "origin"') {{value}}
+            td.center(v-for='(value, key) in data' :key='key' v-if='key !== "origin"' @click='key==="is_top" ? toTop(data) : ""' :class='key==="is_top" ? "blue pointer" : ""') {{key === 'is_top' ? (value ? '取消置顶' : '置顶'): value}}
             td.center
               div.btn-group
                 router-link.blue.space(:to='{name: editUrl, params: data.origin}')
@@ -52,7 +53,7 @@
             label {{textItem.label}}: 
             input(:type='textItem.type || "text"' v-model='textItem.value' :key='textItem.key + "search"')
         .select.row
-          .search-item.col-sm-4.col-xs-3(v-if='!!searchItems.select' v-for='(selectItem, index) in searchItems.select' :key='selectItem.key + index')
+          .search-item.col-sm-6.col-xs-12(v-if='!!searchItems.select' v-for='(selectItem, index) in searchItems.select' :key='selectItem.key + index')
             label {{selectItem.label}}: 
             select(v-model='selectItem.value')
               option.hide(value=-1) --请选择--
@@ -143,6 +144,11 @@
       search(e) {
         $(e.currentTarget).parents('.search-box').removeClass('show')
         this.$emit('search')
+      },
+      toTop(data) {
+        console.log(data)
+        this.$emit('toTop', { id: data.id, is_top: !data.is_top })
+        
       }
 
     },
@@ -166,32 +172,14 @@
         if(this.checked) $row.addClass(active_class);
         else $row.removeClass(active_class);
       });
-
-      
-
-      /* $('.bootbox-confirm').on(ace.click_event, function(callback) {
-        console.log('alert confirm');
-        
-        bootbox.confirm({
-          message: '确定删除？',
-          buttons: {
-            confirm: {
-              label: '确定',
-              className: 'btn-success btn-sm'
-            },
-            cancel: {
-              label: '取消',
-              className: 'btn-sm'
-            }
-          },
-          callback,
-        })
-      }) */
     }
   }
 </script>
 
 <style>
+  .pointer {
+    cursor: pointer;
+  }
   .grid-header .page-size select {
     display: inline-block;
     width: auto;

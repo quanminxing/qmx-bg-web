@@ -13,9 +13,15 @@
   margin: 0;
   padding: 10px 0;
 }
+.edit-content .align-item-start {
+  align-items: flex-start;
+}
 .edit-content .info-left {
   width: 160px;
   padding-right: 15px;
+}
+.edit-content .info-right {
+  flex-grow: 1;
 }
 .edit-content .info .label-txt {
   text-align: right;
@@ -37,7 +43,8 @@
 
 .imgs .img-empty, .imgs img, video {
   width: 375px;
-  height: 200px;
+  height: auto;
+  min-height: 200px;
 }
 .imgs .img-empty {
   border: 1px solid #eee;
@@ -61,10 +68,6 @@
   padding: 0 10px 0 0;
 }
 
-.edit-content .img-tips {
-  /* padding: 5px 0 0 120px; */
-}
-
 .edit-btns {
   padding: 0 0 0 30%;
 }
@@ -82,4 +85,10 @@
 }
 .detail-operate-item {
   margin: 15px 0;
+}
+.padding-lr5 {
+  padding: 0 5px;
+}
+.margin-left20 {
+  margin-left: 20px;
 }

@@ -3,7 +3,7 @@
     breadcrumbs(v-bind:breadcrumbs="pagemenu")
     .page-content.row
       .page-main.col-xs-12
-        grid(v-bind='gridData' @search='searchList')
+        grid(v-bind='gridData' @search='searchList' @toTop='toTop')
 </template>
 
 <script>
@@ -22,7 +22,7 @@
   ];
 
   // table 数据
-  let colNames = [ 'ID', '名称', '类目', '平台', '栏目', '功能', '风格','分类', '价格', '小程序展示','模特', '场景', '关联视频', '时长', '比例', '备注' ]
+  let colNames = [ 'ID', '名称', '类目', '平台', '栏目', '功能', '风格','分类', '价格', '小程序展示','模特', '场景', '关联视频', '时长', '比例', '备注', '置顶' ]
 
   let searchItems = {
     text: [
@@ -139,10 +139,11 @@
           is_wechat: item.is_wechat === 1 ? '显示' : '不显示',
           is_model: item.is_model ? '有' : '无',
           sence: item.sence || '其他',
-          related_id: item.related_id + ' - ' + item.related_name,
+          related_id: item.related_id ? item.related_id + ' - ' + item.related_name : '——',
           time: item.time,
           scale_id: item.scale_id || '',
           description: item.description || '',
+          is_top: item.is_top,
           origin: item
         })
       });
@@ -155,8 +156,6 @@
       vue.$emit('toast', '网络异常，请刷新重试')
     })
   }
-
-  
 
   export default {
     name: 'videos',
@@ -223,6 +222,17 @@
         this.gridData.page.pageNum = 1
         console.log(searchData);
         queryList(this, searchData)
+      },
+      toTop(queryData) {
+        console.log(queryData)
+        query('/api/video/top', 'POST', queryData).then(res => {
+          console.log('置顶成功')
+          console.log(res)
+          queryList(this, searchData)
+        }).catch(err => {
+          console.log('置顶失败')
+          console.log(err)
+        })
       }
     },
     watch: {

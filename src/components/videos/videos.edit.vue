@@ -26,8 +26,22 @@
               span {{item.label}}
             .info-right
               select.select(:id='item.idName' :required='item.required' v-model='values[item.idName]')
-                option.hide(value=-1 selected disabled) --请选择--
-                option(v-for='option in item.options' :key='option.id + "select"' :value='option.id') {{option.name}}
+                option(value='' selected :disabled='item.required') --请选择--
+                option(v-for='(option, optionIndex) in item.options' :key='optionIndex + "selectOption"' :value='option.id') {{option.name}}
+          //- CheckBox 多选类型
+          .info.col-xs-12.align-item-start(v-if='!!infoCheckbox' v-for='(item, index) in infoCheckbox' :key='item.idName + "checkbox"')
+            label.label-txt.info-left
+              i.require-icon(v-if='item.required') * 
+              span {{item.label}}
+            .info-right
+              .selected
+                span.blue
+                  i.ace-icon.fa.fa-pencil 编辑
+              .checkbox
+                .row
+                  .col-md-2.col-sm-3.col-xs-4.margin-left20(v-for='(option, optionIndex) in item.options' :key='optionIndex + "checkboxOption"')
+                    input(type='checkbox' :name='item.idName' :value='option.id' v-model='option.checked')
+                    span {{option.label}}
           //- 选择图片类型表单(单张图片)
           .info.col-xs-12(v-if='!!infoImg' v-for='(item, index) in infoImg' :key='item.idName + "img"')
             label.label-txt.img-label.info-left.align-top
@@ -168,36 +182,49 @@
       required: true,
       idName: 'category_id',
       name: 'category',
+      query: true,
       options: []
     },{
       label: '平台',
       required: true,
       idName: 'platform_id',
       name: 'platform',
+      query: true,
+      options: []
+    },{
+      label: '分类',
+      required: true,
+      idName: 'classify_id',
+      name: 'classify',
+      query: true,
       options: []
     },{
       label: '栏目',
       required: true,
       idName: 'column_id',
       name: 'column',
+      query: true,
       options: []
     },{
       label: '功能',
       required: true,
       idName: 'usage_id',
       name: 'usage',
+      query: true,
       options: []
     },{
       label: '风格',
       required: false,
       idName: 'style_id',
       name: 'style',
+      query: true,
       options: []
     },{
       label: '模特',
-      required: true,
+      required: false,
       idName: 'is_model',
       name: 'is_model',
+      query: false,
       options: [{
         id: 1,
         name: '有'
@@ -207,21 +234,35 @@
       }]
     },{
       label: '场景',
-      required: true,
+      required: false,
       idName: 'sence',
       name: 'sence',
-      options: ['室内', '室外', '棚拍']
+      query: false,
+      options: [
+        {
+          id: '室内',
+          name: '室内'
+        },{
+          id: '室外',
+          name: '室外'
+        },{
+          id: '棚拍',
+          name: '棚拍'
+        }
+      ]
     },{
       label: '关联视频',
-      required: true,
+      required: false,
       idName: 'related_id',
       name: 'related_id',
+      query: false,
       options: []
     },{
       label: '是否小程序展示',
       required: true,
       idName: 'is_wechat',
       name: 'is_wechat',
+      query: false,
       options: [{
         id: 1,
         name: '显示'
@@ -229,12 +270,29 @@
         id: 0,
         name: '不显示'
       }]
-    },{
-      label: '分类',
+    }
+  ];
+
+  // Checkbox 多选
+  let infoCheckbox = [
+    {
+      label: '适用平台',
       required: false,
-      idName: 'classify_id',
-      name: 'classify',
-      options: []
+      idName: 'platform',
+      options: [
+        // {
+        //   id: '',
+        //   label: '',
+        //   checked: false
+        // }
+      ],
+    },
+    {
+      label: '适用品类',
+      required: false,
+      idName: 'category',
+      options: [],
+      checked: []
     }
   ];
 
@@ -251,6 +309,13 @@
       idName: 'waterfall_image',
       label: '封面2',
       tips: ['建议尺寸：1125 * 633（16:9）；560*746（3:4, 9:16）；560*420（4:3）；560*560（1:1）', '在保证清晰度的前提下图片大小尽量不要超过100K'],
+      img_url: ''
+    },
+    {
+      required: false,
+      idName: 'script_url',
+      label: '框架脚本',
+      tips: [],
       img_url: ''
     }
   ];
@@ -280,6 +345,7 @@
         uv: 0,
         infoText,
         infoSelect,
+        infoCheckbox,
         infoImg,
         infoVideo,
         infoDetail,
@@ -287,14 +353,15 @@
           oper: 'add',
           id: '',
           url: '',
-          name: null,
+          name: '',
           short_image: '',
           waterfall_image: '',
+          script_url: '',
           max: '',
           min: '',
           weight: '',
-          is_wechat: -1,
-          channel_ids: null,
+          is_wechat: '',
+          channel_ids: '',
           comment: '',
           infoDetail: []
         }
@@ -317,26 +384,58 @@
       this.uv = initData.uv || 0
 
       query('/api/info/operateVideo' , 'GET').then(res => {
-        console.log(res.data);
-        
         this.infoSelect.forEach(item => {
-          item.oper='edit'
-          if(item.name !== 'is_wechat') {
+          if(item.query) {
             item.options = res.data[item.name]
           }
         })
+        this.infoCheckbox.forEach(item => {
+          let checkbox = res.data[item.idName]  // 所有的checkbox
+          let options = [];
+          checkbox.forEach(data => {
+            let initInfo = initData[item.idName]  // 初始信息：是否checked
+            let OptionItem = {
+              label: data.name,
+              id: data.id
+            }
+
+            if(!!initInfo) {
+              OptionItem.checked = initInfo.search(`${data.id}`) > -1 ? true : false
+            } else {
+              OptionItem.checked = false
+            }
+            options.push(OptionItem)
+          })
+          
+          item.options = options
+          
+        })
       })
-      console.log(initData);
-      if(!initData.oper) {
-        initData.oper = 'add'
-      }
+      query('/api/video/listAll', 'GET', {_search: true, classify_id: 2, pageSize: 1000, sidx: 'id', sord: 'desc'}).then(res => {
+        console.log('关联视频：标准模板客片')
+        let infoSelect = this.infoSelect;
+        infoSelect.forEach(item => {
+          if(item.idName === 'related_id') {
+            let datas = res.data
+            let options = []
+            datas.forEach(data => {
+              options.push({
+                id: data.id,
+                name: data.id + '—' + data.name
+              })
+            })
+            item.options = options
+          }
+        })
+      }).catch(err => {
+        console.log('获取关联视频出错')
+      })
+      initData.oper = initData.oper ? initData.oper : 'add'
       
       if(!!initData.demo_pic) {
-        console.log(initData.demo_pic);
         
         initData.infoDetail = [];
         let details = initData.demo_pic.split('|');
-        console.log(details);
         details.forEach(item => {
           if(!!item) {
             let itemInfo = item.split(',')
@@ -350,35 +449,23 @@
               video_id: itemInfo[1] || null
             })
           }
-          console.log(initData.infoDetail);
-          
         })
-
-        console.log(initData.infoDetail);
-        
-        
       } else {
         that.infoDetail.details = [];
         initData.infoDetail = []
 
       }
       
-      console.log((that.values.infoDetail));
-      if(!initData.url) {
-        initData.url = '';
-      }
-      if(!initData.short_image) {
-        initData.short_image = ''
-      }
-      if(!initData.waterfall_image) {
-        initData.waterfall_image = ''
-      }
-      console.log(initData)
+      let newAdd = ['url', 'short_image', 'waterfall_image', 'script_url']
+      newAdd.forEach(item => {
+        if(!initData[item]) {
+          initData[item] = ''
+        }
+      })
 
       this.values = {...initData}
+      
       console.log(this.values);
-      
-      
     },
     methods: {
       // 选择图片
@@ -399,7 +486,6 @@
               that.values[idName] = res.urls[0]
               that.$emit('toast', '上传成功！', 1000)
             } else {
-              
               that.$emit('toast', '上传失败，请重新上传！')
               that.values[idName] = ''
             }
@@ -470,40 +556,97 @@
       // 保存
       save() {
         console.log(this.values);
+
+        const required = (arr, obj, values) => { // 必填验证:返回 Boolean
+          let flag = true;
+          let allArr = [];
         
-        if(this.values.is_wechat === -1 || !this.values.name || !this.values.price || !this.values.time || !this.values.format || !this.values.scale_id || this.values.category_id === -1 || this.values.platform_id === -1 || this.values.column_id === -1 || this.values.usage_id === -1 || !this.values.url || !this.values.short_image) {
-          
-      
-          this.$emit('toast', '请输入完整信息！')
+          arr.forEach(arrItem => {
+            allArr.push(...arrItem)
+          })
 
+          let arrLength = allArr.length;
+          console.log(allArr)
+          console.log(values)
 
-        } else {
-          
-          let demo_pic = ''
-          console.log(this.values);
-          if(!!this.values.infoDetail) {
-            this.values.infoDetail.forEach((item,index) => {
-              console.log(item.img_url);
-              if(!this.infoDetail.details[index].video_id) {
-                this.infoDetail.details[index].video_id = ''
+          for(let i = 0; i < arrLength; i++) {
+            let item = allArr[i];
+            let value = values[item.idName];
+            if(item.required && (value === '' || value === null || value === undefined) ) {
+              flag = false;
+              console.log(item)
+              console.log(value)
+              break;
+            }
+          }
+          if(flag) {
+            let objArr = [...obj]
+            let objArrLength = objArr.length;
+            for (let i = 0; i < objArrLength; i++) {
+              let objItem = objArr[i];
+              let value = values[objItem.idName];
+              if(objItem.required && (value === '' || value === null || value === undefined)) {
+                flag = false;
+                console.log(objItem)
+                console.log(value)
+                break;
               }
-              demo_pic += item.img_url + ',' + this.infoDetail.details[index].video_id + '|'
-            })
+            }
+          }
+
+          return flag;
+        }
+          
+        let demo_pic = ''
+        if(!!this.values.infoDetail) {
+          this.values.infoDetail.forEach((item,index) => {
+            console.log(item.img_url);
+            if(!this.infoDetail.details[index].video_id) {
+              this.infoDetail.details[index].video_id = ''
+            }
+            demo_pic += item.img_url + ',' + this.infoDetail.details[index].video_id + '|'
+          })
+        }
+        this.values.infoDetail = '';
+        this.values.demo_pic = demo_pic;
+
+        let checkbox = this.infoCheckbox;
+        checkbox.forEach(item => {
+          let options = item.options;
+          let thisValue = '';
+          options.forEach(option => {
+            if(option.checked) {
+              console.log(option.id)
+              console.log(item.idName)
+              console.log(this.values)
+              console.log(thisValue)
+              if(thisValue) {
+                thisValue += `,${option.id}`
+              } else {
+                thisValue = option.id
+              }
+            }
+          })
+          this.values[item.idName] = thisValue;
+        })
+        console.log(this.values)
+        console.log(required([this.infoText, this.infoSelect, this.infoCheckbox, this.infoImg], {infoVideo, infoDetail}, this.values))
+        if(!required([this.infoText, this.infoSelect, this.infoCheckbox, this.infoImg], {infoVideo, infoDetail}, this.values)) {
+          this.$emit('toast', '请输入完整信息！')
+        } else {
+          // let data = {...this.values};
+          let data = {};
+          let values = this.values;
+          for(let key in values) {
+            let value = values[key];
+            if(value !== '' && value !== null && value !== undefined) {
+              data[key] = value;
+            }
           }
           
-          console.log(demo_pic);
-          this.values.infoDetail = null;
-          let data = {...this.values};
-
-          data.demo_pic = demo_pic;
-
-          console.log(this.values)
-          console.log(data);
-          // data.infoDetail = null;
-          
-
+          console.log(data)
           query('/api/video', 'POST', data).then(res => {
-            
+            console.log('保存成功')
             this.$emit('toast', '保存成功！', 1500)
             this.$router.push('/videos/videos')
           }).catch(err => {
@@ -512,6 +655,7 @@
             this.$emit('toast', '网络异常，请刷新重试！', 1500)
           })
         }
+        
       },
     },
   }
