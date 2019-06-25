@@ -127,10 +127,22 @@
       label: '订单管理',
       active: false,
       icon: 'fa-pencil-square-o',
-      href: '/bill/order',
-      // href: '/manager/bill',
+      href: '',
       vueSide: true,
-      submenus: []
+      submenus: [
+        {
+          id: 71,
+          label: '订单列表',
+          href: '/bill/order',
+          vueSide: true,
+        },
+        {
+          id: 72,
+          label: '支付记录列表',
+          href: '/bill/payment/record',
+          vueSide: true,
+        }
+      ]
     },
     {
       id: 8,

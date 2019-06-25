@@ -45,15 +45,17 @@
                 tbody
                   tr.bgc-dceefc
                     th.center(v-for='thItem in payTh' :key='thItem + "payTh"') {{thItem}}
+                    th.center 操作
                   tr(v-for='(info, infoIndex) in payInfo' :key='infoIndex + "payInfo"')
+                    td.center {{info.serial}}
                     td.center {{info.type}}
                     td.center {{info.timestamp}}
                     td.center {{info.price}}
-                    td.center {{info.pay_status}}
+                    td.center(:class='{red: info.verify === "待审核"}') {{info.verify}}
                     td.center {{info.channel}}
                     td.center {{info.end_time}}
                     td.center {{info.third_id}}
-                    td.center {{info.voucher}}
+                    td.center(:class='{"pointer blue": info.channel === "对公付款"}' @click='check(info)') {{info.channel === '对公付款' ? '查看' : '——'}}
         .modal(@click.self='hideModal')
           .revise-wrap.modal-wrap
             .revise-cancel.close(@click='hideModal')
@@ -118,6 +120,19 @@
                 .margin.tips(v-if='modal.settleStatus.tips') {{modal.settleStatus.tips}}
             .revise-btns.align-center
               button.btn.btn-success.btn-sm(@click='revise(modal.modalType)') 提交
+          .check-wrap.modal-wrap(v-if='modal.modalType === "check"')
+            .check-item.modal-item
+              span.check-item-label 支付编号：
+              span.check-item-value {{modal.check.serial}}
+            .check-item.modal-item
+              span.check-item-label 支付凭证：
+              .check-item-value
+                img.pay-voucher(:src='modal.check.voucher')
+            .check-item.modal-item
+              span.check-item-label(v-if='!!modal.check.verify_info') 不通过原因
+              p.check-item-value.padding-tb10-lr30 {{modal.check.verify_info}}
+            .check-btns.modal-btns
+              button.btn(@click='hideModal') 关闭
 </template>
 
 <script>
@@ -172,9 +187,9 @@
         order[6].revise = (detail.pay_status === "待付款" || detail.pay_status === "未付款") && detail.settle_status === '定金+尾款' ? true : false
 
         let payInfo = data.pay_info;
-        payInfo.forEach(item => {
-          item.pay_status = '已付款'
-        });
+        // payInfo.forEach(item => {
+        //   item.verify = '已付款'
+        // });
         that.payInfo = payInfo;
 
         let workComment = that.modal.workComment;
@@ -323,8 +338,8 @@
             type: 'saleStatus',
             col: 'col-xs-3'
           },{
-            label: '支付状态',
-            key: 'pay_status', 
+            label: '审核状态',
+            key: 'verify', 
             value: '',
             revise: false,
             col: 'col-xs-3'
@@ -404,7 +419,7 @@
             col: 'col-xs-2'
           }
         ],
-        payTh: ['付款项目', '生成时间', '应付金额', '支付状态', '支付方式', '付款时间', '第三方交易号', '支付凭证'],
+        payTh: ['支付编号', '付款项目', '生成时间', '应付金额', '审核状态', '支付方式', '付款时间', '第三方交易号'],
         payInfo: [],
         saleStatusList: ['待沟通', '需求沟通中', '需求不可行', '需求已确认', '待支付定金', '已支付定金', '待支付全款', '已支付全款', '脚本策划中', '待确认脚本', '脚本修改中', '脚本已确认', '待寄送样品', '样品已寄到', '拍摄排期中', '拍摄中', '后期排期中', '后期制作中', '待确认样片', '样片修改中', '样片已确认', '待支付尾款', '已支付尾款', '等待成片', '成片已交付', '交易成功', '退款中', '退款完成'],
         salers: [],
@@ -444,6 +459,11 @@
             earnest_price: '',
             tips: '',
             options: ['全款', '定金+尾款']
+          },
+          check: {
+            serial: '',
+            voucher: '',
+            verify_info: ''
           }
         },
       }
@@ -616,6 +636,20 @@
         }
         reviseType[type]();
       },
+
+      check(data) {
+        console.log(data)
+        if(data.channel === "对公付款") {
+          
+          this.modal.check = {
+            serial: data.serial,
+            voucher: data.voucher,
+            verify_info: data.verify_info
+          }
+          this.showModal({type: 'check'})
+        }
+        
+      },
     },
     watch: {
       'modal.settleStatus.earnest_price': function(val) {
@@ -669,7 +703,9 @@
     color: #169BD5;
     cursor: pointer;
   }
-
+  .pointer {
+    cursor: pointer;
+  }
   .modal {
     background-color: rgba(0, 0, 0, .3);
   }

@@ -10,6 +10,7 @@ import videos from '@/components/videos/videos'
 import videosEdit from '@/components/videos/videos.edit'
 import order from '@/components/bill/order'
 import orderEdit from '@/components/bill/order.edit'
+import paymentRecord from '@/components/bill/payment.record'
 
 Vue.use(Router)
 
@@ -55,6 +56,10 @@ export default new Router({
       path: '/bill/order/edit',
       name: 'orderEdit',
       component: orderEdit
+    }, {
+      path: '/bill/payment/record',
+      name: 'paymentRecord',
+      component: paymentRecord
     }
   ]
 })
