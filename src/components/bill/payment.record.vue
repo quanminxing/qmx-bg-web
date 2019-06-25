@@ -34,7 +34,7 @@
                 a.pointer(@click='nextPage')
                   i.ace-icon.fa.fa-angle-double-right
         .modal(@click.self='hideModal')
-          .search-box.modal-box(:hidden='modal.type !== "search"')
+          .modal-search-box.modal-box(:hidden='modal.type !== "search"')
             .search-box-content
               .text.row
                 .search-item.modal-item.col-sm-6.col-xs-12(v-if='!!searchItems.text' v-for='(textItem, index) in searchItems.text' :key='textItem.key + index')
