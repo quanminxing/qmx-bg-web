@@ -431,7 +431,9 @@
           this.$emit('toast', '提交成功！', 2000)
           this.hideModal()
         }).catch(err => {
-          if(err.httpStatus === 200) {
+          console.log(err)
+          if(err.httpStatus === 200 && err.status === 500) {
+            console.log('重复审核')
             values.tip = err.err_message;
           } else {
             this.$emit('toast', '网络异常，请稍后重试', 2000)
