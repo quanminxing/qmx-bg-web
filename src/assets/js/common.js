@@ -27,6 +27,7 @@ export const query = function (url, type='GET', data = '') { // 请求
           
           resolve(res);
         } else {
+          res.httpStatus = 200;
           reject(res);
         }
       },

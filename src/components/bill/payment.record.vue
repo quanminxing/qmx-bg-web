@@ -35,7 +35,7 @@
                   i.ace-icon.fa.fa-angle-double-right
         .modal(@click.self='hideModal')
           .modal-search-box.modal-box(:hidden='modal.type !== "search"')
-            .search-box-content
+            .modal-search-box-content
               .text.row
                 .search-item.modal-item.col-sm-6.col-xs-12(v-if='!!searchItems.text' v-for='(textItem, index) in searchItems.text' :key='textItem.key + index')
                   label {{textItem.label}}: 
@@ -111,6 +111,7 @@
                 input.verify-item-value(type='text' v-model='modal.verify.third_id' style='min-width:250px;')
             .div(:hidden='modal.verify.verify_status')
               .verify-item.modal-item
+                i.red * 
                 span.verify-item-label 审核不通过原因：
                 .verify-item-value.textarea
                   textarea(cols='60' rows='3' v-model='modal.verify.verify_info')
@@ -404,6 +405,10 @@
           values.tip = '请选择付款时间后再提交！'
           return false
         }
+        if(!values.verify_status && !values.verify_info) {
+          values.tip = '请填写审核不通过原因！'
+          return false
+        }
 
         let postData = {}
         if(values.verify_status) {
@@ -417,7 +422,7 @@
           postData = {
             pay_id: values.pay_id,
             verify: '审核未通过',
-            verify_info: values.verify_info || ''
+            verify_info: values.verify_info
           }
         }
         query('/api/pay/verify', 'POST', postData).then(res => {
@@ -426,7 +431,11 @@
           this.$emit('toast', '提交成功！', 2000)
           this.hideModal()
         }).catch(err => {
-          this.$emit('toast', '网络异常，请稍后重试', 2000)
+          if(err.httpStatus === 200) {
+            values.tip = err.err_message;
+          } else {
+            this.$emit('toast', '网络异常，请稍后重试', 2000)
+          }
         })
       },
       prevPage() {
