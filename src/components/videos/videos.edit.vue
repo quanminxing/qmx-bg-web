@@ -496,11 +496,11 @@
           // $('.toast').show();
           that.$emit('toast', '上传中，请稍等。。。', 300000)
           if(type === 'image') {
-            putimage('https://test.qmxpower.com/api/getSTS?filetype=image', Date.parse(new Date()) + file.name, file, function(res) {
+            putimage('https://admin.qmxpower.com/api/getSTS?filetype=image', Date.parse(new Date()) + file.name, file, function(res) {
               uploadInfo(res)
             })
           } else {
-            putvideo('https://test.qmxpower.com/api/getSTS?filetype=video', Date.parse(new Date()) + file.name, file, function(res) {
+            putvideo('https://admin.qmxpower.com/api/getSTS?filetype=video', Date.parse(new Date()) + file.name, file, function(res) {
               uploadInfo(res)
             })
           }
