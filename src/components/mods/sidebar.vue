@@ -139,7 +139,7 @@
         {
           id: 72,
           label: '支付记录列表',
-          href: '',
+          href: '/bill/payment/record',
           vueSide: true,
         }
       ]
@@ -198,9 +198,10 @@
       }
     },
     mounted() {
-      if(this.$props.user.position === "管理员") {
-        this.sidebars[6].submenus[1].href = '/bill/payment/record'
-      }
+      // this.$props.user
+      // if(this.$props.user.position === "管理员") {
+      //   this.sidebars[6].submenus[1].href = '/bill/payment/record'
+      // }
     },
     methods: {
       menuActive(e) {
@@ -219,5 +220,6 @@
       submenuActive(e) {
       }
     }
+    
   }
 </script>

@@ -50,6 +50,8 @@
         // this.user.position = '非管理员'
         this.user.position = res.data.user.position
         this.user.cname = res.data.user.cname
+
+        console.log(this.user)
       }).catch(err => {
         console.log('获取用户信息错误')
       })
