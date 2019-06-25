@@ -184,9 +184,12 @@
         })
         ctx.records = records;
 
+        resolve()
+
       }).catch(err => {
         console.log(err)
         ctx.$emit('toast', '网络异常，请稍后重试！', 2000)
+        reject()
       })
     })
   }
@@ -361,23 +364,27 @@
       },
       search() {
         let searchValue = this.modal.search;
+        let timestamp_start = '1995-01-01 00:00:00';
+        let timestamp_end = '2119-01-01 00:00:00'
         queryData._search = true;
+
         for(let key in searchValue) {
           if(!!searchValue[key]) {
-            if(key === 'timestamp_start') {
-              queryData.timestamp = searchValue[key]
-            } else if(key === 'timestamp_end') {
-
-              queryData.timestamp = `${queryData.timestamp || ''},${searchValue[key]}`
+            if(key === 'timestamp_start' && !!searchValue[key]) {
+              timestamp_start = searchValue[key]
+            } else if(key === 'timestamp_end' && !!searchValue[key]) {
+              timestamp_end = searchValue[key]
             } else {
               queryData[key] = searchValue[key]
             }
             
           }
         }
+        queryData.timestamp = `${timestamp_start},${timestamp_end}`
         
         // console.log(searchValue)
         // 搜索订单列表
+        console.log('搜索')
         queryList(queryData, this).then(() => {
           console.log('999999999999999999999999')
           this.hideModal()
@@ -489,7 +496,7 @@
     background-color: #fafafa;
   }
   .modal-item {
-    padding: 10px;
+    padding: 5px;
   }
   .search-item label, .modal-item .label {
     width: 80px;

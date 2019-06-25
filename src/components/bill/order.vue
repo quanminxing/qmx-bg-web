@@ -542,7 +542,7 @@
             query('/api/bill/saleStatus', 'POST', {
               id: data.id,
               sale_status: data.sale_status,
-              refund_price: refundPrice || ''
+              refund_price: refundPrice || 0
             }).then(() => {
               queryOrders(this, searchData)
               this.hideModal()
