@@ -2,7 +2,7 @@
   .vh#app
     navbar(:user='user')
     .main-container.ace-save-state.vh#main-container
-      sidebar
+      sidebar(:user='user')
       .main-content.vh.position-relative
         router-view(@toast='toastShow' :user='user')
         .toast

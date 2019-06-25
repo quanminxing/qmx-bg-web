@@ -139,7 +139,7 @@
         {
           id: 72,
           label: '支付记录列表',
-          href: '/bill/payment/record',
+          href: '',
           vueSide: true,
         }
       ]
@@ -191,9 +191,15 @@
 
   export default {
     name: 'sidebar',
+    props: ['user'],
     data() {
       return {
         sidebars
+      }
+    },
+    mounted() {
+      if(this.$props.user.position === "管理员") {
+        this.sidebars[6].submenus[1].href = '/bill/payment/record'
       }
     },
     methods: {
@@ -211,7 +217,6 @@
         $currentTarget.addClass('active');
       },
       submenuActive(e) {
-
       }
     }
   }

@@ -195,6 +195,7 @@
     components: {
       breadcrumbs
     },
+    props: ['user'],
     data() {
       return {
         test: '',
