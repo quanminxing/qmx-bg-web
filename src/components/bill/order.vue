@@ -570,12 +570,13 @@
 
               return
               } else if(earnestPrice > price) {
-                data.tips = '操作失败，定金金额必须小于订单价格9999999'
+                data.tips = '操作失败，定金金额必须小于订单价格.'
 
               return
               }
             }
-            // earnestPrice = data.settle_status === '全款' ? '' : earnestPrice
+
+            earnestPrice = data.settle_status === '全款' ? '' : earnestPrice
             let settle = query('/api/bill/settleStatus', 'POST', {
               id: data.id,
               settle_status: data.settle_status,

@@ -189,7 +189,7 @@
       }).catch(err => {
         console.log(err)
         ctx.$emit('toast', '网络异常，请稍后重试！', 2000)
-        reject()
+        reject(err)
       })
     })
   }
@@ -297,7 +297,9 @@
       })
 
       // 获取订单列表
-      queryList(queryData, this)
+      queryList(queryData, this).catch(err => {
+        console.log(err)
+      })
     },
     methods: {
       showModal(type, data) {
