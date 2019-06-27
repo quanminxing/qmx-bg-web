@@ -34,10 +34,11 @@
               i.require-icon(v-if='item.required') * 
               span {{item.label}}
             .info-right
-              .selected
-                span.blue
-                  i.ace-icon.fa.fa-pencil 编辑
-              .checkbox
+              //-
+                .selected
+                  span.blue
+                    i.ace-icon.fa.fa-pencil 编辑
+              .checkbox.infoCheckbox-checkbox
                 .row
                   .col-md-2.col-sm-3.col-xs-4.margin-left20(v-for='(option, optionIndex) in item.options' :key='optionIndex + "checkboxOption"')
                     input(type='checkbox' :name='item.idName' :value='option.id' v-model='option.checked')
