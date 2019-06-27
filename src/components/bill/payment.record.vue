@@ -365,28 +365,36 @@
       search() {
         let searchValue = this.modal.search;
         let timestamp_start = '1995-01-01 00:00:00';
-        let timestamp_end = '2119-01-01 00:00:00'
-        queryData._search = true;
+        let timestamp_end = '2119-01-01 00:00:00';
+        queryData = {
+          _search: true,
+          pageSize: 20,
+          pageNum: 1
+        }
 
         for(let key in searchValue) {
           if(!!searchValue[key]) {
-            if(key === 'timestamp_start' && !!searchValue[key]) {
-              timestamp_start = searchValue[key]
-            } else if(key === 'timestamp_end' && !!searchValue[key]) {
-              timestamp_end = searchValue[key]
+            if(key === 'timestamp_start' || key === 'timestamp_end') {
+              
+              if(key === 'timestamp_start' && !!searchValue[key]) {
+                timestamp_start = searchValue[key]
+              } else if(key === 'timestamp_end' && !!searchValue[key]) {
+                timestamp_end = searchValue[key]
+              }
+              queryData.timestamp = `${timestamp_start},${timestamp_end}`
             } else {
               queryData[key] = searchValue[key]
             }
             
           }
         }
-        queryData.timestamp = `${timestamp_start},${timestamp_end}`
         
         // console.log(searchValue)
         // 搜索订单列表
         console.log('搜索')
         queryList(queryData, this).then(() => {
           console.log('999999999999999999999999')
+          this.page.pageNum = 1;
           this.hideModal()
         })
       },

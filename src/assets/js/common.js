@@ -1,5 +1,6 @@
 // 请求：url：请求路径；type：请求方式；data：请求需传送的数据
-export const query = function (url, type='GET', data = '') { // 请求
+export const query = function (url, type='GET', data = '') {
+  type = type.toUpperCase()
   const header = {
     Accept: 'application/json; charset=utf-8'
   };
@@ -36,8 +37,8 @@ export const query = function (url, type='GET', data = '') { // 请求
         reject(err)
       }
     }
-    if(type == 'POST') {
-      ajaxData['content-type'] = 'application/json'
+    if(type === 'POST') {
+      ajaxData.contentType = 'application/json;charset=utf-8'
     }
     console.log(ajaxData);
     
