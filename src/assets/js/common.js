@@ -1,6 +1,7 @@
 // 请求：url：请求路径；type：请求方式；data：请求需传送的数据
-export const query = function (url, method='GET', data = '') {
-  method = method.toUpperCase()
+export const query = function (url, type='GET', data = '') {
+  console.log(data)
+  type = type.toUpperCase()
   const header = {
     Accept: 'application/json; charset=utf-8'
   };
@@ -8,39 +9,64 @@ export const query = function (url, method='GET', data = '') {
   const domain = 'https://test.qmxpower.com';
   // const domain = 'https://admin.qmxpower.com';
   // const domain = 'http://192.168.2.60:7001'
-  //const domain = '127.0.0.1:7001'
-  console.log()
+  // const domain = 'http://localhost:7001'
+  // const domain = 'http://127.0.0.1:7001'
+
   return new Promise((resolve, reject) => {
-    console.log(domain + url)
-    let ajaxData = {
-      header,
-      method,
-      url: domain + url,
-      // url: '/api' + url,
-      xhrFields: {
-        withCredentials: true
-      },
-      crossDomain: true,
-      data,
-      success(res) {
-        console.log(res);
-        if (res.status === 200) {
-          
-          resolve(res);
-        } else {
-          res.httpStatus = 200;
-          reject(res);
+    let ajaxData = {}
+    if(type === 'POST') {
+      ajaxData = {
+        url: domain + url,
+        type:"POST",
+        contentType: "application/json",
+        dataType: "json",
+        xhrFields: {
+          withCredentials: true
+        },
+        crossDomain: true,
+        data: JSON.stringify(data),
+        success(res) {
+          console.log(res);
+          if (res.status === 200) {
+            resolve(res);
+          } else {
+            res.httpStatus = 200;
+            reject(res);
+          }
+        },
+        error(xml, err) {
+          console.log(err)
+          reject(err)
         }
-      },
-      error(xml, err) {
-        console.log(err)
-        reject(err)
+      }
+    } else if (type === 'GET') {
+      ajaxData = {
+        header,
+        type,
+        url: domain + url,
+        xhrFields: {
+          withCredentials: true
+        },
+        crossDomain: true,
+        data,
+        success(res) {
+          console.log(res);
+          if (res.status === 200) {
+            
+            resolve(res);
+          } else {
+            res.httpStatus = 200;
+            reject(res);
+          }
+        },
+        error(xml, err) {
+          console.log(err)
+          reject(err)
+        }
       }
     }
-    if(method === 'POST') {
-      // ajaxData.contentType = 'application/json;charset=utf-8'
-      // ajaxData['content-type'] = 'application/json;charset=utf-8'
-    }
+    
+
     console.log(ajaxData);
     
     $.ajax(ajaxData)
