@@ -337,6 +337,9 @@
     tips: ['建议尺寸：1125 * 633（16:9）', '在保证清晰度的前提下图片大小尽量不要超过100K'],
   }
 
+  let uploadUrl = 'https://test.qmxpower.com/api/getSTS'
+  // let uploadUrl = 'https://admin.qmxpower.com/api/getSTS'
+
   export default {
     name: 'wechatBannerEdit',
     data() {
@@ -392,15 +395,16 @@
         this.infoCheckbox.forEach(item => {
           let checkbox = res.data[item.idName]  // 所有的checkbox
           let options = [];
+          let initInfo = initData[item.idName]  // 初始信息：是否checked
+
           checkbox.forEach(data => {
-            let initInfo = initData[item.idName]  // 初始信息：是否checked
             let OptionItem = {
               label: data.name,
-              id: data.id
+              id: data.id || ''
             }
 
             if(!!initInfo) {
-              OptionItem.checked = initInfo.search(`${data.id}`) > -1 ? true : false
+              OptionItem.checked = initInfo.search(data.name) > -1 ? true : false
             } else {
               OptionItem.checked = false
             }
@@ -496,11 +500,13 @@
           // $('.toast').show();
           that.$emit('toast', '上传中，请稍等。。。', 300000)
           if(type === 'image') {
-            putimage('https://admin.qmxpower.com/api/getSTS?filetype=image', Date.parse(new Date()) + file.name, file, function(res) {
+            putimage(uploadUrl + '?filetype=image', new Date().getTime() + file.name, file, function(res) {
+              console.log(res)
+
               uploadInfo(res)
             })
           } else {
-            putvideo('https://admin.qmxpower.com/api/getSTS?filetype=video', Date.parse(new Date()) + file.name, file, function(res) {
+            putvideo(uploadUrl + '?filetype=video', new Date().getTime() + file.name, file, function(res) {
               uploadInfo(res)
             })
           }
@@ -526,7 +532,7 @@
             video_id: null
           })
           
-          putimage('https://test.qmxpower.com/api/getSTS?filetype=image', Date.parse(new Date()) + file.name, file, function(res) {
+          putimage(uploadUrl + '?filetype=image', new Date().getTime() + file.name, file, function(res) {
             if(res.status === 200) {
               console.log(that);
               if(!that.values.infoDetail) {
