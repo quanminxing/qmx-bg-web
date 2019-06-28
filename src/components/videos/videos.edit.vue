@@ -647,7 +647,7 @@
         if(!required([this.infoText, this.infoSelect, this.infoCheckbox, this.infoImg], [infoVideo, infoDetail], this.values)) {
           this.$emit('toast', '请输入完整信息！')
         } else {
-          // let data = {...this.values};
+          console.log('完整完整完整完整完整完整完整完整完整完整完整完整完整完整完整')
           let data = {};
           let values = this.values;
           for(let key in values) {
@@ -661,7 +661,7 @@
           query('/api/video', 'POST', data).then(res => {
             console.log('保存成功')
             this.$emit('toast', '保存成功！', 1500)
-            this.$router.push('/videos/videos')
+            this.$router.push({path: '/videos/videos'})
           }).catch(err => {
             console.log(err);
             

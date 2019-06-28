@@ -325,4 +325,12 @@
     }
   }
 </script>
+<style>
+.modal-backdrop {
+  display: none;
+}
+.modal {
+  z-index: 9999;
+}
+</style>
 
