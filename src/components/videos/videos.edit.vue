@@ -338,8 +338,8 @@
     tips: ['建议尺寸：1125 * 633（16:9）', '在保证清晰度的前提下图片大小尽量不要超过100K'],
   }
 
-  let uploadUrl = 'https://test.qmxpower.com/api/getSTS'
-  // let uploadUrl = 'https://admin.qmxpower.com/api/getSTS'
+  // let uploadUrl = 'https://test.qmxpower.com/api/getSTS'
+  let uploadUrl = 'https://admin.qmxpower.com/api/getSTS'
 
   export default {
     name: 'wechatBannerEdit',
