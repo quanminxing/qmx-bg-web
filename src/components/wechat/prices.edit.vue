@@ -231,12 +231,12 @@
           query('/api/banner', 'POST', data).then(res => {
             
             this.$emit('toast', '保存成功！', 1500)
-            this.$router.push('/wechat/prices')
+            this.$router.push({path: '/wechat/prices'})
           }).catch(err => {
             console.log(err);
             if(err === 'success') {
               this.$emit('toast', '保存成功！', 2000)
-              this.$router.push('/wechat/prices')
+              this.$router.push({path: '/wechat/prices'})
             } else {
               this.$emit('toast', '网络异常，请重试！', 2000)
             }

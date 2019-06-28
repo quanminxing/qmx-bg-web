@@ -210,7 +210,7 @@
           query('/api/channel', 'POST', this.values).then(res => {
             if(res.status === 200) {
               this.$emit('toast', '保存成功！', 1500)
-              this.$router.push('/wechat/channel')
+              this.$router.push({path: '/wechat/channel'})
             }
             
           }).catch(err => {

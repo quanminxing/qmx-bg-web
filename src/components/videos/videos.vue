@@ -330,7 +330,10 @@
   display: none;
 }
 .modal {
-  z-index: 9999;
+  z-index: 9999 !important;
+}
+.modal-dialog {
+  margin: 70px auto;
 }
 </style>
 

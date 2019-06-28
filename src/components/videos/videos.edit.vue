@@ -661,7 +661,10 @@
           query('/api/video', 'POST', data).then(res => {
             console.log('保存成功')
             this.$emit('toast', '保存成功！', 1500)
-            this.$router.push({path: '/videos/videos'})
+            setTimeout(() => {
+              this.$router.push({path: '/videos/videos'})
+            }, 1200)
+            
           }).catch(err => {
             console.log(err);
             

@@ -201,7 +201,7 @@
             console.log(res)
             if(res.status === 200) {
               this.$emit('toast', '保存成功！', 1500)
-              this.$router.push('/wechat/banner')
+              this.$router.push({path: '/wechat/banner'})
             }
           }).catch(err => {
             
