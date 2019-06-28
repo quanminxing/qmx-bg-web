@@ -325,7 +325,7 @@
   let infoVideo = {
     label: '视频',
     required: true,
-    idName: 'video_id',
+    idName: 'url',
     url: ''
   }
 
@@ -489,7 +489,10 @@
         readFile.onload = function() {
           const uploadInfo = function(res) {
             if(res.status === 200) {
+              console.log(res)
+              console.log(idName)
               that.values[idName] = res.urls[0]
+              console.log(that.values[idName])
               that.$emit('toast', '上传成功！', 1000)
             } else {
               that.$emit('toast', '上传失败，请重新上传！')
@@ -588,7 +591,9 @@
             }
           }
           if(flag) {
+            console.log(obj)
             let objArr = [...obj]
+            console.log(objArr)
             let objArrLength = objArr.length;
             for (let i = 0; i < objArrLength; i++) {
               let objItem = objArr[i];
@@ -638,8 +643,8 @@
           this.values[item.idName] = thisValue;
         })
         console.log(this.values)
-        console.log(required([this.infoText, this.infoSelect, this.infoCheckbox, this.infoImg], {infoVideo, infoDetail}, this.values))
-        if(!required([this.infoText, this.infoSelect, this.infoCheckbox, this.infoImg], {infoVideo, infoDetail}, this.values)) {
+        console.log(required([this.infoText, this.infoSelect, this.infoCheckbox, this.infoImg], [infoVideo, infoDetail], this.values))
+        if(!required([this.infoText, this.infoSelect, this.infoCheckbox, this.infoImg], [infoVideo, infoDetail], this.values)) {
           this.$emit('toast', '请输入完整信息！')
         } else {
           // let data = {...this.values};

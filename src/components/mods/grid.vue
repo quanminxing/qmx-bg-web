@@ -90,9 +90,10 @@
           },
           callback: function(result) {
             if(result) {
+              console.log({ids: [dataId]})
               query(url, 'POST', {ids: [dataId]})
               .then((res) => {
-                console.log(resizeBy)
+                console.log(res)
 
                 that.$props.datas.splice(dataIndex, 1)
               })
