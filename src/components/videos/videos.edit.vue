@@ -122,7 +122,7 @@
     {
       label: '价格',
       idName: 'price',
-      placeholder: '请填写价格上限',
+      placeholder: '请填写价格',
       required: true,
       type: 'number'
     },
@@ -435,6 +435,7 @@
       }).catch(err => {
         console.log('获取关联视频出错')
       })
+      
       initData.oper = initData.oper ? initData.oper : 'add'
       
       if(!!initData.demo_pic) {

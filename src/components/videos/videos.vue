@@ -82,6 +82,49 @@
         key: 'column_id',
         value: -1,
         options: []
+      },
+      {
+        label: '模特',
+        name: 'model',
+        key: 'is_model',
+        value: -1,
+        options: [
+          {
+            id: 1,
+            name: '有'
+          },
+          {
+            id: 0,
+            name: '无'
+          }
+        ]
+      },
+      {
+        label: '场景',
+        name: 'sence',
+        key: 'sence',
+        value: -1,
+        options: [
+          {
+            id: '室内',
+            name: '室内'
+          },
+          {
+            id: '室外',
+            name: '室外'
+          },
+          {
+            id: '棚拍',
+            name: '棚拍'
+          }
+        ]
+      },
+      {
+        label: '关联视频',
+        name: 'related',
+        key: 'related_id',
+        value: -1,
+        options: []
       }
     ]
   }
@@ -100,6 +143,7 @@
     if(searchData._search) {
       let min = '';
       let max = '';
+      console.log(searchData)
       for(let key in searchData) {
         if(key === 'min') {
           min = searchData[key]
@@ -109,8 +153,10 @@
           queryData[key] = searchData[key]
         }
       }
+      if((min !== '') || (max !== '')) {
+        queryData.price = `${min},${max}`
+      }
       
-      queryData.price = `${min},${max}`
       console.log(queryData.price);
       
       
@@ -155,6 +201,8 @@
       console.log(err);
       vue.$emit('toast', '网络异常，请刷新重试')
     })
+
+
   }
 
   export default {
@@ -190,31 +238,63 @@
         
       })
 
+      // 搜索数据
       query('/api/info/operateVideo' , 'GET').then(res => {
         console.log(res.data);
         
         let selecItems = this.gridData.searchItems.select;
         selecItems.forEach(item => {
-          item.options = res.data[item.name]
+          let optionData = res.data[item.name]
+          if(!!optionData && optionData.length > 0) {
+            item.options = optionData
+          }
+          
         })
       }).catch(err => {
         console.log(err)
+      })
+
+      // 搜索关联视频数据
+      query('/api/video/listAll', 'GET', {_search: true, classify_id: 2, pageSize: 1000, sidx: 'id', sord: 'desc'}).then(res => {
+        console.log('关联视频：标准模板客片')
+        let searchSelect = this.gridData.searchItems.select;
+        console.log(searchSelect)
+        searchSelect.forEach(item => {
+          if(item.key === 'related_id') {
+            let datas = res.data
+            let options = []
+            datas.forEach(data => {
+              options.push({
+                id: data.id,
+                name: data.id + '—' + data.name
+              })
+            })
+            item.options = options
+          }
+        })
+      }).catch(err => {
+        console.log(err)
+        console.log('获取关联视频出错')
       })
     },
     methods: {
       searchList() {
         console.log(this);
-        searchData._search = true;
+        searchData = {
+          _search: true
+        };
         
         let searchItems = this.gridData.searchItems;
         
         for(let type in searchItems) {
           let thisType = searchItems[type];
           thisType.forEach(item => {
-            if(item.value === -1) {
-              searchData[item.key] = null;
-            } else {
-              searchData[item.key] = item.value;
+            if(item.value !== -1 && item.value !== null && item.value !== undefined && item.value !== '') {
+              if(item.key === 'is_model') {
+                searchData.model = item.value ? true : false
+              } else {
+                searchData[item.key] = item.value;
+              }
             }
             
           })
