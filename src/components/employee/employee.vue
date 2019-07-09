@@ -207,14 +207,14 @@
             },{
               label: '成员姓名',
               key: 'cname',
-              placeholder: '账号',
+              placeholder: '成员姓名',
               required: true,
               type: 'text',
               value: ''
             },{
               label: '电话号码',
               key: 'phone',
-              placeholder: '账号',
+              placeholder: '电话号码',
               required: true,
               validity: 'phone',
               type: 'text',
@@ -222,14 +222,14 @@
             },{
               label: '登录密码',
               key: 'password',
-              placeholder: '账号',
+              placeholder: '登录密码',
               required: true,
               type: 'text',
               value: ''
             },{
               label: '邮箱',
               key: 'email',
-              placeholder: '账号',
+              placeholder: '邮箱',
               required: true,
               validity: 'email',
               type: 'text',
@@ -237,7 +237,7 @@
             },{
               label: '权限',
               key: 'auth',
-              placeholder: '账号',
+              placeholder: '权限',
               required: false,
               type: 'select',
               value: 1,
@@ -253,7 +253,7 @@
             },{
               label: '备注',
               key: 'description',
-              placeholder: '账号',
+              placeholder: '备注',
               required: false,
               type: 'text',
               value: ''
@@ -268,7 +268,8 @@
           description: ''
         },
         reviseOper: '',
-        reviseTip: ''
+        reviseTip: '',
+        reviseId: ''
       }
     },
     mounted() {
@@ -286,6 +287,7 @@
               this.modal.revise.forEach(item => {
                 item.value = data[item.key] || ''
               })
+              this.reviseId = data.id
               this.reviseOper = 'edit'
             } else {
               console.log(oper)
@@ -326,6 +328,7 @@
         this.page.pageNum = 1;
         
         queryList(this)
+        this.hideModal()
       },
       resetSearch() {
         this.search = {
@@ -341,7 +344,8 @@
         let reviseModal = this.modal.revise;
         let length = reviseModal.length;
         let reviseData = {
-          oper: this.reviseOper
+          oper: this.reviseOper,
+          id: this.reviseId
         };
 
         this.reviseTip = ''
