@@ -149,8 +149,8 @@
       label: '人员管理',
       active: false,
       icon: 'fa-key',
-      href: '/manager/people',
-      vueSide: false,
+      href: '/employee/employee',
+      vueSide: true,
       submenus: []
     },
     {
@@ -187,6 +187,15 @@
         },
       ]
     },
+    {
+      id: 10,
+      label: '数据导出',
+      active: false,
+      icon: 'fa-pencil-square-o',
+      href: '/practicaldata/dataexport',
+      vueSide: true,
+      submenus: []
+    }
   ]
 
   export default {

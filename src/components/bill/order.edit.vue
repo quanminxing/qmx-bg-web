@@ -22,6 +22,13 @@
                 li.content-item(v-for='(customerItem, customerIndex) in customer' :key='customerIndex + "customer"' :class='customerItem.col')
                   span.label {{customerItem.label}}：
                   span.value {{customerItem.value}}
+          .content-customer.margin-top
+            .content-heading 需求简表
+            .content-body.row
+              ul
+                li.content-item(v-for='(productItem, productIndex) in product' :key='productIndex + "product"' :class='productItem.col')
+                  span.label {{productItem.label}}：
+                  span.value {{productItem.value}}
           .content-sale.margin-top
             .content-heading 销售信息
             .content-body.row
@@ -158,6 +165,11 @@
 
         let customer = that.customer;
         customer.forEach(item => {
+          item.value = data[item.key] || '——'
+        })
+
+        let product = that.product;
+        product.forEach(item => {
           item.value = data[item.key] || '——'
         })
 
@@ -379,6 +391,24 @@
             key: 'email',
             value: '',
             col: 'col-xs-9'
+          }
+        ],
+        product: [
+          {
+            label: '宝贝名称',
+            key: 'product_name',
+            value: '',
+            col: 'col-xs-12'
+          }, {
+            label: '宝贝链接',
+            key: 'product_url',
+            value: '',
+            col: 'col-xs-12'
+          }, {
+            label: '视频比例',
+            key: 'product_scale',
+            value: '',
+            col: 'col-xs-12'
           }
         ],
         sale: [

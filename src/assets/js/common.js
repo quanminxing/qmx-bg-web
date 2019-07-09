@@ -6,8 +6,8 @@ export const query = function (url, type='GET', data = '') {
     Accept: 'application/json; charset=utf-8'
   };
 
-  // const domain = 'https://test.qmxpower.com';
-  const domain = 'https://admin.qmxpower.com';
+  const domain = 'https://test.qmxpower.com';
+  // const domain = 'https://admin.qmxpower.com';
   // const domain = 'http://192.168.2.60:7001'
   // const domain = 'http://localhost:7001'
   // const domain = 'http://127.0.0.1:7001'
@@ -51,6 +51,7 @@ export const query = function (url, type='GET', data = '') {
         data,
         success(res) {
           console.log(res);
+          
           if (res.status === 200) {
             
             resolve(res);

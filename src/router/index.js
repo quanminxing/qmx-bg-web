@@ -11,6 +11,8 @@ import videosEdit from '@/components/videos/videos.edit'
 import order from '@/components/bill/order'
 import orderEdit from '@/components/bill/order.edit'
 import paymentRecord from '@/components/bill/payment.record'
+import employee from '@/components/employee/employee'
+import dataExport from '@/components/practicaldata/data.export'
 
 Vue.use(Router)
 
@@ -60,6 +62,14 @@ export default new Router({
       path: '/bill/payment/record',
       name: 'paymentRecord',
       component: paymentRecord
+    }, {
+      path: '/employee/employee',
+      name: 'employee',
+      component: employee
+    }, {
+      path: '/practicaldata/dataexport',
+      name: 'dataExport',
+      component: dataExport
     }
   ]
 })

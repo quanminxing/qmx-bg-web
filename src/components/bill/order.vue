@@ -87,7 +87,6 @@
                 input(:type='textItem.type || "text"' v-model='textItem.value' :placeholder='textItem.placeholder')
               .search-item.col-xs-12.order-time
                 label 下单时间：
-                //- input#date-picker(v-model='searchItems.order_time.start')
                 input(type='date' name='order-time-start' v-model='searchItems.order_time.start')
                 span.padding  — — 
                 input(type='date', name='order-time-end' v-model='searchItems.order_time.end')
