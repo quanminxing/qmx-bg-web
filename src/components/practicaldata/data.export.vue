@@ -92,36 +92,8 @@
     methods: {
       exportData() {
         let that = this;
-        // $(function() {
-          window.location.href = 'https://test.qmxpower.com/api/bill/getSaleReport?timeUp=' + that.endDate + '&timeDown=' + that.startDate
-        //   $.ajax({
-        //     type: 'GET',
-        //     url: domain + '/api/bill/getSaleReport',
-        //     xhrFields: {
-        //       withCredentials: true
-        //     },
-        //     crossDomain: true,
-        //     data: {
-        //       timeUp: that.startDate,
-        //       timeDown: that.endDate
-        //     },
-        //     success(res) {
-        //       console.log(res)
-        //       console.log('数据导出成功')
-        //     },
-        //     error() {
-        //       console.log('数据导出失败')
-        //     }
-        //   })
-        // })
-        // query('/api/bill/getSaleReport', 'GET', {
-        //   timeUp: this.startDate,
-        //   timeDown: this.endDate
-        // }).then(res => {
-        //   console.log('数据导出成功')
-        // }).catch(err => {
-        //   console.log('数据导出失败')
-        // })
+        
+        window.location.href = 'https://test.qmxpower.com/api/bill/getSaleReport?timeUp=' + that.endDate + '&timeDown=' + that.startDate
       }
     }
   }
