@@ -188,7 +188,7 @@
 
       }).catch(err => {
         console.log(err)
-        ctx.$emit('toast', '网络异常，请稍后重试！', 2000)
+        ctx.$emit('toast', '网络异常 或者 您没有操作权限', 2000)
         reject(err)
       })
     })

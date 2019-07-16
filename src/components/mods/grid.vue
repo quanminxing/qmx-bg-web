@@ -218,7 +218,7 @@
     padding: 10px;
   }
   .search-item label {
-    width: 80px;
+    width: 120px;
     padding: 0 5px 0 0; 
     text-align: right;
   }

@@ -93,7 +93,7 @@
       exportData() {
         let that = this;
         
-        window.location.href = 'https://test.qmxpower.com/api/bill/getSaleReport?timeUp=' + that.endDate + '&timeDown=' + that.startDate
+        window.location.href = 'https://admin.qmxpower.com/api/bill/getSaleReport?timeUp=' + that.endDate + '&timeDown=' + that.startDate
       }
     }
   }

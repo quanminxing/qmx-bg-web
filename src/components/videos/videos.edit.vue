@@ -8,6 +8,10 @@
             label.label-txt.info-left 
               span ID
             .info-right {{values.id}}
+          .info.col-xs-12.col-sm-6(v-show='!!values.local_id')
+            label.label-txt.info-left 
+              span 线下视频库号
+            .info-right {{values.local_id}}
           .info.col-xs-12.col-sm-6(v-show='!!uv')
             label.label-txt.info-left 
               span 播放量
@@ -356,6 +360,7 @@
         values: {
           oper: 'add',
           id: '',
+          local_id: '',
           url: '',
           name: '',
           short_image: '',

@@ -22,7 +22,7 @@
   ];
 
   // table 数据
-  let colNames = [ 'ID', '名称', '类目', '平台', '栏目', '功能', '风格','分类', '价格', '小程序展示','模特', '场景', '关联视频', '时长', '比例', '备注', '置顶' ]
+  let colNames = [ 'ID', '线下视频库号', '名称', '类目', '平台', '栏目', '功能', '风格','分类', '价格', '小程序展示','模特', '场景', '关联视频', '时长', '比例', '备注', '置顶' ]
 
   let searchItems = {
     text: [
@@ -49,6 +49,12 @@
         key: 'min',
         value: '',
         type: 'number'
+      },{
+        label: '线下视频库号',
+        placeholder: '线下视频库号',
+        key: 'local_id',
+        value: '',
+        type: 'text'
       }
     ],
     select: [
@@ -174,6 +180,7 @@
         item.oper = 'edit';
         datas.push({
           id: item.id || item.video_id,
+          local_id: item.local_id || '——',
           name: item.name,
           category_id: item.categroy_name || '',
           platform_id: item.platform_name || '',

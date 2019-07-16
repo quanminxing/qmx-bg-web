@@ -274,6 +274,12 @@
               value: '',
               type: ''
             },{
+              label: '账号',
+              placeholder: '账号',
+              key: 'phone',
+              value: '',
+              type: ''
+            },{
               label: '联系电话',
               placeholder: '联系电话',
               key: 'phone',
