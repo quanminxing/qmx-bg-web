@@ -10,7 +10,7 @@
     "build": "rm -rf ./dist && node build/build.js"
   },
   "dependencies": {
-    "acorn": "^6.0.0",
+    "acorn": "^6.4.1",
     "ajv": "^6.9.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
